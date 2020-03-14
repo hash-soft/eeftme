@@ -130,6 +130,9 @@ const EventEditor = React.forwardRef((props, ref) => {
   const onSelectChange = (e) =>{
     console.log('選択インデックス変更:' + e.target.selectedIndex);
 
+    // イベントコマンド画面消去
+    commandsRef.current.eraseEditor();
+
     // 編集中イベント保存
     setEditEvent();
 

@@ -37,6 +37,10 @@ const Commands = React.forwardRef((props, ref) => {
     return {
       getList: () => list,
       updateList: update,
+      eraseEditor: () => {
+        commandRef.current.code = 0;
+        updateListEnable(true);
+      }
     }
   });
 
@@ -85,6 +89,9 @@ const Commands = React.forwardRef((props, ref) => {
     commandRef.current.code = commandId;
     commandRef.current.parameters = null;
     updatePopup(false);
+    if(commandId === 0) {
+      updateListEnable(true);
+    }
   }
 
   const viewPopup = () => {

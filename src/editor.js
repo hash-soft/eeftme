@@ -75,6 +75,11 @@ const SaveButton = (props) => {
     link.download = props.eventFileNameRef.current.name + '.json'
     link.click();
     window.URL.revokeObjectURL(link.href);
+
+    // ローカルストレージに保存
+    const eventsText = JSON.stringify(events);
+    localStorage.setItem('events', eventsText);
+    localStorage.setItem('filename', props.eventFileNameRef.current.name);
   }
 
   return (

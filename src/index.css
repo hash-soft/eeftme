@@ -13,41 +13,48 @@ code {
 }
 
 .editor {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  height: 100vh;
+  background-color: rgb(217, 255, 0);
 }
 
 .inout-area {
   display: flex;
   flex-direction: row;
-  margin-top: 20px;
+  margin-top: 10px;
   margin-left: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  height: 30px;
+  background-color: rgb(255, 0, 255);
 }
 
 .event-file-name {
-  display: flex;
-  flex-direction: row;
+  margin-left: 4px;
 }
 
 .load-area {
-  display: flex;
-  flex-direction: row;
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 .edit-area {
   display: flex;
   flex-direction: row;
   margin-left: 20px;
+  height: calc(100% - 55px);
+  background-color: rgb(120, 163, 154);
 }
 
 
 .event-list {
-  width: 200px;
+    width: 200px;
+    height: 100%;
 }
 
 .event-list select {
   width: 100%;
+  height: calc(100% - 30px);
 }
 
 .event {
@@ -76,7 +83,7 @@ code {
 .event-right {
   margin-left: 20px;
   width: 800px;
-  height: 800px;
+  height: 100%;
 }
 
 .commands {
