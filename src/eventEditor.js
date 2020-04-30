@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Conditions from './conditions';
 import Commands from './commands';
 import EventList from './eventList';
+import { TRIGGER } from './define';
+import { simpleSelectItems } from './selectBoxSet'
 import './index.css';
 
 
@@ -33,6 +35,34 @@ const EventName = React.forwardRef((props, ref) => {
   )
 });
 
+// 開始条件
+const Trigger = React.forwardRef((props, ref) => {
+  
+  const [trigger, updateTrigger] = useState(props.trigger || 0);
+
+  React.useImperativeHandle(ref, () => {
+    return {
+      trigger: trigger,
+      updateTrigger: updateTrigger
+    }
+  });
+
+  const onChange = (e) => {
+    const cTrigger = parseInt(e.target.value);
+    console.log('trigger change ' + cTrigger);
+    updateTrigger(cTrigger);
+  }
+
+  return (
+    <div className="event-name">
+      <font size="3" >開始条件：</font>
+      <select value={trigger} onChange={(e) => onChange(e)}>
+        {simpleSelectItems(['話す', '調べる', '触れる'])}
+      </select>
+    </div>
+  )
+});
+
 
 // イベント項目
 const Event = (props) => {
@@ -48,6 +78,10 @@ const Event = (props) => {
           name={props.event.name}
           updateEventList={props.updateEventList}
           ref={props.nameRef}
+        />
+        <Trigger
+          trigger={props.event.trigger}
+          ref={props.triggerRef}
         />
         <Conditions
           conditions={props.event.conditions}
@@ -73,7 +107,7 @@ const EventEditor = React.forwardRef((props, ref) => {
   const conditionsRef = useRef(null);
   const commandsRef = useRef(null);
   const nameRef = useRef(null);
-  
+  const triggerRef = useRef(null);
 
   // 親が参照できる機能
   React.useImperativeHandle(ref, () => {
@@ -92,6 +126,7 @@ const EventEditor = React.forwardRef((props, ref) => {
 
   const refreshEvent = (event) => {
     nameRef.current.updateName(event.name);
+    triggerRef.current.updateTrigger(event.trigger || 0);
     conditionsRef.current.updateConditions(event.conditions);
     commandsRef.current.updateList(event.list);
   }
@@ -122,6 +157,7 @@ const EventEditor = React.forwardRef((props, ref) => {
     const event = events[index];
 
     event.name = nameRef.current.name;
+    event.trigger = triggerRef.current.trigger;
     event.conditions = conditionsRef.current.getConditions();
     event.list = commandsRef.current.getList();
   }
@@ -145,9 +181,7 @@ const EventEditor = React.forwardRef((props, ref) => {
     // イベントを更新
     const events = props.eventsRef.current;
     const editEvent = events[e.target.selectedIndex];
-    nameRef.current.updateName(editEvent.name);
-    conditionsRef.current.updateConditions(editEvent.conditions);
-    commandsRef.current.updateList(editEvent.list);
+    refreshEvent(editEvent);
   }
 
   // イベント数変更
@@ -164,7 +198,13 @@ const EventEditor = React.forwardRef((props, ref) => {
     setEditEvent();
 
     for(let i = oldSize; i < newSize; i++) {
-      events.push({id:i + 1, name: 'ev' + (i + 1), conditions: [], list: []});
+      // イベントのデータ
+      const event = {id:i + 1, 
+        name: 'ev' + (i + 1), 
+        trigger: TRIGGER.TALK,
+        conditions: [], 
+        list: []}
+      events.push(event);
     }
     if(newSize < oldSize) {
       events.length = newSize;
@@ -198,6 +238,7 @@ const EventEditor = React.forwardRef((props, ref) => {
         event={props.eventsRef.current[0]}
         updateEventList={updateEventList}
         nameRef={nameRef}
+        triggerRef={triggerRef}
         conditionsRef={conditionsRef}
         commandsRef={commandsRef}
       />

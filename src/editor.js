@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import EventEditor from './eventEditor'
-import Variables from './variables'
+import {Flags, Variables} from './contents'
 import './index.css';
 
 
@@ -36,6 +36,8 @@ const LoadButton = (props) => {
     json.shift();
     if(props.type === 'events') {
       refreshEvents(json, contents, file.name.split(/\.(?=[^.]+$)/));
+    }  else if(props.type === 'flags') {
+      refreshFlags(json, contents);
     } else if(props.type === 'variables') {
       refreshVariables(json, contents);
     }
@@ -46,6 +48,13 @@ const LoadButton = (props) => {
     props.eventFileNameRef.current.updateName(filename[0]);
     localStorage.setItem('events', contents);
     localStorage.setItem('filename', filename[0]);
+  }
+
+  // フラグを読み込んだ後の処理
+  // ローカルストレージもも更新する
+  const refreshFlags = (json, contents) => {
+    props.update(json);
+    localStorage.setItem('flags', contents);
   }
 
   const refreshVariables = (json, contents) => {
@@ -100,6 +109,11 @@ const FileButtons = (props) => {
         type={'events'}
         eventEditorRef={props.eventEditorRef}
         eventFileNameRef={props.eventFileNameRef}
+      />
+      <LoadButton
+        label={'フラグを開く'}
+        type={'flags'}
+        update={props.updateFlags}
       />
       <LoadButton
         label={'変数を開く'}
@@ -184,10 +198,20 @@ const Editor = () => {
     return events;
   }
 
+  const initFlags = () => {
+    const flagsText = localStorage.getItem('flags');
+    if(flagsText == null) {
+      return [{id:1, name:'f_one'}];
+    }
+    const flags = JSON.parse(flagsText);
+    flags.shift();
+    return flags;
+  }
+
   const initVariables = () => {
     const variablesText = localStorage.getItem('variables');
     if(variablesText == null) {
-      return [{id:1, name:'one'}];
+      return [{id:1, name:'v_one'}];
     }
     const variables = JSON.parse(variablesText);
     variables.shift();
@@ -195,6 +219,7 @@ const Editor = () => {
   }
 
   const eventsRef = React.useRef(initEvents());
+  const [flags, updateFlags] = useState(() => initFlags());
   const [variables, updateVariables] = useState(() => initVariables());
 
   React.useEffect(() => {
@@ -203,10 +228,12 @@ const Editor = () => {
 
   return (
     <div className="editor">
+      <Flags.Provider value={flags}>
       <Variables.Provider value={variables}>
       <InOut
         fileName={initFileName()}
         eventsRef={eventsRef}
+        updateFlags={updateFlags}
         updateVariables={updateVariables}
         eventEditorRef={eventEditorRef}
       />
@@ -215,6 +242,7 @@ const Editor = () => {
         ref={eventEditorRef}
       />
       </Variables.Provider>
+      </Flags.Provider>
     </div>
   );
 }

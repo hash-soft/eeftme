@@ -1,7 +1,19 @@
+const TRIGGER = {
+  TALK : 0,
+  SEARCH : 1,
+  SELFCONTACT: 2,
+};
+
 const COMMAND = {
   MESSAGE : 1,
   MOVE : 2,
-  VARIABLE : 3,
+  FLAG : 3,
+  VARIABLE : 4,
 };
 
-export {COMMAND};
+const VARIABLERANGE = {
+  MIN : -9999999,
+  MAX : 9999999
+}
+
+export {TRIGGER, COMMAND, VARIABLERANGE};

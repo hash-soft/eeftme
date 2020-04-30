@@ -13,6 +13,7 @@ const CommandPopup = props => {
         <div className='command-menu'>
           <button onClick={() => props.closePopup(COMMAND.MESSAGE)}>文章の表示</button>
           <button onClick={() => props.closePopup(COMMAND.MOVE)}>場所移動</button>
+          <button onClick={() => props.closePopup(COMMAND.FLAG)}>フラグの処理</button>
           <button onClick={() => props.closePopup(COMMAND.VARIABLE)}>変数の処理</button>
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>

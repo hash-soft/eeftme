@@ -12,6 +12,11 @@ code {
     monospace;
 }
 
+/* ボタンとかと比べて高さが低いので苦肉の策 */
+select {
+  height: 25px;
+}
+
 .editor {
   display: flex;
   flex-direction: column;
@@ -74,6 +79,18 @@ code {
 
 .conditions {
   margin-top: 20px;
+}
+
+.condition {
+  display: flex;
+  flex-direction: row;
+}
+
+.condition-item {
+  display: flex;
+  flex-direction: row;
+  margin-left: 3px;
+  margin-right: 3px;
 }
 
 .event-name input {
