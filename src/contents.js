@@ -1,8 +1,9 @@
 import React from 'react';
 
-// 少なすぎるのでファイル名を変更してグローバルデータをまとめたものにする
+// グローバルデータをまとめたもの
 
 const Flags = React.createContext([]);
 const Variables = React.createContext([]);
+const Slots = React.createContext([]);
 
-export {Flags, Variables};
+export { Flags, Variables, Slots };

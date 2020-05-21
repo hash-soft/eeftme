@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flags, Variables } from './contents'
+import { Flags, Variables, Slots } from './contents'
 import Utils from './utils'
 
 
@@ -13,50 +13,19 @@ const simpleSelectItems = (items) => {
   return selectItems;
 }
 
-/*
-const SimpleSelectBox = props => {
+const SelectBoxBase = props => {
 
-  const [value, updateValue] = React.useState(props.selectValue);
-
-  const Items = () => {
-    const selectItems = props.items.map((value, index) => {
-      const num = index;
-      const keyText = num.toString();
-      return <option key={keyText} value={num}>{value}</option>
-    })
-
-    return selectItems;
-  }
-
-  const onChange = (e) => {
-    const cValue = parseInt(e.target.value);
-    updateValue(cValue);
-  }
-
-  return (
-    <select value={value} onChange={(e) => onChange(e)}>
-      {Items()}
-    </select>
-  )
-}*/
-
-// フラグセレクトボックス
-// UI操作以外では選択を変えない想定
-const FlagSelectBox = props => {
-
-  const flags = React.useContext(Flags);
-
-  const flagItems = () => {
-    const selectItems = flags.map((step, move) => {
+  const selectItems = () => {
+    const selectItems = props.items.map((step, move) => {
       const num = move + 1;
       const keyText = num.toString();
-      const dispNum = Utils.alignFlagId(num);
+      const dispNum = Utils.alignId(num, props.digits);
       return <option key={keyText} value={num}>{dispNum + ':'}{step.name}</option>
     })
 
     const selectValue = props.selectValue;
     // 選択している変数がなくなっていた場合の対策
-    if (selectValue > flags.length) {
+    if (selectValue > props.items.length) {
       selectItems.push(<option key={selectValue.toString()} value={selectValue}>{'削除:'}{selectValue}</option>)
     }
 
@@ -64,9 +33,28 @@ const FlagSelectBox = props => {
   }
 
   return (
-    <select defaultValue={props.selectValue} onChange={(e) => props.onChange(e)}>
-      {flagItems()}
-    </select>
+    <div>
+      {props.children}
+      <select defaultValue={props.selectValue} onChange={(e) => props.onChange(e)}>
+        {selectItems()}
+      </select>
+    </div>
+  );
+}
+
+// フラグセレクトボックス
+// UI操作以外では選択を変えない想定
+const FlagSelectBox = props => {
+
+  const flags = React.useContext(Flags);
+
+  return (
+    <SelectBoxBase
+      items={flags}
+      digits={3}
+      {...props}
+    >
+    </SelectBoxBase>
   )
 }
 
@@ -76,30 +64,30 @@ const VariableSelectBox = props => {
 
   const variables = React.useContext(Variables);
 
-  const variableItems = () => {
-    const selectItems = variables.map((step, move) => {
-      const num = move + 1;
-      const keyText = num.toString();
-      const dispNum = ('000' + num).slice(-3);
-      return <option key={keyText} value={num}>{dispNum + ':'}{step.name}</option>
-    })
-
-    const selectValue = props.selectValue;
-
-    // 選択している変数がなくなっていた場合の対策
-    if (selectValue > variables.length) {
-      selectItems.push(<option key={selectValue.toString()} value={selectValue}>{'削除:'}{selectValue}</option>)
-    }
-
-    return selectItems;
-  }
-
   return (
-    <select defaultValue={props.selectValue} onChange={(e) => props.onChange(e)}>
-      {variableItems()}
-    </select>
-  );
+    <SelectBoxBase
+      items={variables}
+      digits={3}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
 }
 
+// スロットセレクトボックス
+// UI操作以外では選択を変えない想定
+const SlotSelectBox = props => {
 
-export { simpleSelectItems, FlagSelectBox, VariableSelectBox }
+  const slots = React.useContext(Slots);
+
+  return (
+    <SelectBoxBase
+      items={slots}
+      digits={2}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
+export { simpleSelectItems, FlagSelectBox, VariableSelectBox, SlotSelectBox }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import EventEditor from './eventEditor'
-import {Flags, Variables} from './contents'
+import {Flags, Variables, Slots} from './contents'
 import './index.css';
 
 
@@ -74,8 +74,9 @@ const LoadButton = (props) => {
 // ファイル保存ボタン
 const SaveButton = (props) => {
   const saveFile = () => {
+    const editEvents = props.eventsRef.current;
     // 先頭に空のオブジェクトを追加
-    const events = [{}].concat(props.events);
+    const events = [{}].concat(editEvents);
     // 編集が反映されていないので保存
     props.eventEditorRef.current.setEditEvent();
     const blob = new Blob([JSON.stringify(events, null, '  ')], {type: 'application/json'});
@@ -122,7 +123,7 @@ const FileButtons = (props) => {
       />
       <SaveButton
         label={'イベントを保存'}
-        events={props.eventsRef.current}
+        eventsRef={props.eventsRef}
         eventEditorRef={props.eventEditorRef}
         eventFileNameRef={props.eventFileNameRef}
       />
@@ -221,6 +222,8 @@ const Editor = () => {
   const eventsRef = React.useRef(initEvents());
   const [flags, updateFlags] = useState(() => initFlags());
   const [variables, updateVariables] = useState(() => initVariables());
+  const slots = [
+  { name: '選択した道具' }, { name: '行動者' }, { name: '道具' }, { name: '道具Id' }];
 
   React.useEffect(() => {
     console.log('Editor effect');
@@ -230,6 +233,7 @@ const Editor = () => {
     <div className="editor">
       <Flags.Provider value={flags}>
       <Variables.Provider value={variables}>
+      <Slots.Provider value={slots}>
       <InOut
         fileName={initFileName()}
         eventsRef={eventsRef}
@@ -241,6 +245,7 @@ const Editor = () => {
         eventsRef={eventsRef}
         ref={eventEditorRef}
       />
+      </Slots.Provider>
       </Variables.Provider>
       </Flags.Provider>
     </div>
