@@ -13,6 +13,15 @@ const simpleSelectItems = (items) => {
   return selectItems;
 }
 
+const pairSelectItems = (items) => {
+  const selectItems = items.map((value, index) => {
+    const keyText = index.toString();
+    return <option key={keyText} value={value.value}>{value.text}</option>
+  })
+
+  return selectItems;
+}
+
 const SelectBoxBase = props => {
 
   const selectItems = () => {
@@ -90,4 +99,4 @@ const SlotSelectBox = props => {
   )
 }
 
-export { simpleSelectItems, FlagSelectBox, VariableSelectBox, SlotSelectBox }
+export { simpleSelectItems, pairSelectItems, FlagSelectBox, VariableSelectBox, SlotSelectBox }

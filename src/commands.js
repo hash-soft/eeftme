@@ -14,19 +14,30 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.MESSAGE)}>文章の表示</button>
           <button onClick={() => props.closePopup(COMMAND.MENU)}>メニュー表示</button>
           <button onClick={() => props.closePopup(COMMAND.ENDMENU)}>メニュー終了</button>
+          <button onClick={() => props.closePopup(COMMAND.MESSAGEOUTWAIT)}>文章待機</button>
+          <button onClick={() => props.closePopup(COMMAND.EMBEDDED)}>組み込みメニュー</button>
           <button onClick={() => props.closePopup(COMMAND.FLAG)}>フラグの処理</button>
           <button onClick={() => props.closePopup(COMMAND.VARIABLE)}>変数の処理</button>
           <button onClick={() => props.closePopup(COMMAND.ITEMSLOT)}>道具をスロット格納</button>
           <button onClick={() => props.closePopup(COMMAND.ITEMSPACE)}>道具追加可能判定</button>
+          <button onClick={() => props.closePopup(COMMAND.JUDGETRIGGER)}>起動起因判定</button>
+          <button onClick={() => props.closePopup(COMMAND.GOODS)}>商品の設定</button>
           <button onClick={() => props.closePopup(COMMAND.CASE)}>CASE</button>
           <button onClick={() => props.closePopup(COMMAND.ELSE)}>ELSE</button>
           <button onClick={() => props.closePopup(COMMAND.ENDBRANCH)}>ENDBRANCH</button>
           <button onClick={() => props.closePopup(COMMAND.LABEL)}>ラベル</button>
           <button onClick={() => props.closePopup(COMMAND.JUMP)}>ラベルジャンプ</button>
           <button onClick={() => props.closePopup(COMMAND.GAINITEM)}>道具を追加</button>
+          <button onClick={() => props.closePopup(COMMAND.CHANGEGOLD)}>所持金変更</button>
+          <button onClick={() => props.closePopup(COMMAND.CHANGETILE)}>タイル変更</button>
+          <button onClick={() => props.closePopup(COMMAND.SWAPTILE)}>タイル切替</button>
           <button onClick={() => props.closePopup(COMMAND.MOVE)}>場所移動</button>
+          <button onClick={() => props.closePopup(COMMAND.MOVEROUTE)}>移動ルート</button>
           <button onClick={() => props.closePopup(COMMAND.MAPSCRIPT)}>マップスクリプト</button>
           <button onClick={() => props.closePopup(COMMAND.COMMONSCRIPT)}>コモンスクリプト</button>
+          <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
+          <button onClick={() => props.closePopup(COMMAND.SE)}>効果音</button>
+          <button onClick={() => props.closePopup(COMMAND.EVENTTRIGGER)}>イベント起動</button>
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>
       </div>

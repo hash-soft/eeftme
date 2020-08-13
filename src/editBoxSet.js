@@ -4,18 +4,27 @@ import React from 'react';
 const NumberEdit = props => {
 
   const [value, updateValue] = React.useState(props.value);
+  const allowEmpty = props.allowEmpty;
 
-  // changeの時点ではそのまま表示するだけだから仲で閉じ込めて置けるかも
+  // changeの時点ではそのまま表示するだけだから中で閉じ込めて置けるかも
   const onChange = (e) => {
     updateValue(e.target.value);
   }
 
   const onBlur = (e) => {
-    const valueNum = Number(e.target.value);
-    const alignValue = Math.max(Math.min(valueNum, props.max), props.min);
+    const alignValue = getValue(e.target.value);
 
     props.onValueFocusOff(alignValue);
     updateValue(alignValue);
+  }
+
+  const getValue = (value) => {
+    if(value === '' && allowEmpty) {
+      return;
+    }
+    const valueNum = Number(value);
+    const alignValue = Math.max(Math.min(valueNum, props.max), props.min);
+    return alignValue;
   }
 
   return (

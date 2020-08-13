@@ -223,7 +223,9 @@ const Editor = () => {
   const [flags, updateFlags] = useState(() => initFlags());
   const [variables, updateVariables] = useState(() => initVariables());
   const slots = [
-  { name: '選択した道具' }, { name: '行動者' }, { name: '道具' }, { name: '道具Id' }];
+  { name: '選択した道具' }, { name: '行動者' }, { name: '道具' }, { name: '道具Id' },
+  { name: '' }, { name: '' }, { name: '' }, { name: '' },{ name: '' }, { name: '' }, { name: '' }, { name: '' },
+  { name: '' }, { name: '' }, { name: '' }, { name: '' }];
 
   React.useEffect(() => {
     console.log('Editor effect');

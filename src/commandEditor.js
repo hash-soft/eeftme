@@ -1,11 +1,13 @@
 import React from 'react';
-import { FlagSelectBox, VariableSelectBox, SlotSelectBox } from './selectBoxSet'
+import { pairSelectItems, FlagSelectBox, VariableSelectBox, SlotSelectBox } from './selectBoxSet'
 import { NumberEdit } from './editBoxSet'
 import { COMMAND, VARIABLERANGE } from './define';
 import './index.css';
 
 
-
+const sliceParameters = (parameters) => {
+  return parameters && parameters.slice();
+}
 
 const CommandBase = props => {
   return (
@@ -31,7 +33,7 @@ const Message = props => {
   }
 
   const onUpdate = () => {
-    const command = {code: COMMAND.MESSAGE, parameters: []};
+    const command = {code: props.command.code, parameters: []};
     command.parameters.push(textRef.current);
     props.onUpdate(command);
   }
@@ -53,9 +55,10 @@ const Message = props => {
 // メニュー表示
 const Menu = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: メニューId
   // 1: 格納スロットId
-  const parametersRef = React.useRef(props.command.parameters || [1, 1]);
+  const parametersRef = React.useRef(data || [1, 1]);
   const parameters = parametersRef.current;
 
   const onValueFocusOff = (value) => {
@@ -67,7 +70,7 @@ const Menu = props => {
   }
 
   const onUpdate = () => {
-    const command = {code: COMMAND.MENU, parameters: parameters};
+    const command = {code: props.command.code, parameters: parameters};
     props.onUpdate(command);
   }
   
@@ -94,8 +97,9 @@ const Menu = props => {
 // メニュー終了
 const EndMenu = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: メニューId
-  const parametersRef = React.useRef(props.command.parameters || [1]);
+  const parametersRef = React.useRef(data || [1]);
   const parameters = parametersRef.current;
 
   const onValueFocusOff = (value) => {
@@ -103,7 +107,7 @@ const EndMenu = props => {
   }
 
   const onUpdate = () => {
-    const command = {code: COMMAND.ENDMENU, parameters: parameters};
+    const command = {code: props.command.code, parameters: parameters};
     props.onUpdate(command);
   }
   
@@ -123,13 +127,56 @@ const EndMenu = props => {
   );
 }
 
+// 組み込みメニュー
+const Embedded = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: メニューId
+  // 1: 格納スロットId
+  const parametersRef = React.useRef(data || [1, 1]);
+  const parameters = parametersRef.current;
+
+  const onValueFocusOff = (value) => {
+    parameters[0] = value;
+  }
+
+  const onSlotChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase 
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>組み込みId：</font>
+      <NumberEdit
+        min={0}
+        max={100}
+        value={parameters[0]}
+        onValueFocusOff={onValueFocusOff}
+      />
+      <SlotSelectBox
+        selectValue = {parameters[1]}
+        onChange = {(e) => onSlotChange(e)}
+      />
+    </CommandBase>
+  );
+}
+
 // フラグ
 const Flag = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: 先頭Id
   // 1: 終端Id
   // 2: ONOFF
-  const parametersRef = React.useRef(props.command.parameters || [1, 1, 1]);
+  const parametersRef = React.useRef(data || [1, 1, 1]);
   const parameters = parametersRef.current;
   const opecode = parameters[2];
 
@@ -143,7 +190,7 @@ const Flag = props => {
   }
 
   const onUpdate = () => {
-    const command = {code: COMMAND.FLAG, parameters: parameters};
+    const command = {code: props.command.code, parameters: parameters};
     props.onUpdate(command);
   }
   
@@ -171,12 +218,13 @@ const Flag = props => {
 // 変数
 const Variable = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: 先頭Id
   // 1: 終端Id
   // 2: 演算子
   // 3: 数値タイプ 0:定数
   // 4: 数値
-  const parametersRef = React.useRef(props.command.parameters || [1, 1, 0, 0, 0]);
+  const parametersRef = React.useRef(data || [1, 1, 0, 0, 0]);
   const parameters = parametersRef.current;
   const opecode = parameters[2];
 
@@ -190,7 +238,7 @@ const Variable = props => {
   }
 
   const onUpdate = () => {
-    const command = {code: COMMAND.VARIABLE, parameters: parameters};
+    const command = {code: props.command.code, parameters: parameters};
     props.onUpdate(command);
   }
 
@@ -232,10 +280,11 @@ const Variable = props => {
 // 道具をスロット格納
 const ItemSlot = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: 道具Id
   // 1: 道具Id格納スロット
   // 2: 道具オブジェクト格納スロット
-  const parametersRef = React.useRef(props.command.parameters || [1, 1, 2]);
+  const parametersRef = React.useRef(data || [1, 1, 2]);
   const parameters = parametersRef.current;
 
   const onValueFocusOff = (value) => {
@@ -247,7 +296,7 @@ const ItemSlot = props => {
   }
 
   const onUpdate = () => {
-    const command = {code: COMMAND.ITEMSLOT, parameters: parameters};
+    const command = {code: props.command.code, parameters: parameters};
     props.onUpdate(command);
   }
   
@@ -281,11 +330,56 @@ const ItemSlot = props => {
   );
 }
 
+// 商品の設定
+const Goods = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 道具Id配列
+  const parametersRef = React.useRef(data || []);
+  const parameters = parametersRef.current;
+
+  const onValueFocusOff = (value, i) => {
+    parameters[i] = value;
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, 
+      parameters: parameters.filter(value => value !== undefined)};
+    props.onUpdate(command);
+  }
+
+  const GoodsList = () => {
+    const inputList = new Array(8);
+    for(let i = 0; i < inputList.length; i++) {
+        inputList[i] = <NumberEdit
+        min={1}
+        max={1000}
+        allowEmpty={true}
+        value={parameters[i]}
+        onValueFocusOff={(value) => onValueFocusOff(value, i)}
+      />
+    }
+    return inputList;
+  }
+  
+  return (
+    <CommandBase 
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>道具Id：</font>
+      <GoodsList
+      />
+    </CommandBase>
+  );
+}
+
 // CASE
 const Case = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: 比較値
-  const parametersRef = React.useRef(props.command.parameters || [0]);
+  const parametersRef = React.useRef(data || [0]);
   const parameters = parametersRef.current;
 
   const onValueFocusOff = (value) => {
@@ -293,7 +387,7 @@ const Case = props => {
   }
 
   const onUpdate = () => {
-    const command = {code: COMMAND.CASE, parameters: parameters};
+    const command = {code: props.command.code, parameters: parameters};
     props.onUpdate(command);
   }
   
@@ -316,8 +410,9 @@ const Case = props => {
 // ラベル
 const Label = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: ラベル名
-  const parametersRef = React.useRef(props.command.parameters || ['']);
+  const parametersRef = React.useRef(data || ['']);
   const parameters = parametersRef.current;
 
   const onChange = (e) => {
@@ -349,8 +444,9 @@ const Label = props => {
 // ラベルジャンプ
 const Jump = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: ラベル名
-  const parametersRef = React.useRef(props.command.parameters || ['']);
+  const parametersRef = React.useRef(data || ['']);
   const parameters = parametersRef.current;
 
   const onChange = (e) => {
@@ -382,10 +478,11 @@ const Jump = props => {
 // 道具入手
 const GainItem = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: 道具指定種類 0>道具Id 1>スロットId
   // 1: 道具指定Id
   // 2: 道具入手メンバー格納スロット
-  const parametersRef = React.useRef(props.command.parameters || [0, 1, 1]);
+  const parametersRef = React.useRef(data || [0, 1, 1]);
   const parameters = parametersRef.current;
   const type = parameters[0];
   let itemId = parameters[1];
@@ -454,10 +551,207 @@ const GainItem = props => {
   );
 }
 
+
+// 所持金変更
+const ChangeGold = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 操作 0>増加 1>減少
+  // 1: タイプ 0 直接 1 スロット
+  // 2: 値
+  const parametersRef = React.useRef(data || [0, 0, 1]);
+  const parameters = parametersRef.current;
+  const type = parameters[1];
+  let number = parameters[2];
+  let slotId = parameters[2];
+
+  const onOpChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onTypeChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  }
+
+  const onSlotChange = (e) => {
+    slotId = parseInt(e.target.value);
+  }
+
+  const onValueFocusOff = (value) => {
+    number = value;
+  }
+
+  const onUpdate = () => {
+    // typeによりidを決定する
+    parameters[2] = parameters[1] === 0 ? number : slotId;
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase 
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="op" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onOpChange(e)}
+        />増加
+        <input type="radio" name="op" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onOpChange(e)}
+        />減少
+      </div>
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={type === 0 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />道具
+        <input type="radio" name="type" value="1" defaultChecked={type === 1 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />スロット
+      </div>
+      <div>
+        <font>値：</font>
+        <NumberEdit
+          min={0}
+          max={99999999}
+          value={parameters[2]}
+          onValueFocusOff={onValueFocusOff}
+        />
+      </div>
+      <div>
+        <font>スロット：</font>
+        <SlotSelectBox
+          selectValue={parameters[2]}
+          onChange={(e) => onSlotChange(e)}
+        />
+      </div>
+    </CommandBase>
+  );
+}
+
+
+// タイル変更
+const ChangeTile = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 変更するレイヤー
+  // 1: タイルid
+  // 2: x座標
+  // 3: y座標
+  const parametersRef = React.useRef(data || [0, 1, 0, 0]);
+  const parameters = parametersRef.current;
+
+  const onValueFocusOff = (value, i) => {
+    parameters[i] = value;
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>変更するレイヤー：</font>
+        <NumberEdit
+          min={0}
+          max={3}
+          value={parameters[0]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 0)}
+        />
+      </div>
+      <div>
+        <font>タイルid：</font>
+        <NumberEdit
+          min={0}
+          max={9999}
+          value={parameters[1]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 1)}
+        />
+      </div>
+      <div>
+        <font>X：</font>
+        <NumberEdit
+          min={0}
+          max={999}
+          value={parameters[2]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 2)}
+        />
+        <font>Y：</font>
+        <NumberEdit
+          min={0}
+          max={999}
+          value={parameters[3]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 3)}
+        />
+      </div>
+    </CommandBase>
+  );
+}
+
+
+// タイル切替
+const SwapTile = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 0 戻す 1 置き換える
+  // 1: 切り替えるレイヤー
+  const parametersRef = React.useRef(data || [1, 0]);
+  const parameters = parametersRef.current;
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onValueFocusOff = (value) => {
+    parameters[1] = value;
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="replace" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />元のタイル
+      <input type="radio" name="replace" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />設定タイル
+      </div>
+      <font>置き換えるレイヤー：</font>
+      <NumberEdit
+        min={0}
+        max={3}
+        value={parameters[1]}
+        onValueFocusOff={onValueFocusOff}
+      />
+    </CommandBase>
+  );
+}
+
+
 // 場所移動
 const Move = props => {
 
-  const parametersRef = React.useRef(props.command.parameters || [0, '', 0, 0]);
+  const data = sliceParameters(props.command.parameters);
+  // 0: 0 同一マップ 1 異なるマップ
+  // 1: マップ名
+  // 2: x座標
+  // 3: y座標
+  // 4: 方向
+  // 5: パターン初期化するか
+  const parametersRef = React.useRef(data || [0, '', 0, 0, -1, 1]);
   const parameters = parametersRef.current;
   const x = parameters[2];
   const y = parameters[3];
@@ -478,26 +772,37 @@ const Move = props => {
     parameters[3] = value;
   }
 
-  const onUpdate = () => {
-    const command = {code: COMMAND.MOVE, parameters: parameters};
-    props.onUpdate(command);
+  const directionList = [{value: -1, text: 'そのまま'}, {value: 0, text: '下'}, 
+    {value: 1, text: '右'}, {value: 2, text: '左'}, {value: 3, text: '上'}]
+
+  const onDirectionChange = (e) => {
+    parameters[4] = parseInt(e.target.value);
   }
   
+  const onPatternChange = (e) => {
+    parameters[5] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+
   return (
-    <CommandBase 
+    <CommandBase
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
       <div>
-      <input type="radio" name="movetype" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
-        onChange={(e) => onRadioChange(e)}
-      />同じマップ
+        <input type="radio" name="movetype" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />同じマップ
       <input type="radio" name="movetype" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
-        onChange={(e) => onRadioChange(e)}
-      />別のマップ
+          onChange={(e) => onRadioChange(e)}
+        />別のマップ
       </div>
       <font>マップ名：</font>
-      <input 
+      <input
         defaultValue={parameters[1]}
         onChange={(e) => onMapNameChange(e)}
       />
@@ -517,15 +822,92 @@ const Move = props => {
           onValueFocusOff={onYValueFocusOff}
         />
       </div>
+      <div>
+        <font>方向：</font>
+        <select defaultValue={parameters[4]} onChange={(e) => onDirectionChange(e)}>
+          {pairSelectItems(directionList)}
+        </select>
+      </div>
+      <div>
+        <input type="radio" name="pattern" value="0" defaultChecked={parameters[5] === 0 ? 'checked' : ''}
+          onChange={(e) => onPatternChange(e)}
+        />そのまま
+      <input type="radio" name="pattern" value="1" defaultChecked={parameters[5] === 1 ? 'checked' : ''}
+          onChange={(e) => onPatternChange(e)}
+        />初期化
+      </div>
+
     </CommandBase>
   );
 }
 
+
+// 移動ルート
+const MoveRoute = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 0 共通 1 マップ
+  // 1: ルートId
+  // 2: 0 ウェイトなし 1:ウェイトあり
+  const parametersRef = React.useRef(data || [0, 1, 0]);
+  const parameters = parametersRef.current;
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onValueFocusOff = (value) => {
+    parameters[1] = value;
+  }
+
+  const onWaitChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />共通
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />マップ
+      </div>
+      <font>ルートId：</font>
+      <NumberEdit
+        min={1}
+        max={1000}
+        value={parameters[1]}
+        onValueFocusOff={onValueFocusOff}
+      />
+      <div>
+        <input type="radio" name="wait" value="0" defaultChecked={parameters[2] === 0 ? 'checked' : ''}
+          onChange={(e) => onWaitChange(e)}
+        />ウェイトなし
+      <input type="radio" name="wait" value="1" defaultChecked={parameters[2] === 1 ? 'checked' : ''}
+          onChange={(e) => onWaitChange(e)}
+        />ウェイトあり
+      </div>
+    </CommandBase>
+  );
+}
+
+
 // マップスクリプト
 const MapScript = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: スクリプトId
-  const parametersRef = React.useRef(props.command.parameters || [1]);
+  const parametersRef = React.useRef(data || [1]);
   const parameters = parametersRef.current;
 
   const onValueFocusOff = (value) => {
@@ -556,8 +938,9 @@ const MapScript = props => {
 // コモンスクリプト
 const CommonScript = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: スクリプトId
-  const parametersRef = React.useRef(props.command.parameters || [1]);
+  const parametersRef = React.useRef(data || [1]);
   const parameters = parametersRef.current;
 
   const onValueFocusOff = (value) => {
@@ -585,6 +968,109 @@ const CommonScript = props => {
   );
 }
 
+
+// 待機
+const Wait = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: フレーム数
+  const parametersRef = React.useRef(data || [60]);
+  const parameters = parametersRef.current;
+
+  const onValueFocusOff = (value) => {
+    parameters[0] = value;
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase 
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>フレーム：</font>
+      <NumberEdit
+        min={1}
+        max={600}
+        value={parameters[0]}
+        onValueFocusOff={onValueFocusOff}
+      />
+    </CommandBase>
+  );
+}
+
+
+// 効果音
+const Se = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 効果音Id
+  const parametersRef = React.useRef(data || [1]);
+  const parameters = parametersRef.current;
+
+  const onValueFocusOff = (value) => {
+    parameters[0] = value;
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase 
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>効果音Id：</font>
+      <NumberEdit
+        min={1}
+        max={1000}
+        value={parameters[0]}
+        onValueFocusOff={onValueFocusOff}
+      />
+    </CommandBase>
+  );
+}
+
+// イベント起動
+const EventTrigger = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 起動Id
+  const parametersRef = React.useRef(data || [1]);
+  const parameters = parametersRef.current;
+
+  const onValueFocusOff = (value) => {
+    parameters[0] = value;
+  }
+
+  const onUpdate = () => {
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase 
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>起動Id：</font>
+      <NumberEdit
+        min={0}
+        max={100}
+        value={parameters[0]}
+        onValueFocusOff={onValueFocusOff}
+      />
+    </CommandBase>
+  );
+}
+
+
+
 const CommandEditor = props => {
 
   const viewEditor = () => {
@@ -599,6 +1085,9 @@ const CommandEditor = props => {
       case COMMAND.ENDMENU:
         return <EndMenu
           {...props} />
+      case COMMAND.EMBEDDED:
+        return <Embedded
+          {...props} />
       case COMMAND.FLAG:
         return <Flag
           {...props} />
@@ -607,6 +1096,9 @@ const CommandEditor = props => {
           {...props} />
       case COMMAND.ITEMSLOT:
         return <ItemSlot
+          {...props} />
+      case COMMAND.GOODS:
+        return <Goods
           {...props} />
       case COMMAND.CASE:
         return <Case
@@ -620,14 +1112,35 @@ const CommandEditor = props => {
       case COMMAND.GAINITEM:
         return <GainItem
           {...props} />
+      case COMMAND.CHANGEGOLD:
+        return <ChangeGold
+          {...props} />
+      case COMMAND.CHANGETILE:
+        return <ChangeTile
+          {...props} />
+      case COMMAND.SWAPTILE:
+        return <SwapTile
+          {...props} />
       case COMMAND.MOVE:
         return <Move
+          {...props} />
+      case COMMAND.MOVEROUTE:
+        return <MoveRoute
           {...props} />
       case COMMAND.MAPSCRIPT:
         return <MapScript
           {...props} />
       case COMMAND.COMMONSCRIPT:
         return <CommonScript
+          {...props} />
+      case COMMAND.WAIT:
+        return <Wait
+          {...props} />
+      case COMMAND.SE:
+        return <Se
+          {...props} />
+      case COMMAND.EVENTTRIGGER:
+        return <EventTrigger
           {...props} />
       default:
         return null;

@@ -25,6 +25,11 @@ const CommandItem = props => {
     const menuName = `${menuId}`;
     return <td>{menuName}</td>
   }
+
+  const listEmbeddedContents = (menuId, slotId) => {
+    const menuName = `[${menuId}]`;
+    return <td>{menuName}, 格納スロット({slotId}:{slotName(slotId)})</td>
+  }
   
   const listFlagContents = (parameters, flags) => {
     const flagId = parameters[0]; // まとめての場合parameters[1]を使用する
@@ -47,7 +52,12 @@ const CommandItem = props => {
     const itemName = `[${itemId}:道具名]`;
     return <td>{itemName}, 格納スロット(id:{slotId1}:{slotName(slotId1)}, object:{slotId2}:{slotName(slotId2)})</td>
   }
-  
+
+  const listGoodsContents = (parameters) => {
+    const goods = `[${parameters}]`;
+    return <td>{goods}</td>
+  }
+
   const listCaseContents = (result) => {
     return <td>結果が {result} の場合</td>
   }
@@ -63,10 +73,20 @@ const CommandItem = props => {
   const listGainItemContents = (type, id, memberSlotId) => {
     // 直接指定
     if(type === 0) {
-      const itemName = `[${id}}:道具名]`;
+      const itemName = `[${id}:道具名]`;
       return <td>{itemName}を追加, 入手者格納スロット({memberSlotId}:{slotName(memberSlotId)})</td>
     } else {
       return <td>スロット({id})の道具(id指定)を追加, 入手者格納スロット({memberSlotId}:{slotName(memberSlotId)})</td>
+    }
+  }
+
+  const listChangeGoldContents = (op, type, value) => {
+    const opText = op === 0 ? '+' : '-';
+    // 直接指定
+    if(type === 0) {
+      return <td>{opText}{value}</td>
+    } else {
+      return <td>{opText}スロット({value}:{slotName(value)})</td>
     }
   }
   
@@ -76,6 +96,34 @@ const CommandItem = props => {
   
   const listCommonScriptContents = (id) => {
     return <td>({id})</td>
+  }
+
+  const listChangeTileContents = (layerIndex, id, x, y) => {
+    return <td>レイヤー{layerIndex}, タイル{id}({x},{y})</td>
+  }
+
+  const listSwapTileContents = (type, layerIndex) => {
+    return <td>{type === 0 ? '戻す' : '置き換える'}(レイヤー={layerIndex})</td>
+  }
+
+  const listMoveContents = (type, name, x, y, direction, pattern) => {
+    return <td>{type === 0 ? '同じマップ' : name}(X={x},Y={y},方向={direction},パターン={pattern})</td>
+  }
+
+  const listMoveRouteContents = (type, routeId, wait) => {
+    return <td>{type === 0 ? '共通' : 'マップ'}(ルートId={routeId},ウェイト={wait === 0 ? 'なし' : 'あり'})</td>
+  }
+
+  const listWaitContents = (frame) => {
+    return <td>{frame}フレーム</td>
+  }
+
+  const listSeContents = (id) => {
+    return <td>id:{id}</td>
+  }
+
+  const listEventTriggerContents = (id) => {
+    return <td>id:{id}</td>
   }
 
   const viewCommand = () => {
@@ -95,6 +143,13 @@ const CommandItem = props => {
         title = 'メニュー終了:';
         contents = listEndMenuContents(...parameters);
         break;
+      case COMMAND.MESSAGEOUTWAIT:
+        title = '文章待機';
+        break;
+      case COMMAND.EMBEDDED:
+        title = '組み込みメニュー';
+        contents = listEmbeddedContents(...parameters);
+        break;
       case COMMAND.FLAG:
         title = 'フラグ:';
         contents = listFlagContents(parameters, flags);
@@ -107,8 +162,15 @@ const CommandItem = props => {
         title = '道具をスロット格納:';
         contents = listItemSlotContents(...parameters);
         break;
+      case COMMAND.GOODS:
+        title = '商品の設定:';
+        contents = listGoodsContents(parameters);
+        break;
       case COMMAND.ITEMSPACE:
         title = '道具追加可能判定';
+        break;
+      case COMMAND.JUDGETRIGGER:
+        title = '起動起因判定';
         break;
       case COMMAND.CASE:
         title = 'CASE:';
@@ -132,6 +194,10 @@ const CommandItem = props => {
         title = '道具を追加:';
         contents = listGainItemContents(...parameters);
         break;
+      case COMMAND.CHANGEGOLD:
+        title = '所持金の変更:';
+        contents = listChangeGoldContents(...parameters);
+        break;
       case COMMAND.MAPSCRIPT:
         title = 'マップスクリプト:';
         contents = listMapScriptContents(...parameters);
@@ -140,9 +206,33 @@ const CommandItem = props => {
         title = 'コモンスクリプト:';
         contents = listCommonScriptContents(...parameters);
         break;
+      case COMMAND.CHANGETILE:
+        title = 'タイル変更:';
+        contents = listChangeTileContents(...parameters);
+        break;
+      case COMMAND.SWAPTILE:
+        title = 'タイル切替:';
+        contents = listSwapTileContents(...parameters);
+        break;
       case COMMAND.MOVE:
         title = '場所移動:';
-        contents = <td>{parameters[0] === 0 ? '同じマップ' : parameters[1]}(X={parameters[2]},Y={parameters[3]})</td>
+        contents = listMoveContents(...parameters);
+        break;
+      case COMMAND.MOVEROUTE:
+        title = '移動ルート:';
+        contents = listMoveRouteContents(...parameters);
+        break;
+      case COMMAND.WAIT:
+        title = '待機:';
+        contents = listWaitContents(...parameters);
+        break;
+      case COMMAND.SE:
+        title = '効果音:';
+        contents = listSeContents(...parameters);
+        break;
+      case COMMAND.EVENTTRIGGER:
+        title = 'イベント起動:';
+        contents = listEventTriggerContents(...parameters);
         break;
       default:
         title = '不明なコマンド';
