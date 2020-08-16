@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import EventEditor from './eventEditor'
-import {Flags, Variables, Slots} from './contents'
+import {Dataset} from './contents'
 import './index.css';
 
 
@@ -32,34 +32,27 @@ const LoadButton = (props) => {
     console.log(contents);
     console.log(props.type);
     const json = JSON.parse(contents);
-    // 最初の要素は表示しないので除去する
-    json.shift();
-    if(props.type === 'events') {
+    
+    if (props.type === 'events') {
       refreshEvents(json, contents, file.name.split(/\.(?=[^.]+$)/));
-    }  else if(props.type === 'flags') {
-      refreshFlags(json, contents);
-    } else if(props.type === 'variables') {
-      refreshVariables(json, contents);
+    } else if (props.type === 'dataset') {
+      refreshDataset(json, contents);
     }
   }
 
   const refreshEvents = (json, contents, filename) => {
+    // 最初の要素は表示しないので除去する
+    json.shift();
     props.eventEditorRef.current.refreshEvents(json);
     props.eventFileNameRef.current.updateName(filename[0]);
     localStorage.setItem('events', contents);
     localStorage.setItem('filename', filename[0]);
   }
 
-  // フラグを読み込んだ後の処理
-  // ローカルストレージもも更新する
-  const refreshFlags = (json, contents) => {
+  const refreshDataset = (json, contents) => {
+    props.shiftDataset(json);
     props.update(json);
-    localStorage.setItem('flags', contents);
-  }
-
-  const refreshVariables = (json, contents) => {
-    props.update(json);
-    localStorage.setItem('variables', contents);
+    localStorage.setItem('dataset', contents);
   }
 
   React.useEffect(() => {
@@ -106,23 +99,19 @@ const FileButtons = (props) => {
   return (
     <div className="load-area">
       <LoadButton
-        label={'イベントを開く'}
+        label={'コマンドを開く'}
         type={'events'}
         eventEditorRef={props.eventEditorRef}
         eventFileNameRef={props.eventFileNameRef}
       />
       <LoadButton
-        label={'フラグを開く'}
-        type={'flags'}
-        update={props.updateFlags}
-      />
-      <LoadButton
-        label={'変数を開く'}
-        type={'variables'}
-        update={props.updateVariables}
+        label={'データセットを開く'}
+        type={'dataset'}
+        shiftDataset={props.shiftDataset}
+        update={props.updateDataset}
       />
       <SaveButton
-        label={'イベントを保存'}
+        label={'コマンドを保存'}
         eventsRef={props.eventsRef}
         eventEditorRef={props.eventEditorRef}
         eventFileNameRef={props.eventFileNameRef}
@@ -199,33 +188,33 @@ const Editor = () => {
     return events;
   }
 
-  const initFlags = () => {
-    const flagsText = localStorage.getItem('flags');
-    if(flagsText == null) {
-      return [{id:1, name:'f_one'}];
+  const initDataset = () => {
+    const datasetText = localStorage.getItem('dataset');
+    if(datasetText == null) {
+      return {flags: ['flag1', 'flag2'],
+        variables: ['variable1', 'variable2'],
+        slots: ['slot1', 'slot2'],
+        members: [],
+        items: [],
+        windowsets: []
+      }
     }
-    const flags = JSON.parse(flagsText);
-    flags.shift();
-    return flags;
+    const dataset = JSON.parse(datasetText);
+    shiftDataset(dataset);
+    return dataset;
   }
 
-  const initVariables = () => {
-    const variablesText = localStorage.getItem('variables');
-    if(variablesText == null) {
-      return [{id:1, name:'v_one'}];
-    }
-    const variables = JSON.parse(variablesText);
-    variables.shift();
-    return variables;
+  const shiftDataset = (dataset) => {
+    dataset.flags.shift();
+    dataset.variables.shift();
+    dataset.slots.shift();
+    dataset.members.shift();
+    if(dataset.items) dataset.items.shift();
+    dataset.windowsets.shift();
   }
 
   const eventsRef = React.useRef(initEvents());
-  const [flags, updateFlags] = useState(() => initFlags());
-  const [variables, updateVariables] = useState(() => initVariables());
-  const slots = [
-  { name: '選択した道具' }, { name: '行動者' }, { name: '道具' }, { name: '道具Id' },
-  { name: '' }, { name: '' }, { name: '' }, { name: '' },{ name: '' }, { name: '' }, { name: '' }, { name: '' },
-  { name: '' }, { name: '' }, { name: '' }, { name: '' }];
+  const [dataset, updateDataset] = useState(() => initDataset());
 
   React.useEffect(() => {
     console.log('Editor effect');
@@ -233,23 +222,19 @@ const Editor = () => {
 
   return (
     <div className="editor">
-      <Flags.Provider value={flags}>
-      <Variables.Provider value={variables}>
-      <Slots.Provider value={slots}>
+      <Dataset.Provider value={dataset}>
       <InOut
         fileName={initFileName()}
         eventsRef={eventsRef}
-        updateFlags={updateFlags}
-        updateVariables={updateVariables}
+        shiftDataset={shiftDataset}
+        updateDataset={updateDataset}
         eventEditorRef={eventEditorRef}
       />
       <EventEditor
         eventsRef={eventsRef}
         ref={eventEditorRef}
       />
-      </Slots.Provider>
-      </Variables.Provider>
-      </Flags.Provider>
+      </Dataset.Provider>
     </div>
   );
 }

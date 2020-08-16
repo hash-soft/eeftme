@@ -1,40 +1,61 @@
 import React from 'react';
 import './index.css';
 import { COMMAND, CommandKeys, NoParamKeys } from './define';
-import { Flags, Variables, Slots } from './contents'
+import { Dataset } from './contents'
 import Utils from './utils'
 
 
 const CommandItem = props => {
 
-  const flags = React.useContext(Flags);
-  const variables = React.useContext(Variables);
-  const slots = React.useContext(Slots);
+  const dataset = React.useContext(Dataset);
+  const flags = dataset.flags;
+  const variables = dataset.variables;
+  const slots = dataset.slots;
+  const items = dataset.items;
+  const windowsets = dataset.windowsets;
 
-  const slotName = (id) => {
-    const name = slots[id - 1] === undefined ? '' : slots[id - 1].name;
-    return name;
+  const dispFlagName = (id, idEnd = id) => {
+    return Utils.getDispValue(flags, id, idEnd);
+  }
+
+  const dispVariableName = (id, idEnd = id) => {
+    return Utils.getDispValue(variables, id, idEnd);
+  }
+
+  const dispSlotName = (id, idEnd = id) => {
+    return Utils.getDispValue(slots, id, idEnd);
+  }
+
+  const dispItemName = (id) => {
+    return Utils.getDispName(items, id);
+  }
+
+  const listMessageContents = (text, nowait) => {
+    const header = nowait === 1 ? '[無待機]' : '[待機]';
+    const message = <td style={{ whiteSpace: 'pre-line' }}>{header}{'\n'}{text}</td>;
+    
+    return message;
   }
 
   const listMenuContents = (menuId, slotId) => {
-    const menuName = `[${menuId}]`;
-    return <td>{menuName}, 格納スロット({slotId}:{slotName(slotId)})</td>
+    const menuName = Utils.getDispName(windowsets, menuId);
+    return <td>{menuName}, 格納スロット({dispSlotName(slotId)})</td>
   }
   
   const listEndMenuContents = (menuId) => {
-    const menuName = `${menuId}`;
+    const menuName = Utils.getDispName(windowsets, menuId);
     return <td>{menuName}</td>
   }
 
   const listEmbeddedContents = (menuId, slotId) => {
     const menuName = `[${menuId}]`;
-    return <td>{menuName}, 格納スロット({slotId}:{slotName(slotId)})</td>
+    return <td>{menuName}, 格納スロット({dispSlotName(slotId)})</td>
   }
   
-  const listFlagContents = (parameters, flags) => {
+  const listFlagContents = (parameters) => {
     const flagId = parameters[0]; // まとめての場合parameters[1]を使用する
     const control = parameters[2];
-    const flagName = '[' + Utils.alignId(flagId, 3) + ':' + flags[flagId - 1].name + ']';
+    const flagName = dispFlagName(flagId);
     return <td>{flagName} = {control === 0 ? 'OFF' : 'ON'}</td>
   }
   
@@ -43,19 +64,76 @@ const CommandItem = props => {
     const opecode = parameters[2];
     //const operand = parameters[3];  // 定数以外いるか不明なので未実装
     const id = parameters[4];
-    const variableName = '[' + Utils.alignId(variableId, 3) + ':' + variables[variableId - 1].name + ']';
+    const variableName = '[' + Utils.alignId(variableId, 3) + ':' + Utils.getValue(variables, variableId) + ']';
     const opeTexts = ['=', '+=', '-='];
     return <td>{variableName} {opeTexts[opecode]} {id}</td>
   }
-  
-  const listItemSlotContents = (itemId, slotId1, slotId2) => {
-    const itemName = `[${itemId}:道具名]`;
-    return <td>{itemName}, 格納スロット(id:{slotId1}:{slotName(slotId1)}, object:{slotId2}:{slotName(slotId2)})</td>
+
+  // type:代入タイプ
+  //  0:直値 1:文字列 2:json 3:変数 4:スロット 5:乱数 6:ゲームデータ 7:道具
+  // param:代入タイプによって変わるパラメータ
+  const listOperateSlotContents = (beginId, endId, code, type, param1, param2) => {
+    const slotText = dispSlotName(beginId, endId);
+    const codeText = _getOpecodeText(code);
+    const paramText = _getOperateSlotParamText(type, param1, param2);
+    const checkText = code === 0 ? '' : [1,2,7].includes(type) ? '★不正！' : '';
+    return <td>{slotText}{codeText}{paramText}{checkText}</td>
+  }
+
+  const _getOperateSlotParamText = (type, param1, param2) => {
+    switch(type) {
+      case 0:
+        return param1;
+      case 1:
+        return param1;
+      case 2:
+        return 'json:' + param1;
+      case 3:
+        return '変数:' + dispVariableName(param1);
+      case 4:
+        return 'スロット:' + dispSlotName(param1);
+      case 5:
+        return param1 + '～' + param2;
+      case 6:
+        return _getOperateSlotGameDataText(param1);
+      case 7:
+        return '道具:' + dispItemName(param1);
+      default:
+        return '';
+    }
+  }
+
+  const _getOperateSlotGameDataText = (param) => {
+    switch(param) {
+      case 0:
+        return '所持金';
+      case 1:
+        return 'パーティ人数';
+      default:
+        return '';
+    }
+  }
+
+  const _getOpecodeText = (code) => {
+    const text = ['=', '+', '-', '*', '/', '%'];
+    return text[code];
   }
 
   const listGoodsContents = (parameters) => {
     const goods = `[${parameters}]`;
     return <td>{goods}</td>
+  }
+
+  const listCompareSlotContents = (id, code, type, param) => {
+    const slotText = dispSlotName(id);
+    const codeText = _getCompareText(code);
+    const paramText = _getNumberOrSlotParamText(type, param);
+    return <td>{slotText}{codeText}{paramText}</td>
+  }
+
+  const _getCompareText = (code) => {
+    const text = ['=', '>=', '<=', '>', '<', '!=', '&'];
+    return text[code];
   }
 
   const listCaseContents = (result) => {
@@ -74,19 +152,26 @@ const CommandItem = props => {
     // 直接指定
     if(type === 0) {
       const itemName = `[${id}:道具名]`;
-      return <td>{itemName}を追加, 入手者格納スロット({memberSlotId}:{slotName(memberSlotId)})</td>
+      return <td>{itemName}を追加, 入手者格納スロット({dispSlotName(memberSlotId)})</td>
     } else {
-      return <td>スロット({id})の道具(id指定)を追加, 入手者格納スロット({memberSlotId}:{slotName(memberSlotId)})</td>
+      return <td>スロット({id})の道具(id指定)を追加, 入手者格納スロット({dispSlotName(memberSlotId)})</td>
     }
   }
 
   const listChangeGoldContents = (op, type, value) => {
     const opText = op === 0 ? '+' : '-';
-    // 直接指定
-    if(type === 0) {
-      return <td>{opText}{value}</td>
-    } else {
-      return <td>{opText}スロット({value}:{slotName(value)})</td>
+    const paramText = _getNumberOrSlotParamText(type, value);
+    return <td>{opText}{paramText}</td>
+  }
+
+  const _getNumberOrSlotParamText = (type, param) => {
+    switch(type) {
+      case 0:
+      return param;
+    case 1:
+      return 'スロット:' + dispSlotName(param);
+    default:
+      return '';
     }
   }
   
@@ -110,8 +195,11 @@ const CommandItem = props => {
     return <td>{type === 0 ? '同じマップ' : name}(X={x},Y={y},方向={direction},パターン={pattern})</td>
   }
 
-  const listMoveRouteContents = (type, routeId, wait) => {
-    return <td>{type === 0 ? '共通' : 'マップ'}(ルートId={routeId},ウェイト={wait === 0 ? 'なし' : 'あり'})</td>
+  const listMoveRouteContents = (target, type, routeId) => {
+    if(typeof routeId === 'object') {
+      routeId = 1;
+    }
+    return <td>対象{target} ({type === 0 ? '共通' : 'マップ'},ルートId={routeId})</td>
   }
 
   const listWaitContents = (frame) => {
@@ -133,7 +221,7 @@ const CommandItem = props => {
     switch (props.command.code) {
       case COMMAND.MESSAGE:
         title = '文章:';
-        contents = <td style={{ whiteSpace: 'pre-line' }}>{parameters[0]}</td>;
+        contents = listMessageContents(...parameters);//<td style={{ whiteSpace: 'pre-line' }}>{parameters[0]}</td>;
         break;
       case COMMAND.MENU:
         title = 'メニュー表示:';
@@ -144,7 +232,10 @@ const CommandItem = props => {
         contents = listEndMenuContents(...parameters);
         break;
       case COMMAND.MESSAGEOUTWAIT:
-        title = '文章待機';
+        title = '文章無待機解除';
+        break;
+      case COMMAND.MESSAGECLOSEWAIT:
+        title = '文章閉じ待機';
         break;
       case COMMAND.EMBEDDED:
         title = '組み込みメニュー';
@@ -152,15 +243,15 @@ const CommandItem = props => {
         break;
       case COMMAND.FLAG:
         title = 'フラグ:';
-        contents = listFlagContents(parameters, flags);
+        contents = listFlagContents(parameters);
         break;
       case COMMAND.VARIABLE:
         title = '変数:';
         contents = listVariableContents(parameters, variables);
         break;
-      case COMMAND.ITEMSLOT:
-        title = '道具をスロット格納:';
-        contents = listItemSlotContents(...parameters);
+      case COMMAND.OPERATESLOT:
+        title = 'スロット演算:';
+        contents = listOperateSlotContents(...parameters);
         break;
       case COMMAND.GOODS:
         title = '商品の設定:';
@@ -171,6 +262,10 @@ const CommandItem = props => {
         break;
       case COMMAND.JUDGETRIGGER:
         title = '起動起因判定';
+        break;
+      case COMMAND.COMPARESLOT:
+        title = 'スロット比較';
+        contents = listCompareSlotContents(...parameters);
         break;
       case COMMAND.CASE:
         title = 'CASE:';
@@ -222,6 +317,9 @@ const CommandItem = props => {
         title = '移動ルート:';
         contents = listMoveRouteContents(...parameters);
         break;
+      case COMMAND.MOVEROUTEWAIT:
+        title = '移動ルート待機:';
+        break;
       case COMMAND.WAIT:
         title = '待機:';
         contents = listWaitContents(...parameters);
@@ -253,7 +351,7 @@ const CommandItem = props => {
     if(NoParamKeys.includes(code) || !CommandKeys.includes(code)) {
       return null;
     }
-    return <button onClick={() => props.onEditClick(props.index)}>編集</button>
+    return <button onClick={() => props.onEditClick(props.index)}>編</button>
   }
 
   return (
@@ -261,9 +359,11 @@ const CommandItem = props => {
       <div>
       {viewCommand()}
       </div>
-      <button onClick={() => props.onAddClick(props.index)}>↑追加</button>
+      <button onClick={() => props.onAddClick(props.index)}>↑加</button>
       {editButton()}
-      <button onClick={() => props.onDeleteClick(props.index)}>削除</button>
+      <button onClick={() => props.onDeleteClick(props.index)}>除</button>
+      <button onClick={() => props.onPasteClick(props.index)}>↑貼</button>
+      <button onClick={() => props.onCopyClick(props.index)}>写</button>
     </div>
   );
 }
@@ -272,6 +372,7 @@ const CommandItemLast = props => {
   return (
     <div className="command-item">
       <button onClick={() => props.onAddClick(props.index)}>追加</button>
+      <button onClick={() => props.onPasteClick(props.index)}>貼る</button>
     </div>
   );
 }
@@ -294,6 +395,8 @@ const CommandList = props => {
         onAddClick={props.onAddClick}
         onEditClick={props.onEditClick}
         onDeleteClick={props.onDeleteClick}
+        onPasteClick={props.onPasteClick}
+        onCopyClick={props.onCopyClick}
       />
     )
     if([COMMAND.CASE, COMMAND.ELSE].includes(command.code)) {
@@ -308,6 +411,7 @@ const CommandList = props => {
       key={listItems.length}
       index={listItems.length}
       onAddClick={props.onAddClick}
+      onPasteClick={props.onPasteClick}
     />);
     return listItems;
   }

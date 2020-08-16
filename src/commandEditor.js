@@ -1,5 +1,6 @@
 import React from 'react';
-import { pairSelectItems, FlagSelectBox, VariableSelectBox, SlotSelectBox } from './selectBoxSet'
+import { simpleSelectItems, pairSelectItems, FlagSelectBox, 
+  VariableSelectBox, SlotSelectBox, ItemSelectBox, MenuSelectBox } from './selectBoxSet'
 import { NumberEdit } from './editBoxSet'
 import { COMMAND, VARIABLERANGE } from './define';
 import './index.css';
@@ -24,17 +25,22 @@ const CommandBase = props => {
 // 文章の表示
 const Message = props => {
 
+  const data = sliceParameters(props.command.parameters);
   // 0: 表示テキスト
-  const textRef = React.useRef(props.command.parameters ? props.command.parameters[0] : '');
+  // 1: 無待機フラグ
+  const parametersRef = React.useRef(data || ['', 0]);
+  const parameters = parametersRef.current;
 
   const onChange = (e) => {
-    const nText = e.target.value
-    textRef.current = nText;
+    parameters[0] = e.target.value;
+  }
+
+  const onNoWaitChange = (e) => {
+    parameters[1] = e.target.checked ? parseInt(e.target.value) : 0;
   }
 
   const onUpdate = () => {
-    const command = {code: props.command.code, parameters: []};
-    command.parameters.push(textRef.current);
+    const command = {code: props.command.code, parameters: parameters};
     props.onUpdate(command);
   }
   
@@ -43,11 +49,14 @@ const Message = props => {
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
-      <textarea cols="50" rows="10" defaultValue={textRef.current} 
+      <textarea cols="50" rows="10" defaultValue={parameters[0]} 
         style={{resize: 'none'}}
         onChange={(e) => onChange(e)}
       >
       </textarea>
+      <input type="checkbox" name="nowait" value="1" defaultChecked={parameters[1] === 1 ? 'checked' : ''}
+        onChange={(e) => onNoWaitChange(e)}
+      />待機しない
     </CommandBase>
   );
 }
@@ -61,8 +70,8 @@ const Menu = props => {
   const parametersRef = React.useRef(data || [1, 1]);
   const parameters = parametersRef.current;
 
-  const onValueFocusOff = (value) => {
-    parameters[0] = value;
+  const onMenuChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
   }
 
   const onSlotChange = (e) => {
@@ -80,15 +89,14 @@ const Menu = props => {
       onCancel={props.onCancel}
     >
       <font>メニューId：</font>
-      <NumberEdit
-        min={0}
-        max={100}
-        value={parameters[0]}
-        onValueFocusOff={onValueFocusOff}
+      <MenuSelectBox
+        selectValue = {parameters[0]}
+        onChange = {(e) => onMenuChange(e)}
       />
       <SlotSelectBox
         selectValue = {parameters[1]}
         onChange = {(e) => onSlotChange(e)}
+        unuse = {true}
       />
     </CommandBase>
   );
@@ -102,8 +110,8 @@ const EndMenu = props => {
   const parametersRef = React.useRef(data || [1]);
   const parameters = parametersRef.current;
 
-  const onValueFocusOff = (value) => {
-    parameters[0] = value;
+  const onMenuChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
   }
 
   const onUpdate = () => {
@@ -117,11 +125,9 @@ const EndMenu = props => {
       onCancel={props.onCancel}
     >
       <font>メニューId：</font>
-      <NumberEdit
-        min={0}
-        max={100}
-        value={parameters[0]}
-        onValueFocusOff={onValueFocusOff}
+      <MenuSelectBox
+        selectValue = {parameters[0]}
+        onChange = {(e) => onMenuChange(e)}
       />
     </CommandBase>
   );
@@ -277,55 +283,209 @@ const Variable = props => {
   );
 }
 
-// 道具をスロット格納
-const ItemSlot = props => {
+// スロット演算
+const OperateSlot = props => {
 
   const data = sliceParameters(props.command.parameters);
-  // 0: 道具Id
-  // 1: 道具Id格納スロット
-  // 2: 道具オブジェクト格納スロット
-  const parametersRef = React.useRef(data || [1, 1, 2]);
+  // 0: 先頭Id
+  // 1: 終端Id
+  // 2: 演算子
+  // 3: 演算タイプ
+  // 4: パラメータ1
+  // 5: パラメータ2
+  const parametersRef = React.useRef(data || [1, 1, 0, 0, 0, 0]);
   const parameters = parametersRef.current;
+  const code = parameters[2];
+  const type = parameters[3];
+  let num = type === 0 ? parameters[4] : 0;
+  let str = type === 1 ? parameters[4] : '';
+  let json = type === 2 ? parameters[4] : '';
+  let variableId = type === 3 ? parameters[4] : 1;
+  let slotId = type === 4 ? parameters[4] : 1;
+  let [rand1, rand2] = type === 5 ? [parameters[4], parameters[5]] : [0, 0];
+  let gameId = type === 6 ? parameters[4] : 0;
+  const gameList = ['所持金', 'パーティ人数'];
+  let itemId = type === 7 ? parameters[4] : 1;
 
-  const onValueFocusOff = (value) => {
-    parameters[0] = value;
+  const onSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+    parameters[1] = parameters[0];
   }
 
-  const onSlotChange = (e, i) => {
-    parameters[i] = parseInt(e.target.value);
+  const onCodeChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  }
+
+  const onTypeChange = (e) => {
+    parameters[3] = parseInt(e.target.value);
+  }
+
+  const onValueFocusOffNum = (value) => {
+    num = value;
+  }
+
+  const onStrChange = (e) => {
+    str = e.target.value;
+  }
+
+  const onJsonChange = (e) => {
+    json = e.target.value;
+  }
+
+  const onVariableChange = (e) => {
+    variableId = parseInt(e.target.value);
+  }
+
+  const onSlotIdChange = (e) => {
+    slotId = parseInt(e.target.value);
+  }
+
+  const onValueFocusOffRand1 = (value) => {
+    rand1 = value;
+  }
+
+  const onValueFocusOffRand2 = (value) => {
+    rand2 = value;
+  }
+
+  const onGameIdChange = (e) => {
+    gameId = parseInt(e.target.value);
+  }
+
+  const onItemIdChange = (e) => {
+    itemId = parseInt(e.target.value);
   }
 
   const onUpdate = () => {
-    const command = {code: props.command.code, parameters: parameters};
+    const values1 = [num, str, json, variableId, slotId, rand1, gameId, itemId];
+    const values2 = [0, 0, 0, 0, 0, rand2, 0, 0];
+    const newType = parameters[3];
+    [parameters[4], parameters[5]] = [values1[newType], values2[newType]];
+
+    const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
   }
-  
+
   return (
-    <CommandBase 
+    <CommandBase
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
-      <font>道具Id：</font>
-      <NumberEdit
-        min={1}
-        max={1000}
-        value={parameters[0]}
-        onValueFocusOff={onValueFocusOff}
+      <SlotSelectBox
+        selectValue={parameters[0]}
+        onChange={(e) => onSlotChange(e)}
       />
       <div>
-        <font>道具Id格納スロット：</font>
-        <SlotSelectBox
-          selectValue = {parameters[1]}
-          onChange = {(e) => onSlotChange(e, 1)}
+        <input type="radio" name="code" value="0" defaultChecked={code === 0 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>=</font>
+        <input type="radio" name="code" value="1" defaultChecked={code === 1 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>+</font>
+        <input type="radio" name="code" value="2" defaultChecked={code === 2 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>-</font>
+        <input type="radio" name="code" value="3" defaultChecked={code === 3 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>*</font>
+        <input type="radio" name="code" value="4" defaultChecked={code === 4 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>/</font>
+        <input type="radio" name="code" value="5" defaultChecked={code === 5 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>%</font>
+      </div>
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={type === 0 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>定数：</font>
+        <NumberEdit
+          min={VARIABLERANGE.MIN}
+          max={VARIABLERANGE.MAX}
+          value={num}
+          onValueFocusOff={onValueFocusOffNum}
         />
       </div>
       <div>
-        <font>道具オブジェクト格納スロット：</font>
-        <SlotSelectBox
-          selectValue = {parameters[2]}
-          onChange = {(e) => onSlotChange(e, 2)}
+        <input type="radio" name="type" value="1" defaultChecked={type === 1 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>文字列：</font>
+        <input
+          defaultValue={str}
+          onChange={(e) => onStrChange(e)}
         />
       </div>
+      <div>
+        <input type="radio" name="type" value="2" defaultChecked={type === 2 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>json：</font>
+        <input
+          defaultValue={json}
+          onChange={(e) => onJsonChange(e)}
+        />
+      </div>
+      <div>
+        <input type="radio" name="type" value="3" defaultChecked={type === 3 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>変数：</font>
+        <VariableSelectBox
+          selectValue={variableId}
+          onChange={(e) => onVariableChange(e)}
+        />
+      </div>
+      <div>
+        <input type="radio" name="type" value="4" defaultChecked={type === 4 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>スロット：</font>
+        <SlotSelectBox
+          selectValue={slotId}
+          onChange={(e) => onSlotIdChange(e)}
+        />
+      </div>
+      <div>
+        <input type="radio" name="type" value="5" defaultChecked={type === 5 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>乱数：</font>
+        <NumberEdit
+          min={VARIABLERANGE.MIN}
+          max={VARIABLERANGE.MAX}
+          value={rand1}
+          onValueFocusOff={onValueFocusOffRand1}
+        />
+        <font>～</font>
+        <NumberEdit
+          min={VARIABLERANGE.MIN}
+          max={VARIABLERANGE.MAX}
+          value={rand2}
+          onValueFocusOff={onValueFocusOffRand2}
+        />
+      </div>
+      <div>
+        <input type="radio" name="type" value="6" defaultChecked={type === 6 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>ゲームデータ：</font>
+        <select defaultValue={gameId} onChange={(e) => onGameIdChange(e)}>
+          {simpleSelectItems(gameList)}
+        </select>
+      </div>
+      <div>
+        <input type="radio" name="type" value="7" defaultChecked={type === 7 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>道具：</font>
+        <ItemSelectBox
+          selectValue={itemId}
+          onChange={(e) => onItemIdChange(e)}
+        />
+      </div>
+        
     </CommandBase>
   );
 }
@@ -370,6 +530,105 @@ const Goods = props => {
       <font>道具Id：</font>
       <GoodsList
       />
+    </CommandBase>
+  );
+}
+
+// スロット比較
+const CompareSlot = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: スロットId
+  // 1: 比較演算子
+  // 2: 指定タイプ
+  // 3: パラメータ
+  const parametersRef = React.useRef(data || [1, 0, 0, 0]);
+  const parameters = parametersRef.current;
+  const code = parameters[1];
+  const type = parameters[2];
+  let num = type === 0 ? parameters[3] : 0;
+  let slotId = type === 1 ? parameters[3] : 1;
+
+  const onSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onCodeChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  }
+
+  const onTypeChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  }
+
+  const onValueFocusOffNum = (value) => {
+    num = value;
+  }
+
+  const onSlotIdChange = (e) => {
+    slotId = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    parameters[3] = parameters[2] === 0 ? num : slotId;
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <SlotSelectBox
+        selectValue={parameters[0]}
+        onChange={(e) => onSlotChange(e)}
+      />
+      <div>
+        <input type="radio" name="code" value="0" defaultChecked={code === 0 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>=</font>
+        <input type="radio" name="code" value="1" defaultChecked={code === 1 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>&gt;=</font>
+        <input type="radio" name="code" value="2" defaultChecked={code === 2 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>&lt;=</font>
+        <input type="radio" name="code" value="3" defaultChecked={code === 3 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>&gt;</font>
+        <input type="radio" name="code" value="4" defaultChecked={code === 4 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>&lt;</font>
+        <input type="radio" name="code" value="5" defaultChecked={code === 5 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>!=</font>
+        <input type="radio" name="code" value="6" defaultChecked={code === 5 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>&amp;</font>
+      </div>
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={type === 0 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>定数：</font>
+        <NumberEdit
+          min={VARIABLERANGE.MIN}
+          max={VARIABLERANGE.MAX}
+          value={num}
+          onValueFocusOff={onValueFocusOffNum}
+        />
+      </div>
+      <div>
+        <input type="radio" name="type" value="1" defaultChecked={type === 1 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>スロット：</font>
+        <SlotSelectBox
+          selectValue={slotId}
+          onChange={(e) => onSlotIdChange(e)}
+        />
+      </div>
     </CommandBase>
   );
 }
@@ -434,7 +693,7 @@ const Label = props => {
     >
       <font>ラベル名：</font>
       <input
-        initialValue={parameters[0]}
+        defaultValue={parameters[0]}
         onChange={(e) => onChange(e)}
       />
     </CommandBase>
@@ -468,7 +727,7 @@ const Jump = props => {
     >
       <font>ラベル名：</font>
       <input
-        initialValue={parameters[0]}
+        defaultValue={parameters[0]}
         onChange={(e) => onChange(e)}
       />
     </CommandBase>
@@ -604,7 +863,7 @@ const ChangeGold = props => {
       <div>
         <input type="radio" name="type" value="0" defaultChecked={type === 0 ? 'checked' : ''}
           onChange={(e) => onTypeChange(e)}
-        />道具
+        />直値
         <input type="radio" name="type" value="1" defaultChecked={type === 1 ? 'checked' : ''}
           onChange={(e) => onTypeChange(e)}
         />スロット
@@ -846,22 +1105,18 @@ const Move = props => {
 const MoveRoute = props => {
 
   const data = sliceParameters(props.command.parameters);
-  // 0: 0 共通 1 マップ
-  // 1: ルートId
-  // 2: 0 ウェイトなし 1:ウェイトあり
-  const parametersRef = React.useRef(data || [0, 1, 0]);
+  // 0: 対象 -1 プレイヤー 0:自キャラ その他：番号のキャラ
+  // 1: 0 共通 1 マップ
+  // 2: ルートId
+  const parametersRef = React.useRef(data || [0, 0, 1]);
   const parameters = parametersRef.current;
 
+  const onValueFocusOff = (value, i) => {
+    parameters[i] = value;
+  }
+
   const onRadioChange = (e) => {
-    parameters[0] = parseInt(e.target.value);
-  }
-
-  const onValueFocusOff = (value) => {
-    parameters[1] = value;
-  }
-
-  const onWaitChange = (e) => {
-    parameters[2] = parseInt(e.target.value);
+    parameters[1] = parseInt(e.target.value);
   }
 
   const onUpdate = () => {
@@ -874,11 +1129,18 @@ const MoveRoute = props => {
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
+      <font>対象：</font>
+      <NumberEdit
+        min={-1}
+        max={1000}
+        value={parameters[0]}
+        onValueFocusOff={(value) => onValueFocusOff(value, 0)}
+      />
       <div>
-        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+        <input type="radio" name="type" value="0" defaultChecked={parameters[1] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />共通
-      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+      <input type="radio" name="type" value="1" defaultChecked={parameters[1] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />マップ
       </div>
@@ -886,17 +1148,9 @@ const MoveRoute = props => {
       <NumberEdit
         min={1}
         max={1000}
-        value={parameters[1]}
-        onValueFocusOff={onValueFocusOff}
+        value={parameters[2]}
+        onValueFocusOff={(value) => onValueFocusOff(value, 2)}
       />
-      <div>
-        <input type="radio" name="wait" value="0" defaultChecked={parameters[2] === 0 ? 'checked' : ''}
-          onChange={(e) => onWaitChange(e)}
-        />ウェイトなし
-      <input type="radio" name="wait" value="1" defaultChecked={parameters[2] === 1 ? 'checked' : ''}
-          onChange={(e) => onWaitChange(e)}
-        />ウェイトあり
-      </div>
     </CommandBase>
   );
 }
@@ -1094,14 +1348,17 @@ const CommandEditor = props => {
       case COMMAND.VARIABLE:
         return <Variable
           {...props} />
-      case COMMAND.ITEMSLOT:
-        return <ItemSlot
+      case COMMAND.OPERATESLOT:
+        return <OperateSlot
           {...props} />
       case COMMAND.GOODS:
         return <Goods
           {...props} />
       case COMMAND.CASE:
         return <Case
+          {...props} />
+      case COMMAND.COMPARESLOT:
+        return <CompareSlot
           {...props} />
       case COMMAND.LABEL:
         return <Label

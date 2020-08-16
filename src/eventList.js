@@ -54,12 +54,13 @@ const EventList = React.forwardRef((props, ref) =>{
       {listItem}
       </select>
       <div>
-        <font>最大数：</font>
-        <input type="number" min="1" max="100"
+        <font>数：</font>
+        <input type="number" min="1" max="200"
           value={size}
           onChange={(e) => onSizeChange(e)}
         />
         <button onClick={props.eventSizeClick}>変更</button>
+        <button onClick={props.eventDeleteClick}>削除</button>
       </div>
     </div>
   )

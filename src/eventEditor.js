@@ -177,6 +177,17 @@ const EventEditor = React.forwardRef((props, ref) => {
     console.log('old = ' + oldSize + ' new = ' + newSize);
   }
 
+  // 選択中イベント削除
+  const onEventDeleteClick = () => {
+    const events = props.eventsRef.current;
+    const index = listRef.current.index;
+    const event = events[index];
+
+    event.conditions = [];
+    event.list = [];
+    refreshEvents(events, index);
+  }
+
   React.useEffect(() => {
     console.log('EventEditor effect');
   });
@@ -194,6 +205,7 @@ const EventEditor = React.forwardRef((props, ref) => {
         events={props.eventsRef.current}
         changeEvent={onSelectChange}
         eventSizeClick={onEventSizeClick}
+        eventDeleteClick={onEventDeleteClick}
         ref={listRef}
       />
       <Event

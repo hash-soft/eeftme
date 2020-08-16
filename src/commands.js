@@ -14,14 +14,16 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.MESSAGE)}>文章の表示</button>
           <button onClick={() => props.closePopup(COMMAND.MENU)}>メニュー表示</button>
           <button onClick={() => props.closePopup(COMMAND.ENDMENU)}>メニュー終了</button>
-          <button onClick={() => props.closePopup(COMMAND.MESSAGEOUTWAIT)}>文章待機</button>
+          <button onClick={() => props.closePopup(COMMAND.MESSAGEOUTWAIT)}>文章閉無待機解除</button>
+          <button onClick={() => props.closePopup(COMMAND.MESSAGECLOSEWAIT)}>文章閉じ待機</button>
           <button onClick={() => props.closePopup(COMMAND.EMBEDDED)}>組み込みメニュー</button>
           <button onClick={() => props.closePopup(COMMAND.FLAG)}>フラグの処理</button>
           <button onClick={() => props.closePopup(COMMAND.VARIABLE)}>変数の処理</button>
-          <button onClick={() => props.closePopup(COMMAND.ITEMSLOT)}>道具をスロット格納</button>
+          <button onClick={() => props.closePopup(COMMAND.OPERATESLOT)}>スロット演算</button>
           <button onClick={() => props.closePopup(COMMAND.ITEMSPACE)}>道具追加可能判定</button>
           <button onClick={() => props.closePopup(COMMAND.JUDGETRIGGER)}>起動起因判定</button>
           <button onClick={() => props.closePopup(COMMAND.GOODS)}>商品の設定</button>
+          <button onClick={() => props.closePopup(COMMAND.COMPARESLOT)}>スロット比較</button>
           <button onClick={() => props.closePopup(COMMAND.CASE)}>CASE</button>
           <button onClick={() => props.closePopup(COMMAND.ELSE)}>ELSE</button>
           <button onClick={() => props.closePopup(COMMAND.ENDBRANCH)}>ENDBRANCH</button>
@@ -33,6 +35,7 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.SWAPTILE)}>タイル切替</button>
           <button onClick={() => props.closePopup(COMMAND.MOVE)}>場所移動</button>
           <button onClick={() => props.closePopup(COMMAND.MOVEROUTE)}>移動ルート</button>
+          <button onClick={() => props.closePopup(COMMAND.MOVEROUTEWAIT)}>移動ルート待機</button>
           <button onClick={() => props.closePopup(COMMAND.MAPSCRIPT)}>マップスクリプト</button>
           <button onClick={() => props.closePopup(COMMAND.COMMONSCRIPT)}>コモンスクリプト</button>
           <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
@@ -52,6 +55,7 @@ const Commands = React.forwardRef((props, ref) => {
   const [list, updateList] = useState(props.list);
   const commandRef = React.useRef({code: 0, parameters: null})
   const editInfoRef = React.useRef({index: 0, new: true});
+  const copyRef = React.useRef({code: 0, parameters: null});
 
   const update = (list) => {
     updateList(list);
@@ -88,6 +92,23 @@ const Commands = React.forwardRef((props, ref) => {
     editInfo.new = false;
     updateListEnable(false);
     editCommand(list[index]);
+  }
+
+  const onCopyClick = (index) => {
+    const item = list[index];
+    console.log(item);
+    copyRef.current.code = item.code;
+    copyRef.current.parameters = item.parameters.slice();
+  }
+
+  const onPasteClick = (index) => {
+    if(copyRef.current.code === 0) {
+      return;
+    }
+    const item = {code: copyRef.current.code, parameters: copyRef.current.parameters.slice()};
+    const newList = list.slice()
+    newList.splice(index, 0, item);
+    updateList(newList);
   }
 
   const onUpdate = (command) => {
@@ -154,6 +175,8 @@ const Commands = React.forwardRef((props, ref) => {
         onAddClick={onAddClick}
         onEditClick={onEditClick}
         onDeleteClick={onDeleteClick}
+        onCopyClick={onCopyClick}
+        onPasteClick={onPasteClick}
         listEnable={listEnable}
         list={list}
       />
