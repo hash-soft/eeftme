@@ -1,6 +1,7 @@
 import React from 'react';
 import { simpleSelectItems, pairSelectItems, FlagSelectBox, 
-  VariableSelectBox, SlotSelectBox, ItemSelectBox, MenuSelectBox } from './selectBoxSet'
+  VariableSelectBox, SlotSelectBox, ItemSelectBox, MenuSelectBox, 
+  MapEventSelectBox, CommonEventSelectBox } from './selectBoxSet'
 import { NumberEdit } from './editBoxSet'
 import { COMMAND, VARIABLERANGE } from './define';
 import './index.css';
@@ -43,20 +44,24 @@ const Message = props => {
     const command = {code: props.command.code, parameters: parameters};
     props.onUpdate(command);
   }
-  
+
   return (
     <CommandBase
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
-      <textarea cols="50" rows="10" defaultValue={parameters[0]} 
-        style={{resize: 'none'}}
-        onChange={(e) => onChange(e)}
-      >
-      </textarea>
-      <input type="checkbox" name="nowait" value="1" defaultChecked={parameters[1] === 1 ? 'checked' : ''}
-        onChange={(e) => onNoWaitChange(e)}
-      />待機しない
+      <div>
+        <textarea cols="50" rows="10" defaultValue={parameters[0]}
+          style={{ resize: 'none' }}
+          onChange={(e) => onChange(e)}
+        >
+        </textarea>
+      </div>
+      <div>
+        <input type="checkbox" name="nowait" value="1" defaultChecked={parameters[1] === 1 ? 'checked' : ''}
+          onChange={(e) => onNoWaitChange(e)}
+        />待機しない
+      </div>
     </CommandBase>
   );
 }
@@ -1010,7 +1015,8 @@ const Move = props => {
   // 3: y座標
   // 4: 方向
   // 5: パターン初期化するか
-  const parametersRef = React.useRef(data || [0, '', 0, 0, -1, 1]);
+  // 6: 移動音 0:なし 1:あり
+  const parametersRef = React.useRef(data || [0, '', 0, 0, -1, 1, 1]);
   const parameters = parametersRef.current;
   const x = parameters[2];
   const y = parameters[3];
@@ -1040,6 +1046,10 @@ const Move = props => {
   
   const onPatternChange = (e) => {
     parameters[5] = parseInt(e.target.value);
+  }
+
+  const onSoundChange = (e) => {
+    parameters[6] = parseInt(e.target.value);
   }
 
   const onUpdate = () => {
@@ -1088,12 +1098,22 @@ const Move = props => {
         </select>
       </div>
       <div>
+        <font>パターン：</font>
         <input type="radio" name="pattern" value="0" defaultChecked={parameters[5] === 0 ? 'checked' : ''}
           onChange={(e) => onPatternChange(e)}
         />そのまま
       <input type="radio" name="pattern" value="1" defaultChecked={parameters[5] === 1 ? 'checked' : ''}
           onChange={(e) => onPatternChange(e)}
         />初期化
+      </div>
+      <div>
+        <font>移動音：</font>
+        <input type="radio" name="sound" value="0" defaultChecked={parameters[5] === 0 ? 'checked' : ''}
+          onChange={(e) => onSoundChange(e)}
+        />なし
+      <input type="radio" name="sound" value="1" defaultChecked={parameters[5] === 1 ? 'checked' : ''}
+          onChange={(e) => onSoundChange(e)}
+        />あり
       </div>
 
     </CommandBase>
@@ -1164,8 +1184,8 @@ const MapScript = props => {
   const parametersRef = React.useRef(data || [1]);
   const parameters = parametersRef.current;
 
-  const onValueFocusOff = (value) => {
-    parameters[0] = value;
+  const onEventChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
   }
 
   const onUpdate = () => {
@@ -1179,11 +1199,9 @@ const MapScript = props => {
       onCancel={props.onCancel}
     >
       <font>スクリプトId：</font>
-      <NumberEdit
-        min={1}
-        max={500}
-        value={parameters[0]}
-        onValueFocusOff={onValueFocusOff}
+      <MapEventSelectBox
+        selectValue = {parameters[0]}
+        onChange = {(e) => onEventChange(e)}
       />
     </CommandBase>
   );
@@ -1197,8 +1215,8 @@ const CommonScript = props => {
   const parametersRef = React.useRef(data || [1]);
   const parameters = parametersRef.current;
 
-  const onValueFocusOff = (value) => {
-    parameters[0] = value;
+  const onEventChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
   }
 
   const onUpdate = () => {
@@ -1212,11 +1230,9 @@ const CommonScript = props => {
       onCancel={props.onCancel}
     >
       <font>スクリプトId：</font>
-      <NumberEdit
-        min={1}
-        max={500}
-        value={parameters[0]}
-        onValueFocusOff={onValueFocusOff}
+      <CommonEventSelectBox
+        selectValue = {parameters[0]}
+        onChange = {(e) => onEventChange(e)}
       />
     </CommandBase>
   );

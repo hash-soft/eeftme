@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css';
 import { COMMAND, CommandKeys, NoParamKeys } from './define';
-import { Dataset } from './contents'
+import { Dataset, MapEventsRef, CommonEventsRef } from './contents'
 import Utils from './utils'
 
 
@@ -13,6 +13,8 @@ const CommandItem = props => {
   const slots = dataset.slots;
   const items = dataset.items;
   const windowsets = dataset.windowsets;
+  const mapEventsRef = React.useContext(MapEventsRef);
+  const commonEventsRef = React.useContext(CommonEventsRef);
 
   const dispFlagName = (id, idEnd = id) => {
     return Utils.getDispValue(flags, id, idEnd);
@@ -28,6 +30,14 @@ const CommandItem = props => {
 
   const dispItemName = (id) => {
     return Utils.getDispName(items, id);
+  }
+
+  const dispMapEventName = (id) => {
+    return Utils.getDispName(mapEventsRef.current, id);
+  }
+
+  const dispCommonEventName = (id) => {
+    return Utils.getDispName(commonEventsRef.current, id);
   }
 
   const listMessageContents = (text, nowait) => {
@@ -115,7 +125,7 @@ const CommandItem = props => {
   }
 
   const _getOpecodeText = (code) => {
-    const text = ['=', '+', '-', '*', '/', '%'];
+    const text = ['=', '+=', '-=', '*=', '/=', '%='];
     return text[code];
   }
 
@@ -176,11 +186,11 @@ const CommandItem = props => {
   }
   
   const listMapScriptContents = (id) => {
-    return <td>({id})</td>
+    return <td>{dispMapEventName(id)}</td>
   }
   
   const listCommonScriptContents = (id) => {
-    return <td>({id})</td>
+    return <td>{dispCommonEventName(id)}</td>
   }
 
   const listChangeTileContents = (layerIndex, id, x, y) => {
@@ -191,8 +201,8 @@ const CommandItem = props => {
     return <td>{type === 0 ? '戻す' : '置き換える'}(レイヤー={layerIndex})</td>
   }
 
-  const listMoveContents = (type, name, x, y, direction, pattern) => {
-    return <td>{type === 0 ? '同じマップ' : name}(X={x},Y={y},方向={direction},パターン={pattern})</td>
+  const listMoveContents = (type, name, x, y, direction, pattern, sound) => {
+    return <td>{type === 0 ? '同じマップ' : name}(X={x},Y={y},方向={direction},パターン={pattern},移動音={sound})</td>
   }
 
   const listMoveRouteContents = (target, type, routeId) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dataset } from './contents'
+import { Dataset, MapEventsRef, CommonEventsRef } from './contents'
 import Utils from './utils'
 
 
@@ -130,6 +130,22 @@ const ItemSelectBox = props => {
   )
 }
 
+// メンバーセレクトボックス
+const MemberSelectBox = props => {
+
+  const dataset = React.useContext(Dataset);
+  const members = dataset.members;
+
+  return (
+    <SelectBoxBase
+      items={members}
+      digits={3}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
 // メニューセレクトボックス
 const MenuSelectBox = props => {
 
@@ -147,5 +163,36 @@ const MenuSelectBox = props => {
 }
 
 
+// マップイベントセレクトボックス
+const MapEventSelectBox = props => {
+
+  const mapEventsRef = React.useContext(MapEventsRef);
+
+  return (
+    <SelectBoxBase
+      items={mapEventsRef.current}
+      digits={3}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
+// 共通イベントセレクトボックス
+const CommonEventSelectBox = props => {
+
+  const commonEventsRef = React.useContext(CommonEventsRef);
+
+  return (
+    <SelectBoxBase
+      items={commonEventsRef.current}
+      digits={3}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
+
 export { simpleSelectItems, pairSelectItems, FlagSelectBox, VariableSelectBox, SlotSelectBox,
-  ItemSelectBox, MenuSelectBox }
+  ItemSelectBox, MemberSelectBox, MenuSelectBox, MapEventSelectBox, CommonEventSelectBox}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FlagSelectBox, VariableSelectBox } from './selectBoxSet'
+import { FlagSelectBox, VariableSelectBox, SlotSelectBox, ItemSelectBox,
+  MemberSelectBox } from './selectBoxSet'
 import { NumberEdit } from './editBoxSet'
 import './index.css';
 
@@ -20,15 +21,30 @@ const ConditionType = props => {
     condition.type = parseInt(e.target.value);
     // 種別ごとにパラメータを初期化する
     switch(condition.type) {
-      case 0:
+      case 0: // フラグ
         condition.param1 = 1;
         condition.param2 = 0;
         condition.compare = 1;
         break;
-      case 1:
+      case 1: // 変数
         condition.param1 = 1;
         condition.param2 = 0;
         condition.compare = 0;
+        break;
+      case 2: // スロット
+        condition.param1 = 1;
+        condition.param2 = 0;
+        condition.compare = 0;
+        break;
+      case 3: // 道具
+        condition.param1 = 1;
+        condition.param2 = 0;
+        condition.compare = 1;
+        break;
+      case 4: // メンバー
+        condition.param1 = 1;
+        condition.param2 = 0;
+        condition.compare = 1;
         break;
       default:
         break;
@@ -40,6 +56,9 @@ const ConditionType = props => {
     <select value={props.condition.type} onChange={(e) => onChange(e)}>
       <option value="0">フラグ</option>
       <option value="1">変数</option>
+      <option value="2">スロット</option>
+      <option value="3">道具</option>
+      <option value="4">メンバー</option>
     </select>
   );
 }
@@ -80,13 +99,6 @@ const ConditionVaribale = props => {
     props.onUpdateConditions();
   }
 
-  /*const onValueChange = (e) => {
-    //props.condition.param2 = isNaN(e.target.value) ? 0 : parseInt(e.target.value);
-    // フォーカスが外れたときの補正をあてにするのでここではそのまま代入する
-    props.condition.param2 = e.target.value;
-    props.onUpdateConditions();
-  }*/
-
   // フォーカスが外れたときに値を補正する
   const onValueFocusOff = (value) => {
     props.condition.param2 = value;
@@ -109,13 +121,8 @@ const ConditionVaribale = props => {
         min={-9999999}
         max={9999999}
         value={props.condition.param2}
-        //onChange={(e) => onValueChange(e)}
         onValueFocusOff={onValueFocusOff} 
       />
-      {/* <input type="number" name="example"
-        value={props.condition.param2} min="-9999999" max="9999999"
-        onChange={(e) => onValueChange(e)} onBlur={(e) => onValueFocusOff(e)}
-      /> */}
       と
       <select value={props.condition.compare} onChange={(e) => onCompareChange(e)}>
         <option value="0">等しい</option>
@@ -126,8 +133,107 @@ const ConditionVaribale = props => {
   );
 }
 
-// 条件項目
+// スロット
+const ConditionSlot = props => {
+
+  const onSlotChange = (e) => {
+    props.condition.param1 = parseInt(e.target.value);
+    props.onUpdateConditions();
+  }
+
+  // フォーカスが外れたときに値を補正する
+  const onValueFocusOff = (value) => {
+    props.condition.param2 = value;
+    props.onUpdateConditions();
+  }
+
+  const onCompareChange = (e) => {
+    props.condition.compare = parseInt(e.target.value);
+    props.onUpdateConditions();
+  }
+
+  return (
+    <div className="condition-item">
+      <SlotSelectBox
+        selectValue = {props.condition.param1}
+        onChange = {(e) => onSlotChange(e)}
+      />
+      が
+      <NumberEdit
+        min={-9999999}
+        max={9999999}
+        value={props.condition.param2}
+        onValueFocusOff={onValueFocusOff} 
+      />
+      と
+      <select value={props.condition.compare} onChange={(e) => onCompareChange(e)}>
+        <option value="0">等しい</option>
+        <option value="1">以上</option>
+        <option value="2">以下</option>
+      </select>
+    </div>
+  );
+}
+
+// 道具
 const ConditionItem = props => {
+
+  const onItemChange = (e) => {
+    props.condition.param1 = parseInt(e.target.value);
+    props.onUpdateConditions();
+  }
+
+  const onCompareChange = (e) => {
+    props.condition.compare = parseInt(e.target.value);
+    props.onUpdateConditions();
+  }
+
+  return (
+    <div className="condition-item">
+      <ItemSelectBox
+        selectValue = {props.condition.param1}
+        onChange = {(e) => onItemChange(e)}
+      />
+      を
+      <select value={props.condition.compare} onChange={(e) => onCompareChange(e)}>
+        <option value="0">持っていない</option>
+        <option value="1">持っている</option>
+      </select>
+    </div>
+  );
+}
+
+// メンバー
+const ConditionMember = props => {
+
+  const onMemberChange = (e) => {
+    props.condition.param1 = parseInt(e.target.value);
+    props.onUpdateConditions();
+  }
+
+  const onCompareChange = (e) => {
+    props.condition.compare = parseInt(e.target.value);
+    props.onUpdateConditions();
+  }
+
+  return (
+    <div className="condition-item">
+      <MemberSelectBox
+        selectValue = {props.condition.param1}
+        onChange = {(e) => onMemberChange(e)}
+      />
+      が
+      <select value={props.condition.compare} onChange={(e) => onCompareChange(e)}>
+        <option value="0">いない</option>
+        <option value="1">いる</option>
+      </select>
+    </div>
+  );
+}
+
+
+// 条件項目
+const ConditionItemList = props => {
 
   const viewEditor = () => {
     let Component = null;
@@ -137,6 +243,15 @@ const ConditionItem = props => {
         break;
       case 1:
         Component = ConditionVaribale;
+        break;
+      case 2:
+        Component = ConditionSlot;
+        break;
+      case 3:
+        Component = ConditionItem;
+        break;
+      case 4:
+        Component = ConditionMember;
         break;
       default:
         return null;
@@ -208,7 +323,7 @@ const Conditions = React.forwardRef((props, ref) => {
   const conditionItems = conditions.map((step, move) => {
     const num = move + 1;
     return (
-      <ConditionItem key={num}
+      <ConditionItemList key={num}
         condition={step}
         index={move}
         onDeleteClick={onDeleteClick}
@@ -223,8 +338,8 @@ const Conditions = React.forwardRef((props, ref) => {
 
   return (
     <div className="conditions">
-      <button onClick={() => onAddClick()}>出現条件追加</button>
       {conditionItems}
+      <button onClick={() => onAddClick()}>出現条件追加</button>
     </div>
   )
 });
