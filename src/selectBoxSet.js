@@ -44,7 +44,8 @@ const SelectBoxBase = props => {
 
     // 未使用選択可能な場合は先頭にindex0の項目を追加する
     if(props.unuse) {
-      selectItems.unshift(<option key={0} value={0}>なし</option>)
+      const text = props.unuseText ? props.unuseText : 'なし'
+      selectItems.unshift(<option key={0} value={0}>{text}</option>)
     }
 
     return selectItems;
@@ -162,6 +163,41 @@ const MenuSelectBox = props => {
   )
 }
 
+// 効果音セレクトボックス
+const SeSelectBox = props => {
+
+  const dataset = React.useContext(Dataset);
+  const sounds = dataset.sounds;
+
+  return (
+    <SelectBoxBase
+      items={sounds}
+      digits={3}
+      unuseText={'停止'}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
+// BGMセレクトボックス
+const BgmSelectBox = props => {
+
+  const dataset = React.useContext(Dataset);
+  const musics = dataset.musics;
+
+  return (
+    <SelectBoxBase
+      items={musics}
+      digits={3}
+      unuseText={'停止'}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
+
 
 // マップイベントセレクトボックス
 const MapEventSelectBox = props => {
@@ -195,4 +231,4 @@ const CommonEventSelectBox = props => {
 
 
 export { simpleSelectItems, pairSelectItems, FlagSelectBox, VariableSelectBox, SlotSelectBox,
-  ItemSelectBox, MemberSelectBox, MenuSelectBox, MapEventSelectBox, CommonEventSelectBox}
+  ItemSelectBox, MemberSelectBox, MenuSelectBox, SeSelectBox, BgmSelectBox, MapEventSelectBox, CommonEventSelectBox}

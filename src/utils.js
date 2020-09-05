@@ -32,6 +32,14 @@ Utils.getDispName = function(data, id) {
   return this.addBracket(this.alignId(id, 3) + ':' + name);
 }
 
+Utils.getDispNameSound = function(data, id) {
+  if(!id) {
+    return '停止';
+  }
+  const name = this.getName(data, id);
+  return this.addBracket(this.alignId(id, 3) + ':' + name);
+}
+
 Utils.getName = function(data, id) {
   const item = data[id - 1];
   if(!item) {

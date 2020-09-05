@@ -326,7 +326,10 @@ const Editor = () => {
   const initDataset = () => {
     const datasetText = localStorage.getItem('dataset');
     if(datasetText == null) {
-      return {flags: ['flag1', 'flag2'],
+      return {
+        musics: [],
+        sounds: [],
+        flags: ['flag1', 'flag2'],
         variables: ['variable1', 'variable2'],
         slots: ['slot1', 'slot2'],
         members: [],
@@ -340,6 +343,8 @@ const Editor = () => {
   }
 
   const shiftDataset = (dataset) => {
+    if(dataset.musics) dataset.musics.shift();
+    if(dataset.sounds) dataset.sounds.shift();
     dataset.flags.shift();
     dataset.variables.shift();
     dataset.slots.shift();

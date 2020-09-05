@@ -1,6 +1,7 @@
 import React from 'react';
 import { simpleSelectItems, pairSelectItems, FlagSelectBox, 
-  VariableSelectBox, SlotSelectBox, ItemSelectBox, MenuSelectBox, 
+  VariableSelectBox, SlotSelectBox, ItemSelectBox, MemberSelectBox, MenuSelectBox, 
+  SeSelectBox, BgmSelectBox,
   MapEventSelectBox, CommonEventSelectBox } from './selectBoxSet'
 import { NumberEdit } from './editBoxSet'
 import { COMMAND, VARIABLERANGE } from './define';
@@ -309,7 +310,7 @@ const OperateSlot = props => {
   let slotId = type === 4 ? parameters[4] : 1;
   let [rand1, rand2] = type === 5 ? [parameters[4], parameters[5]] : [0, 0];
   let gameId = type === 6 ? parameters[4] : 0;
-  const gameList = ['所持金', 'パーティ人数'];
+  const gameList = ['所持金', 'パーティ生存人数','パーティ人数'];
   let itemId = type === 7 ? parameters[4] : 1;
 
   const onSlotChange = (e) => {
@@ -417,10 +418,11 @@ const OperateSlot = props => {
           onChange={(e) => onTypeChange(e)}
         />
         <font>文字列：</font>
-        <input
-          defaultValue={str}
+        <textarea cols="30" rows="10" defaultValue={str}
+          style={{ resize: 'none' }}
           onChange={(e) => onStrChange(e)}
-        />
+        >
+        </textarea>
       </div>
       <div>
         <input type="radio" name="type" value="2" defaultChecked={type === 2 ? 'checked' : ''}
@@ -894,6 +896,122 @@ const ChangeGold = props => {
 }
 
 
+// 回復
+const Recover = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 操作 0>パーティ 1>仲間全体 2>登録id 3>並び順
+  // 1: 登録id>メンバーid  並び順>並び番号
+  // 2: hp回復率
+  // 3: mp回復率
+  // 4: 状態回復優先度先頭
+  // 5: 状態回復優先度終端
+  const parametersRef = React.useRef(data || [0, 1, 100, 100, 0, 80]);
+  const parameters = parametersRef.current;
+  const type = parameters[0];
+  let memberId = parameters[1];
+  let orderId = type !== 3 ? 0: parameters[1];
+
+  const onTypeChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onMemberChange = (e) => {
+    memberId = parseInt(e.target.value);
+  }
+
+  const onValueFocusOff = (value) => {
+    orderId = value;
+  }
+
+  const onRecoverValueFocusOff = (value, n) => {
+    parameters[n] = value;
+  }
+
+  const onUpdate = () => {
+    // typeによりparamを決定する
+    parameters[1] = parameters[0] !== 3 ? memberId : orderId;
+    const command = {code: props.command.code, parameters: parameters};
+    props.onUpdate(command);
+  }
+  
+  return (
+    <CommandBase 
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={type === 0 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />パーティ
+        <input type="radio" name="type" value="1" defaultChecked={type === 1 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />仲間全体
+        <input type="radio" name="type" value="2" defaultChecked={type === 2 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />メンバーid
+        <input type="radio" name="type" value="3" defaultChecked={type === 3 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />並び指定
+      </div>
+      <div>
+        <font>登録id：</font>
+        <MemberSelectBox
+          selectValue={memberId}
+          onChange={(e) => onMemberChange(e)}
+        />
+      </div>
+      <div>
+        <NumberEdit
+          min={0}
+          max={10}
+          value={orderId}
+          onValueFocusOff={onValueFocusOff}
+        />
+        <font>番目</font>
+      </div>
+      <div>
+        <font>hp回復率：</font>
+        <NumberEdit
+          min={0}
+          max={100}
+          value={parameters[2]}
+          onValueFocusOff={(value) => onRecoverValueFocusOff(value, 2)}
+        />
+        <font>%</font>
+      </div>
+      <div>
+        <font>mp回復率：</font>
+        <NumberEdit
+          min={0}
+          max={100}
+          value={parameters[3]}
+          onValueFocusOff={(value) => onRecoverValueFocusOff(value, 3)}
+        />
+        <font>%</font>
+      </div>
+      <div>
+        <font>状態優先度範囲：</font>
+        <NumberEdit
+          min={0}
+          max={100}
+          value={parameters[4]}
+          onValueFocusOff={(value) => onRecoverValueFocusOff(value, 4)}
+        />
+        <font>～</font>
+        <NumberEdit
+          min={0}
+          max={100}
+          value={parameters[5]}
+          onValueFocusOff={(value) => onRecoverValueFocusOff(value, 5)}
+        />
+      </div>
+      
+    </CommandBase>
+  );
+}
+
+
 // タイル変更
 const ChangeTile = props => {
 
@@ -1278,33 +1396,99 @@ const Se = props => {
 
   const data = sliceParameters(props.command.parameters);
   // 0: 効果音Id
-  const parametersRef = React.useRef(data || [1]);
+  const parametersRef = React.useRef(data || [0]);
   const parameters = parametersRef.current;
 
-  const onValueFocusOff = (value) => {
-    parameters[0] = value;
+  const onChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
   }
 
   const onUpdate = () => {
-    const command = {code: props.command.code, parameters: parameters};
+    const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
   }
-  
+
   return (
-    <CommandBase 
+    <CommandBase
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
       <font>効果音Id：</font>
-      <NumberEdit
-        min={1}
-        max={1000}
-        value={parameters[0]}
-        onValueFocusOff={onValueFocusOff}
+      <SeSelectBox
+        selectValue={parameters[0]}
+        onChange={(e) => onChange(e)}
+        unuse={true}
       />
     </CommandBase>
   );
 }
+
+
+// BGM演奏
+const BgmPlay = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 効果音Id
+  const parametersRef = React.useRef(data || [0]);
+  const parameters = parametersRef.current;
+
+  const onChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>BGMId：</font>
+      <BgmSelectBox
+        selectValue={parameters[0]}
+        onChange={(e) => onChange(e)}
+        unuse={true}
+      />
+    </CommandBase>
+  );
+}
+
+
+// BGM割込
+const BgmInterrupt = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 効果音Id
+  const parametersRef = React.useRef(data || [0]);
+  const parameters = parametersRef.current;
+
+  const onChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>BGMId：</font>
+      <BgmSelectBox
+        selectValue={parameters[0]}
+        onChange={(e) => onChange(e)}
+        unuse={true}
+      />
+    </CommandBase>
+  );
+}
+
 
 // イベント起動
 const EventTrigger = props => {
@@ -1388,6 +1572,9 @@ const CommandEditor = props => {
       case COMMAND.CHANGEGOLD:
         return <ChangeGold
           {...props} />
+      case COMMAND.RECOVER:
+        return <Recover
+          {...props} />
       case COMMAND.CHANGETILE:
         return <ChangeTile
           {...props} />
@@ -1411,6 +1598,12 @@ const CommandEditor = props => {
           {...props} />
       case COMMAND.SE:
         return <Se
+          {...props} />
+      case COMMAND.BGMPLAY:
+        return <BgmPlay
+          {...props} />
+      case COMMAND.BGMINTERRUPT:
+        return <BgmInterrupt
           {...props} />
       case COMMAND.EVENTTRIGGER:
         return <EventTrigger

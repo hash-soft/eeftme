@@ -8,9 +8,12 @@ import Utils from './utils'
 const CommandItem = props => {
 
   const dataset = React.useContext(Dataset);
+  const musics = dataset.musics;
+  const sounds = dataset.sounds;
   const flags = dataset.flags;
   const variables = dataset.variables;
   const slots = dataset.slots;
+  const members = dataset.members;
   const items = dataset.items;
   const windowsets = dataset.windowsets;
   const mapEventsRef = React.useContext(MapEventsRef);
@@ -32,6 +35,10 @@ const CommandItem = props => {
     return Utils.getDispName(items, id);
   }
 
+  const dispMemberName = (id) => {
+    return Utils.getDispName(members, id);
+  }
+
   const dispMapEventName = (id) => {
     return Utils.getDispName(mapEventsRef.current, id);
   }
@@ -39,6 +46,15 @@ const CommandItem = props => {
   const dispCommonEventName = (id) => {
     return Utils.getDispName(commonEventsRef.current, id);
   }
+
+  const dispSeName = (id) => {
+    return Utils.getDispNameSound(sounds, id);
+  }
+
+  const dispBgmName = (id) => {
+    return Utils.getDispNameSound(musics, id);
+  }
+
 
   const listMessageContents = (text, nowait) => {
     const header = nowait === 1 ? '[無待機]' : '[待機]';
@@ -118,6 +134,8 @@ const CommandItem = props => {
       case 0:
         return '所持金';
       case 1:
+        return 'パーティ生存人数';
+      case 2:
         return 'パーティ人数';
       default:
         return '';
@@ -184,6 +202,26 @@ const CommandItem = props => {
       return '';
     }
   }
+
+  const listRecoverContents = (type, param, hprate, mprate, beginState, endState) => {
+    const typeText = _getRecoverTypeText(type, param);
+    return <td>{typeText}hp+={hprate}%, mp+={mprate}%, 状態-=優先{beginState}～{endState}</td>
+  }
+
+  const _getRecoverTypeText = (type, param) => {
+    switch(type) {
+      case 0:
+        return 'パーティ：';
+      case 1:
+        return '仲間全部：';
+      case 2:
+        return 'メンバーId：' + dispMemberName(param);
+      case 3:
+        return param + '番目：';
+      default:
+        return '???：';
+    }
+  }
   
   const listMapScriptContents = (id) => {
     return <td>{dispMapEventName(id)}</td>
@@ -217,7 +255,15 @@ const CommandItem = props => {
   }
 
   const listSeContents = (id) => {
-    return <td>id:{id}</td>
+    return <td>{dispSeName(id)}</td>
+  }
+
+  const listBgmPlay = (id) => {
+    return <td>{dispBgmName(id)}</td>
+  }
+
+  const listBgmInterrupt = (id) => {
+    return <td>{dispBgmName(id)}</td>
   }
 
   const listEventTriggerContents = (id) => {
@@ -303,6 +349,10 @@ const CommandItem = props => {
         title = '所持金の変更:';
         contents = listChangeGoldContents(...parameters);
         break;
+      case COMMAND.RECOVER:
+        title = '回復:';
+        contents = listRecoverContents(...parameters);
+        break;
       case COMMAND.MAPSCRIPT:
         title = 'マップスクリプト:';
         contents = listMapScriptContents(...parameters);
@@ -338,9 +388,23 @@ const CommandItem = props => {
         title = '効果音:';
         contents = listSeContents(...parameters);
         break;
+      case COMMAND.BGMPLAY:
+        title = 'BGM演奏:';
+        contents = listBgmPlay(...parameters);
+        break;
+      case COMMAND.BGMINTERRUPT:
+        title = 'BGM割込:';
+        contents = listBgmInterrupt(...parameters);
+        break;
       case COMMAND.EVENTTRIGGER:
         title = 'イベント起動:';
         contents = listEventTriggerContents(...parameters);
+        break;
+      case COMMAND.SCREENFADEOUT:
+        title = '画面のフェードアウト:';
+        break;
+      case COMMAND.SCREENFADEIN:
+        title = '画面のフェードイン:';
         break;
       default:
         title = '不明なコマンド';

@@ -31,6 +31,7 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.JUMP)}>ラベルジャンプ</button>
           <button onClick={() => props.closePopup(COMMAND.GAINITEM)}>道具を追加</button>
           <button onClick={() => props.closePopup(COMMAND.CHANGEGOLD)}>所持金変更</button>
+          <button onClick={() => props.closePopup(COMMAND.RECOVER)}>回復</button>
           <button onClick={() => props.closePopup(COMMAND.CHANGETILE)}>タイル変更</button>
           <button onClick={() => props.closePopup(COMMAND.SWAPTILE)}>タイル切替</button>
           <button onClick={() => props.closePopup(COMMAND.MOVE)}>場所移動</button>
@@ -40,7 +41,11 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.COMMONSCRIPT)}>コモンスクリプト</button>
           <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
           <button onClick={() => props.closePopup(COMMAND.SE)}>効果音</button>
+          <button onClick={() => props.closePopup(COMMAND.BGMPLAY)}>BGM演奏</button>
+          <button onClick={() => props.closePopup(COMMAND.BGMINTERRUPT)}>BGM割込</button>
           <button onClick={() => props.closePopup(COMMAND.EVENTTRIGGER)}>イベント起動</button>
+          <button onClick={() => props.closePopup(COMMAND.SCREENFADEOUT)}>画面のフェードアウト</button>
+          <button onClick={() => props.closePopup(COMMAND.SCREENFADEIN)}>画面のフェードイン</button>
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>
       </div>
