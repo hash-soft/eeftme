@@ -31,6 +31,7 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.JUMP)}>ラベルジャンプ</button>
           <button onClick={() => props.closePopup(COMMAND.GAINITEM)}>道具を追加</button>
           <button onClick={() => props.closePopup(COMMAND.CHANGEGOLD)}>所持金変更</button>
+          <button onClick={() => props.closePopup(COMMAND.CHANGEPARTY)}>パーティの変更</button>
           <button onClick={() => props.closePopup(COMMAND.RECOVER)}>回復</button>
           <button onClick={() => props.closePopup(COMMAND.CHANGETILE)}>タイル変更</button>
           <button onClick={() => props.closePopup(COMMAND.SWAPTILE)}>タイル切替</button>
@@ -46,6 +47,7 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.EVENTTRIGGER)}>イベント起動</button>
           <button onClick={() => props.closePopup(COMMAND.SCREENFADEOUT)}>画面のフェードアウト</button>
           <button onClick={() => props.closePopup(COMMAND.SCREENFADEIN)}>画面のフェードイン</button>
+          <button onClick={() => props.closePopup(COMMAND.COMMENT)}>コメント</button>
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>
       </div>

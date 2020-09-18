@@ -55,6 +55,8 @@ const LoadButton = (props) => {
       props.eventEditorRef.current.refreshEvents(json);
       props.eventFileNameRef.current.updateName(filename[0]);
     } else {
+      props.eventEditorRef.current.refreshEvents(json);
+      props.eventFileNameRef.current.updateName(filename[0]);
       mapEventsRef.current = json;
       props.mapNameRef.current = filename[0];
     }
@@ -67,6 +69,8 @@ const LoadButton = (props) => {
     json.shift();
     // モードが共通の時だけ更新
     if(props.modeRef.current === 1) {
+      commonEventsRef.current = json;
+      props.commonNameRef.current = filename[0];
       props.eventEditorRef.current.refreshEvents(json);
       props.eventFileNameRef.current.updateName(filename[0]);
     } else {
@@ -139,18 +143,8 @@ const SaveButton = (props) => {
     props.eventEditorRef.current.setEditEvent();
     // ダウンロード
     download(events);
-    /*const blob = new Blob([JSON.stringify(events, null, '  ')], {type: 'application/json'});
-    const link = document.createElement('a')
-    link.href = window.URL.createObjectURL(blob)
-    link.download = props.eventFileNameRef.current.name + '.json'
-    link.click();
-    window.URL.revokeObjectURL(link.href);*/
 
     saveData(editEvents, events);
-    // ローカルストレージに保存
-    /*const eventsText = JSON.stringify(events);
-    localStorage.setItem('events', eventsText);
-    localStorage.setItem('filename', props.eventFileNameRef.current.name);*/
   }
 
   return (
@@ -170,7 +164,10 @@ const FileButtons = (props) => {
     console.log('Buttons effect');
   });
 
+  // モードの変更
   const onModeChange = (e) => {
+    // 編集が反映されていないので保存
+    props.eventEditorRef.current.setEditEvent();
     switch(e.target.value) {
     case '0':
       modeRef.current = 0;

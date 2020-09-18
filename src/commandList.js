@@ -148,8 +148,8 @@ const CommandItem = props => {
   }
 
   const listGoodsContents = (parameters) => {
-    const goods = `[${parameters}]`;
-    return <td>{goods}</td>
+    const text = parameters.map(value => dispItemName(value)).join(',');
+    return <td>{text}</td>
   }
 
   const listCompareSlotContents = (id, code, type, param) => {
@@ -203,6 +203,11 @@ const CommandItem = props => {
     }
   }
 
+  const listChangePartyContents = (type, variableId) => {
+    const typeText = type === 0 ? '加える' : '外す';
+    return <td>{typeText}{dispVariableName(variableId)}</td>
+  }
+
   const listRecoverContents = (type, param, hprate, mprate, beginState, endState) => {
     const typeText = _getRecoverTypeText(type, param);
     return <td>{typeText}hp+={hprate}%, mp+={mprate}%, 状態-=優先{beginState}～{endState}</td>
@@ -223,12 +228,16 @@ const CommandItem = props => {
     }
   }
   
-  const listMapScriptContents = (id) => {
-    return <td>{dispMapEventName(id)}</td>
+  const listMapScriptContents = (type, id) => {
+    const typeText = type === 0 ? '直接：' : 'スロット：';
+    const idText = type === 0 ? dispMapEventName(id) : dispSlotName(id);
+    return <td>{typeText}{idText}</td>
   }
   
-  const listCommonScriptContents = (id) => {
-    return <td>{dispCommonEventName(id)}</td>
+  const listCommonScriptContents = (type, id) => {
+    const typeText = type === 0 ? '直接：' : 'スロット：';
+    const idText = type === 0 ? dispCommonEventName(id) : dispSlotName(id);
+    return <td>{typeText}{idText}</td>
   }
 
   const listChangeTileContents = (layerIndex, id, x, y) => {
@@ -268,6 +277,11 @@ const CommandItem = props => {
 
   const listEventTriggerContents = (id) => {
     return <td>id:{id}</td>
+  }
+
+  const listCommentContents = (text) => {
+    const message = <td style={{ color: 'lime', whiteSpace: 'pre-line' }}>{'#'}{text}</td>;
+    return message;
   }
 
   const viewCommand = () => {
@@ -349,6 +363,10 @@ const CommandItem = props => {
         title = '所持金の変更:';
         contents = listChangeGoldContents(...parameters);
         break;
+      case COMMAND.CHANGEPARTY:
+        title = 'パーティの変更:';
+        contents = listChangePartyContents(...parameters);
+        break;
       case COMMAND.RECOVER:
         title = '回復:';
         contents = listRecoverContents(...parameters);
@@ -406,16 +424,28 @@ const CommandItem = props => {
       case COMMAND.SCREENFADEIN:
         title = '画面のフェードイン:';
         break;
+      case COMMAND.COMMENT:
+        title = '';
+        contents = listCommentContents(...parameters);
+        break;
       default:
         title = '不明なコマンド';
     }
 
-    return (
-      <table style={{ marginLeft: props.nest * 15 + 'px' }}><tbody><tr>
-          <td style={{ color: 'gray'}}>★{title}</td>
+    if (props.command.code !== COMMAND.COMMENT) {
+      return (
+        <table style={{ marginLeft: props.nest * 15 + 'px' }}><tbody><tr>
+          <td style={{ color: 'gray' }}>★{title}</td>
           {contents}
         </tr></tbody></table>
-    )
+      )
+    } else {
+      return (
+        <table style={{ marginLeft: props.nest * 15 + 'px' }}><tbody><tr>
+          {contents}
+        </tr></tbody></table>
+      )
+    }
   }
 
   // 編集ボタン
