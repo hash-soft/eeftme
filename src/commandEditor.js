@@ -2,7 +2,7 @@ import React from 'react';
 import {
   simpleSelectItems, pairSelectItems, FlagSelectBox,
   VariableSelectBox, SlotSelectBox, ItemSelectBox, MemberSelectBox, MenuSelectBox,
-  SeSelectBox, BgmSelectBox,
+  MapSelectBox, PositionSelectBox, WarpSelectBox, SeSelectBox, BgmSelectBox,
   MapEventSelectBox, CommonEventSelectBox
 } from './selectBoxSet'
 import { NumberEdit } from './editBoxSet'
@@ -1177,32 +1177,43 @@ const SwapTile = props => {
 const Move = props => {
 
   const data = sliceParameters(props.command.parameters);
-  // 0: 0 同一マップ 1 異なるマップ
-  // 1: マップ名
+  // 0: 0 直接指定 1 スロット指定
+  // 1: マップId
   // 2: x座標
   // 3: y座標
   // 4: 方向
-  // 5: パターン初期化するか
-  // 6: 移動音 0:なし 1:あり
-  const parametersRef = React.useRef(data || [0, '', 0, 0, -1, 1, 1]);
+  const parametersRef = React.useRef(data || [0, 1, 0, 0, -1]);
   const parameters = parametersRef.current;
-  const x = parameters[2];
-  const y = parameters[3];
+  let [mapId, mapIdSlot] = [parameters[1], parameters[1]];
+  let [x, xSlot] = [parameters[2], parameters[2]];
+  let [y, ySlot] = [parameters[3], parameters[3]];
 
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
   }
 
-  const onMapNameChange = (e) => {
-    parameters[1] = e.target.value;
+  const onMapIdChange = (e) => {
+    mapId = parseInt(e.target.value);
   }
 
   const onXValueFocusOff = (value) => {
-    parameters[2] = value;
+    x = value;
   }
 
   const onYValueFocusOff = (value) => {
-    parameters[3] = value;
+    y = value;
+  }
+
+  const onMapIdSlotChange = (e) => {
+    mapIdSlot = parseInt(e.target.value);
+  }
+
+  const onXSlotChange = (e) => {
+    xSlot = parseInt(e.target.value);
+  }
+
+  const onYSlotChange = (e) => {
+    xSlot = parseInt(e.target.value);
   }
 
   const directionList = [{ value: -1, text: 'そのまま' }, { value: 0, text: '下' },
@@ -1212,15 +1223,17 @@ const Move = props => {
     parameters[4] = parseInt(e.target.value);
   }
 
-  const onPatternChange = (e) => {
-    parameters[5] = parseInt(e.target.value);
-  }
-
-  const onSoundChange = (e) => {
-    parameters[6] = parseInt(e.target.value);
-  }
-
   const onUpdate = () => {
+    if(parameters[0] === 0) {
+      parameters[1] = mapId;
+      parameters[2] = x;
+      parameters[3] = y;
+    } else {
+      parameters[1] = mapIdSlot;
+      parameters[2] = xSlot;
+      parameters[3] = ySlot;
+    }
+    
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
   }
@@ -1231,17 +1244,17 @@ const Move = props => {
       onCancel={props.onCancel}
     >
       <div>
-        <input type="radio" name="movetype" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
-        />同じマップ
-      <input type="radio" name="movetype" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+        />直接
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
-        />別のマップ
+        />スロット
       </div>
-      <font>マップ名：</font>
-      <input
-        defaultValue={parameters[1]}
-        onChange={(e) => onMapNameChange(e)}
+      <font>マップId：</font>
+      <MapSelectBox
+        selectValue={mapId}
+        onChange={(e) => onMapIdChange(e)}
       />
       <div>
         <font>X：</font>
@@ -1259,29 +1272,213 @@ const Move = props => {
           onValueFocusOff={onYValueFocusOff}
         />
       </div>
+      <font>マップId：</font>
+      <SlotSelectBox
+        selectValue={mapIdSlot}
+        onChange={(e) => onMapIdSlotChange(e)}
+      />
+      <div>
+        <font>X：</font>
+        <SlotSelectBox
+          selectValue={xSlot}
+          onChange={(e) => onXSlotChange(e)}
+        />
+        <font>Y：</font>
+        <SlotSelectBox
+          selectValue={ySlot}
+          onChange={(e) => onYSlotChange(e)}
+      />
+      </div>
       <div>
         <font>方向：</font>
         <select defaultValue={parameters[4]} onChange={(e) => onDirectionChange(e)}>
           {pairSelectItems(directionList)}
         </select>
       </div>
+
+    </CommandBase>
+  );
+}
+
+// 位置リスト移動
+const MoveFromPosition = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 0 直接指定 1 スロット指定
+  // 1: 位置Id
+  // 2: 方向
+  const parametersRef = React.useRef(data || [0, 1, -1]);
+  const parameters = parametersRef.current;
+  let [positionId, positionIdSlot] = [parameters[1], parameters[1]];
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onPositionIdChange = (e) => {
+    positionId = parseInt(e.target.value);
+  }
+
+  const onPositionIdSlotChange = (e) => {
+    positionIdSlot = parseInt(e.target.value);
+  }
+
+  const directionList = [{ value: -1, text: 'そのまま' }, { value: 0, text: '下' },
+  { value: 1, text: '右' }, { value: 2, text: '左' }, { value: 3, text: '上' }]
+
+  const onDirectionChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    if(parameters[0] === 0) {
+      parameters[1] = positionId;
+    } else {
+      parameters[1] = positionIdSlot;
+    }
+    
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
       <div>
-        <font>パターン：</font>
-        <input type="radio" name="pattern" value="0" defaultChecked={parameters[5] === 0 ? 'checked' : ''}
-          onChange={(e) => onPatternChange(e)}
-        />そのまま
-      <input type="radio" name="pattern" value="1" defaultChecked={parameters[5] === 1 ? 'checked' : ''}
-          onChange={(e) => onPatternChange(e)}
-        />初期化
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />直接
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />スロット
       </div>
+      <font>位置Id：</font>
+      <PositionSelectBox
+        selectValue={positionId}
+        onChange={(e) => onPositionIdChange(e)}
+      />
+      <font>位置Id：</font>
+      <SlotSelectBox
+        selectValue={positionIdSlot}
+        onChange={(e) => onPositionIdSlotChange(e)}
+      />
       <div>
-        <font>移動音：</font>
-        <input type="radio" name="sound" value="0" defaultChecked={parameters[5] === 0 ? 'checked' : ''}
-          onChange={(e) => onSoundChange(e)}
-        />なし
-      <input type="radio" name="sound" value="1" defaultChecked={parameters[5] === 1 ? 'checked' : ''}
-          onChange={(e) => onSoundChange(e)}
-        />あり
+        <font>方向：</font>
+        <select defaultValue={parameters[4]} onChange={(e) => onDirectionChange(e)}>
+          {pairSelectItems(directionList)}
+        </select>
+      </div>
+
+    </CommandBase>
+  );
+}
+
+// ワープ
+const Warp = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 0 直接指定 1 スロット指定
+  // 1: ワープId
+  // 2: 方向
+  const parametersRef = React.useRef(data || [0, 1, 0]);
+  const parameters = parametersRef.current;
+  let [warpId, warpIdSlot] = [parameters[1], parameters[1]];
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onPositionIdChange = (e) => {
+    warpId = parseInt(e.target.value);
+  }
+
+  const onPositionIdSlotChange = (e) => {
+    warpIdSlot = parseInt(e.target.value);
+  }
+
+  const directionList = [{ value: -1, text: 'そのまま' }, { value: 0, text: '下' },
+  { value: 1, text: '右' }, { value: 2, text: '左' }, { value: 3, text: '上' }]
+
+  const onDirectionChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    if(parameters[0] === 0) {
+      parameters[1] = warpId;
+    } else {
+      parameters[1] = warpIdSlot;
+    }
+    
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />直接
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />スロット
+      </div>
+      <font>ワープId：</font>
+      <WarpSelectBox
+        selectValue={warpId}
+        onChange={(e) => onPositionIdChange(e)}
+      />
+      <font>ワープId：</font>
+      <SlotSelectBox
+        selectValue={warpIdSlot}
+        onChange={(e) => onPositionIdSlotChange(e)}
+      />
+      <div>
+        <font>方向：</font>
+        <select defaultValue={parameters[4]} onChange={(e) => onDirectionChange(e)}>
+          {pairSelectItems(directionList)}
+        </select>
+      </div>
+
+    </CommandBase>
+  );
+}
+
+// スクロール
+const Scroll = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 0 固定 1 固定解除
+  const parametersRef = React.useRef(data || [0]);
+  const parameters = parametersRef.current;
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />固定
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />固定解除
       </div>
 
     </CommandBase>
@@ -1717,6 +1914,15 @@ const CommandEditor = props => {
           {...props} />
       case COMMAND.MOVE:
         return <Move
+          {...props} />
+      case COMMAND.MOVEFROMPOSITION:
+        return <MoveFromPosition
+          {...props} />
+      case COMMAND.WARP:
+        return <Warp
+          {...props} />
+      case COMMAND.SCROLL:
+        return <Scroll
           {...props} />
       case COMMAND.MOVEROUTE:
         return <MoveRoute

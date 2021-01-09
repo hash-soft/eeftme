@@ -163,6 +163,52 @@ const MenuSelectBox = props => {
   )
 }
 
+// マップセレクトボックス
+const MapSelectBox = props => {
+
+  const dataset = React.useContext(Dataset);
+  const mapList = dataset.mapList;
+
+  return (
+    <SelectBoxBase
+      items={mapList}
+      digits={3}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
+// 位置セレクトボックス
+const PositionSelectBox = props => {
+
+  const positions = React.useContext(Dataset).positions;
+
+  return (
+    <SelectBoxBase
+      items={positions}
+      digits={3}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
+// ワープセレクトボックス
+const WarpSelectBox = props => {
+
+  const warpPlaces = React.useContext(Dataset).warpPlaces;
+
+  return (
+    <SelectBoxBase
+      items={warpPlaces}
+      digits={3}
+      {...props}
+    >
+    </SelectBoxBase>
+  )
+}
+
 // 効果音セレクトボックス
 const SeSelectBox = props => {
 
@@ -231,4 +277,5 @@ const CommonEventSelectBox = props => {
 
 
 export { simpleSelectItems, pairSelectItems, FlagSelectBox, VariableSelectBox, SlotSelectBox,
-  ItemSelectBox, MemberSelectBox, MenuSelectBox, SeSelectBox, BgmSelectBox, MapEventSelectBox, CommonEventSelectBox}
+  ItemSelectBox, MemberSelectBox, MenuSelectBox, MapSelectBox, PositionSelectBox, WarpSelectBox,
+  SeSelectBox, BgmSelectBox, MapEventSelectBox, CommonEventSelectBox}

@@ -331,7 +331,10 @@ const Editor = () => {
         slots: ['slot1', 'slot2'],
         members: [],
         items: [],
-        windowsets: []
+        windowsets: [],
+        mapList:[],
+        positions:[],
+        warpPlaces:[]
       }
     }
     const dataset = JSON.parse(datasetText);
@@ -348,6 +351,9 @@ const Editor = () => {
     dataset.members.shift();
     if(dataset.items) dataset.items.shift();
     dataset.windowsets.shift();
+    if(dataset.mapList) dataset.mapList.shift();
+    if(dataset.positions) dataset.positions.shift();
+    dataset.warpPlaces?.shift();
   }
 
   const eventsRef = React.useRef(initEvents());

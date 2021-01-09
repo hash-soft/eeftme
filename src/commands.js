@@ -17,6 +17,7 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.MESSAGEOUTWAIT)}>文章閉無待機解除</button>
           <button onClick={() => props.closePopup(COMMAND.MESSAGECLOSEWAIT)}>文章閉じ待機</button>
           <button onClick={() => props.closePopup(COMMAND.EMBEDDED)}>組み込みメニュー</button>
+          <button onClick={() => props.closePopup(COMMAND.ENDEMBEDDED)}>組み込みメニュー終了</button>
           <button onClick={() => props.closePopup(COMMAND.FLAG)}>フラグの処理</button>
           <button onClick={() => props.closePopup(COMMAND.VARIABLE)}>変数の処理</button>
           <button onClick={() => props.closePopup(COMMAND.OPERATESLOT)}>スロット演算</button>
@@ -36,6 +37,10 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.CHANGETILE)}>タイル変更</button>
           <button onClick={() => props.closePopup(COMMAND.SWAPTILE)}>タイル切替</button>
           <button onClick={() => props.closePopup(COMMAND.MOVE)}>場所移動</button>
+          <button onClick={() => props.closePopup(COMMAND.MOVEFROMPOSITION)}>位置リスト移動</button>
+          <button onClick={() => props.closePopup(COMMAND.WARP)}>ワープ</button>
+          <button onClick={() => props.closePopup(COMMAND.LOCATION)}>位置設定</button>
+          <button onClick={() => props.closePopup(COMMAND.SCROLL)}>マップスクロール</button>
           <button onClick={() => props.closePopup(COMMAND.MOVEROUTE)}>移動ルート</button>
           <button onClick={() => props.closePopup(COMMAND.MOVEROUTEWAIT)}>移動ルート待機</button>
           <button onClick={() => props.closePopup(COMMAND.MAPSCRIPT)}>マップスクリプト</button>

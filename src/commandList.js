@@ -16,6 +16,9 @@ const CommandItem = props => {
   const members = dataset.members;
   const items = dataset.items;
   const windowsets = dataset.windowsets;
+  const mapList = dataset.mapList;
+  const positions = dataset.positions;
+  const warpPlaces = dataset.warpPlaces;
   const mapEventsRef = React.useContext(MapEventsRef);
   const commonEventsRef = React.useContext(CommonEventsRef);
 
@@ -55,6 +58,17 @@ const CommandItem = props => {
     return Utils.getDispNameSound(musics, id);
   }
 
+  const dispMapName = (id) => {
+    return Utils.getDispName(mapList, id);
+  }
+
+  const dispPositionName = (id) => {
+    return Utils.getDispName(positions, id);
+  }
+
+  const dispWarpName = (id) => {
+    return Utils.getDispName(warpPlaces, id);
+  }
 
   const listMessageContents = (text, nowait) => {
     const header = nowait === 1 ? '[無待機]' : '[待機]';
@@ -248,8 +262,36 @@ const CommandItem = props => {
     return <td>{type === 0 ? '戻す' : '置き換える'}(レイヤー={layerIndex})</td>
   }
 
-  const listMoveContents = (type, name, x, y, direction, pattern, sound) => {
-    return <td>{type === 0 ? '同じマップ' : name}(X={x},Y={y},方向={direction},パターン={pattern},移動音={sound})</td>
+  const listMoveContents = (type, mapId, x, y, direction) => {
+    const [typeText, mapIdText, xText, yText] = _getMoveTypeText(type, mapId, x, y);
+    return <td>{typeText}(map:{mapIdText},X:{xText},Y:{yText},方向:{direction})</td>
+  }
+
+  const _getMoveTypeText = (type, mapId, x, y) =>{
+    if (type === 0) {
+      return ['直接', dispMapName(mapId), x, y];
+    } else {
+      return ['スロット', dispSlotName(mapId), dispSlotName(x), dispSlotName(y)];
+    }
+  }
+
+  const listMoveFromPositionContents = (type, positionId, direction) => {
+    const [typeText, positionIdText] = type === 0 ? 
+      ['直接', dispPositionName(positionId)] : 
+      ['スロット', dispSlotName(positionId)];
+    return <td>{typeText}(position:{positionIdText},方向:{direction})</td>
+  }
+
+  const listWarpContents = (type, warpId, direction) => {
+    const [typeText, warpIdText] = type === 0 ? 
+      ['直接', dispWarpName(warpId)] : 
+      ['スロット', dispSlotName(warpId)];
+    return <td>{typeText}(position:{warpIdText},方向:{direction})</td>
+  }
+
+  const listScrollContents = (type) => {
+    const typeText = type === 0 ? '固定' : '固定解除';
+    return <td>{typeText}</td>
   }
 
   const listMoveRouteContents = (target, type, routeId) => {
@@ -310,6 +352,9 @@ const CommandItem = props => {
       case COMMAND.EMBEDDED:
         title = '組み込みメニュー';
         contents = listEmbeddedContents(...parameters);
+        break;
+      case COMMAND.ENDEMBEDDED:
+        title = '組み込みメニュー終了';
         break;
       case COMMAND.FLAG:
         title = 'フラグ:';
@@ -390,6 +435,18 @@ const CommandItem = props => {
       case COMMAND.MOVE:
         title = '場所移動:';
         contents = listMoveContents(...parameters);
+        break;
+      case COMMAND.MOVEFROMPOSITION:
+        title = '位置リスト移動:';
+        contents = listMoveFromPositionContents(...parameters);
+        break;
+      case COMMAND.WARP:
+        title = 'ワープ:';
+        contents = listWarpContents(...parameters);
+        break;
+      case COMMAND.SCROLL:
+        title = 'スクロールの操作:';
+        contents = listScrollContents(...parameters);
         break;
       case COMMAND.MOVEROUTE:
         title = '移動ルート:';
