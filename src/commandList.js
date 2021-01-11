@@ -264,7 +264,7 @@ const CommandItem = props => {
 
   const listMoveContents = (type, mapId, x, y, direction) => {
     const [typeText, mapIdText, xText, yText] = _getMoveTypeText(type, mapId, x, y);
-    return <td>{typeText}(map:{mapIdText},X:{xText},Y:{yText},方向:{direction})</td>
+    return <td>{typeText}(map:{mapIdText},X:{xText},Y:{yText}),方向:{direction}</td>
   }
 
   const _getMoveTypeText = (type, mapId, x, y) =>{
@@ -279,14 +279,41 @@ const CommandItem = props => {
     const [typeText, positionIdText] = type === 0 ? 
       ['直接', dispPositionName(positionId)] : 
       ['スロット', dispSlotName(positionId)];
-    return <td>{typeText}(position:{positionIdText},方向:{direction})</td>
+    return <td>{typeText}(位置:{positionIdText}),方向:{direction}</td>
   }
 
   const listWarpContents = (type, warpId, direction) => {
-    const [typeText, warpIdText] = type === 0 ? 
-      ['直接', dispWarpName(warpId)] : 
-      ['スロット', dispSlotName(warpId)];
-    return <td>{typeText}(position:{warpIdText},方向:{direction})</td>
+    const [typeText, warpIdText] = (() => {
+      switch (type) {
+        case 0:
+          return ['直接', dispWarpName(warpId)];
+        case 1:
+          return ['スロット', dispSlotName(warpId)];
+        case 2:
+          return ['アドレス', dispSlotName(warpId)];
+        default:
+          return ['???', ''];
+      }
+    })();
+    return <td>{typeText}(行先:{warpIdText}),方向:{direction}</td>
+  }
+
+  const listMoveSettingsContents = (type, value) => {
+    const typeText = _getMoveSettingsText(type, value);
+    return <td>{typeText}</td>
+  }
+
+  const _getMoveSettingsText = (type, value) => {
+    switch(type) {
+      case 0:
+        return '[フェード]' + (value === 0 ? 'なし' : 'あり');
+      case 1:
+        return '[中央からのずれを反映]' + (value === 0 ? 'しない' : 'する');
+      case 2:
+        return '[隊列]' + (value === 0 ? '集合' : '一列');
+      default:
+        return '???';
+    }
   }
 
   const listScrollContents = (type) => {
@@ -299,6 +326,11 @@ const CommandItem = props => {
       routeId = 1;
     }
     return <td>対象{target} ({type === 0 ? '共通' : 'マップ'},ルートId={routeId})</td>
+  }
+
+  const listFollowerControlContents = (type) => {
+    const typeText = type === 0 ? '集合' : '一列';
+    return <td>{typeText}</td>
   }
 
   const listWaitContents = (frame) => {
@@ -444,6 +476,10 @@ const CommandItem = props => {
         title = 'ワープ:';
         contents = listWarpContents(...parameters);
         break;
+      case COMMAND.MOVESETTINGS:
+        title = '移動の設定:';
+        contents = listMoveSettingsContents(...parameters);
+        break;
       case COMMAND.SCROLL:
         title = 'スクロールの操作:';
         contents = listScrollContents(...parameters);
@@ -454,6 +490,10 @@ const CommandItem = props => {
         break;
       case COMMAND.MOVEROUTEWAIT:
         title = '移動ルート待機:';
+        break;
+      case COMMAND.FOLLOWERCONTROL:
+        title = '隊列の操作:';
+        contents = listFollowerControlContents(...parameters);
         break;
       case COMMAND.WAIT:
         title = '待機:';

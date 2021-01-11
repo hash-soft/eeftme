@@ -1366,7 +1366,7 @@ const MoveFromPosition = props => {
       />
       <div>
         <font>方向：</font>
-        <select defaultValue={parameters[4]} onChange={(e) => onDirectionChange(e)}>
+        <select defaultValue={parameters[2]} onChange={(e) => onDirectionChange(e)}>
           {pairSelectItems(directionList)}
         </select>
       </div>
@@ -1379,12 +1379,12 @@ const MoveFromPosition = props => {
 const Warp = props => {
 
   const data = sliceParameters(props.command.parameters);
-  // 0: 0 直接指定 1 スロット指定
+  // 0: 0 直接指定 1 スロット指定 2 アドレスインデックス指定
   // 1: ワープId
   // 2: 方向
   const parametersRef = React.useRef(data || [0, 1, 0]);
   const parameters = parametersRef.current;
-  let [warpId, warpIdSlot] = [parameters[1], parameters[1]];
+  let [warpId, warpIdSlot, addressIdSlot] = [parameters[1], parameters[1], parameters[1]];
 
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
@@ -1398,6 +1398,10 @@ const Warp = props => {
     warpIdSlot = parseInt(e.target.value);
   }
 
+  const onAddressIdSlotChange = (e) => {
+    addressIdSlot = parseInt(e.target.value);
+  }
+
   const directionList = [{ value: -1, text: 'そのまま' }, { value: 0, text: '下' },
   { value: 1, text: '右' }, { value: 2, text: '左' }, { value: 3, text: '上' }]
 
@@ -1406,11 +1410,8 @@ const Warp = props => {
   }
 
   const onUpdate = () => {
-    if(parameters[0] === 0) {
-      parameters[1] = warpId;
-    } else {
-      parameters[1] = warpIdSlot;
-    }
+    const values = [warpId, warpIdSlot, addressIdSlot];
+    parameters[1] = values[parameters[0]];
     
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
@@ -1424,28 +1425,113 @@ const Warp = props => {
       <div>
         <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
-        />直接
-      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
-          onChange={(e) => onRadioChange(e)}
-        />スロット
+        />
+        <font>直接ワープId：</font>
+        <WarpSelectBox
+          selectValue={warpId}
+          onChange={(e) => onPositionIdChange(e)}
+        />
       </div>
-      <font>ワープId：</font>
-      <WarpSelectBox
-        selectValue={warpId}
-        onChange={(e) => onPositionIdChange(e)}
-      />
-      <font>ワープId：</font>
-      <SlotSelectBox
-        selectValue={warpIdSlot}
-        onChange={(e) => onPositionIdSlotChange(e)}
-      />
+      <div>
+        <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        <font>スロットワープId：</font>
+        <SlotSelectBox
+          selectValue={warpIdSlot}
+          onChange={(e) => onPositionIdSlotChange(e)}
+        />
+      </div>
+      <div>
+        <input type="radio" name="type" value="2" defaultChecked={parameters[0] === 2 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        <font>アドレスId：</font>
+        <SlotSelectBox
+          selectValue={addressIdSlot}
+          onChange={(e) => onAddressIdSlotChange(e)}
+        />
+      </div>
       <div>
         <font>方向：</font>
-        <select defaultValue={parameters[4]} onChange={(e) => onDirectionChange(e)}>
+        <select defaultValue={parameters[2]} onChange={(e) => onDirectionChange(e)}>
           {pairSelectItems(directionList)}
         </select>
       </div>
 
+    </CommandBase>
+  );
+}
+
+// 移動の設定
+const MoveSettings = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: タイプ
+  // 1: 値
+  const parametersRef = React.useRef(data || [0, 1]);
+  const parameters = parametersRef.current;
+  let fade = parameters[1];
+  let adjust = parameters[1];
+  let follower = parameters[1];
+
+  const fadeList = [{ value: 0, text: 'なし' }, { value: 1, text: 'あり' }];
+  const adjustList = [{ value: 0, text: 'しない' }, { value: 1, text: 'する' }];
+  const followerList = [{ value: 0, text: '集合' }, { value: 1, text: '一列' }];
+ 
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onFadeChange = (e) => {
+    fade = parseInt(e.target.value);
+  }
+
+  const onAdjustChange = (e) => {
+    adjust = parseInt(e.target.value);
+  }
+
+  const onFollowerChange = (e) => {
+    follower = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const values = [fade, adjust, follower];
+    parameters[1] = values[parameters[0]];
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />フェード
+        <select defaultValue={fade} onChange={(e) => onFadeChange(e)}>
+          {pairSelectItems(fadeList)}
+        </select>
+      </div>
+      <div>
+        <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />中央からのずれを反映
+        <select defaultValue={adjust} onChange={(e) => onAdjustChange(e)}>
+          {pairSelectItems(adjustList)}
+        </select>
+      </div>
+      <div>
+        <input type="radio" name="type" value="2" defaultChecked={parameters[0] === 2 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />隊列
+        <select defaultValue={follower} onChange={(e) => onFollowerChange(e)}>
+          {pairSelectItems(followerList)}
+        </select>
+      </div>
     </CommandBase>
   );
 }
@@ -1540,6 +1626,40 @@ const MoveRoute = props => {
   );
 }
 
+// 隊列の操作
+const FollowerControl = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 0 集合 1 一列
+  const parametersRef = React.useRef(data || [0]);
+  const parameters = parametersRef.current;
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />集合
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />一列
+      </div>
+
+    </CommandBase>
+  );
+}
 
 // マップスクリプト
 const MapScript = props => {
@@ -1921,11 +2041,17 @@ const CommandEditor = props => {
       case COMMAND.WARP:
         return <Warp
           {...props} />
+      case COMMAND.MOVESETTINGS:
+        return <MoveSettings
+          {...props} />
       case COMMAND.SCROLL:
         return <Scroll
           {...props} />
       case COMMAND.MOVEROUTE:
         return <MoveRoute
+          {...props} />
+      case COMMAND.FOLLOWERCONTROL:
+        return <FollowerControl
           {...props} />
       case COMMAND.MAPSCRIPT:
         return <MapScript

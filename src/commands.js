@@ -39,10 +39,12 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.MOVE)}>場所移動</button>
           <button onClick={() => props.closePopup(COMMAND.MOVEFROMPOSITION)}>位置リスト移動</button>
           <button onClick={() => props.closePopup(COMMAND.WARP)}>ワープ</button>
-          <button onClick={() => props.closePopup(COMMAND.LOCATION)}>位置設定</button>
+          <button onClick={() => props.closePopup(COMMAND.LOCATION)}>キャラクター位置設定</button>
+          <button onClick={() => props.closePopup(COMMAND.MOVESETTINGS)}>移動の設定</button>
           <button onClick={() => props.closePopup(COMMAND.SCROLL)}>マップスクロール</button>
           <button onClick={() => props.closePopup(COMMAND.MOVEROUTE)}>移動ルート</button>
           <button onClick={() => props.closePopup(COMMAND.MOVEROUTEWAIT)}>移動ルート待機</button>
+          <button onClick={() => props.closePopup(COMMAND.FOLLOWERCONTROL)}>隊列の操作</button>
           <button onClick={() => props.closePopup(COMMAND.MAPSCRIPT)}>マップスクリプト</button>
           <button onClick={() => props.closePopup(COMMAND.COMMONSCRIPT)}>コモンスクリプト</button>
           <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
