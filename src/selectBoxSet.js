@@ -52,12 +52,10 @@ const SelectBoxBase = props => {
   }
 
   return (
-    <div>
-      {props.children}
       <select defaultValue={props.selectValue} onChange={(e) => props.onChange(e)}>
         {selectItems()}
       </select>
-    </div>
+
   );
 }
 

@@ -14,13 +14,15 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.MESSAGE)}>文章の表示</button>
           <button onClick={() => props.closePopup(COMMAND.MENU)}>メニュー表示</button>
           <button onClick={() => props.closePopup(COMMAND.ENDMENU)}>メニュー終了</button>
-          <button onClick={() => props.closePopup(COMMAND.MESSAGEOUTWAIT)}>文章閉無待機解除</button>
+          <button onClick={() => props.closePopup(COMMAND.MESSAGESETTINGS)}>文章の設定</button>
           <button onClick={() => props.closePopup(COMMAND.MESSAGECLOSEWAIT)}>文章閉じ待機</button>
           <button onClick={() => props.closePopup(COMMAND.EMBEDDED)}>組み込みメニュー</button>
           <button onClick={() => props.closePopup(COMMAND.ENDEMBEDDED)}>組み込みメニュー終了</button>
           <button onClick={() => props.closePopup(COMMAND.FLAG)}>フラグの処理</button>
           <button onClick={() => props.closePopup(COMMAND.VARIABLE)}>変数の処理</button>
           <button onClick={() => props.closePopup(COMMAND.OPERATESLOT)}>スロット演算</button>
+          <button onClick={() => props.closePopup(COMMAND.ASSIGNFIXDATA)}>固定データ取得</button>
+          <button onClick={() => props.closePopup(COMMAND.ASSIGNGAMEDATA)}>ゲームデータ取得</button>
           <button onClick={() => props.closePopup(COMMAND.ITEMSPACE)}>道具追加可能判定</button>
           <button onClick={() => props.closePopup(COMMAND.JUDGETRIGGER)}>起動起因判定</button>
           <button onClick={() => props.closePopup(COMMAND.GOODS)}>商品の設定</button>

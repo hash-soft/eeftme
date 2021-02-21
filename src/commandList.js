@@ -70,8 +70,8 @@ const CommandItem = props => {
     return Utils.getDispName(warpPlaces, id);
   }
 
-  const listMessageContents = (text, nowait) => {
-    const header = nowait === 1 ? '[無待機]' : '[待機]';
+  const listMessageContents = (text, type) => {
+    const header = ['[次段落]','[次行]','[基準行]'][type];
     const message = <td style={{ whiteSpace: 'pre-line' }}>{header}{'\n'}{text}</td>;
     
     return message;
@@ -85,6 +85,25 @@ const CommandItem = props => {
   const listEndMenuContents = (menuId) => {
     const menuName = Utils.getDispName(windowsets, menuId);
     return <td>{menuName}</td>
+  }
+
+  const listMessageSettingsContents = (type, value) => {
+    const settingText = ['[待機]',
+      '[自動待機速度]', '自動待機する',
+      '自動待機しない', '一時停止', '[メッセージ音]', '[字下げ]'][type];
+    const valueText = (() => {
+      switch(type) {
+        case 0:
+        case 1:
+        case 6:
+          return value;
+        case 5:
+          return dispSeName(value);
+        default:
+          return '';
+      }
+    })();
+    return <td>{settingText}{valueText}</td>;
   }
 
   const listEmbeddedContents = (menuId, slotId) => {
@@ -110,13 +129,13 @@ const CommandItem = props => {
   }
 
   // type:代入タイプ
-  //  0:直値 1:文字列 2:json 3:変数 4:スロット 5:乱数 6:ゲームデータ 7:道具
+  //  0:直値 1:文字列 2:json 3:変数 4:スロット 5:乱数 6:ゲームデータ
   // param:代入タイプによって変わるパラメータ
   const listOperateSlotContents = (beginId, endId, code, type, param1, param2) => {
     const slotText = dispSlotName(beginId, endId);
     const codeText = _getOpecodeText(code);
     const paramText = _getOperateSlotParamText(type, param1, param2);
-    const checkText = code === 0 ? '' : [1,2,7].includes(type) ? '★不正！' : '';
+    const checkText = code === 0 ? '' : [1].includes(type) ? '★不正！' : '';
     return <td>{slotText}{codeText}{paramText}{checkText}</td>
   }
 
@@ -127,7 +146,7 @@ const CommandItem = props => {
       case 1:
         return param1;
       case 2:
-        return 'json:' + param1;
+        return 'フラグ:' + dispFlagName(param1);;
       case 3:
         return '変数:' + dispVariableName(param1);
       case 4:
@@ -136,8 +155,6 @@ const CommandItem = props => {
         return param1 + '～' + param2;
       case 6:
         return _getOperateSlotGameDataText(param1);
-      case 7:
-        return '道具:' + dispItemName(param1);
       default:
         return '';
     }
@@ -159,6 +176,54 @@ const CommandItem = props => {
   const _getOpecodeText = (code) => {
     const text = ['=', '+=', '-=', '*=', '/=', '%='];
     return text[code];
+  }
+
+  /**
+   * 固定データ取得
+   * @param {*} slotId 
+   * @param {*} type 
+   * @param {*} param1 
+   * @param {*} param2 
+   */
+  const listAssignFixDataContents = (slotId, type, param1, param2) => {
+    const slotText = dispSlotName(slotId);
+    const typeText = ['道具'][type];
+    const paramText = _getAssignFixDataParamText(type, param1, param2);
+    return <td>{slotText} = {typeText}:{paramText}</td>
+  }
+
+  const _getAssignFixDataParamText = (type, param1, param2) => {
+    switch(type) {
+      case 0:
+        return `${dispItemName(param1)}[${param2}]`;
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * ゲームデータ取得
+   * @param {*} slotId 格納するスロットId
+   * @param {*} type 種類
+   * @param {*} param1 
+   * @param {*} param2 
+   */
+  const listAssignGameDataContents = (slotId, type, param1, param2) => {
+    const slotText = dispSlotName(slotId);
+    const typeText = ['表示メンバー', 'パーティ'][type];
+    const paramText = _getAssignGameDataParamText(type, param1, param2);
+    return <td>{slotText} = {typeText}:{paramText}</td>
+  }
+
+  const _getAssignGameDataParamText = (type, param1, param2) => {
+    switch(type) {
+      case 0:
+        return `位置 ${param1}[${param2}]`;
+      case 1:
+        return `[${param2}]`
+      default:
+        return '';
+    }
   }
 
   const listGoodsContents = (parameters) => {
@@ -316,9 +381,13 @@ const CommandItem = props => {
     }
   }
 
-  const listScrollContents = (type) => {
-    const typeText = type === 0 ? '固定' : '固定解除';
-    return <td>{typeText}</td>
+  const listScrollContents = (type, distanceX, distanceY, speed, wait) => {
+    const typeText = ['固定', '固定解除', 'ずらす', '戻す'][type];
+    const distanceText = type === 2 ? `[X:${distanceX} Y:${distanceY}]` : '';
+    const speedList = ['1/8倍', '1/4倍', '1/2倍', '1倍', '2倍', '4倍', '8倍','瞬時']; 
+    const speedText = [2,3].includes(type) ? ` ${speedList[speed > 6 ? 7 : speed]}` : '';
+    const waitText = [2,3].includes(type) ? ` ${wait > 0 ? '待機する' : '待機しない'}` : '';
+    return <td>{typeText}{distanceText}{speedText}{waitText}</td>
   }
 
   const listMoveRouteContents = (target, type, routeId) => {
@@ -365,7 +434,7 @@ const CommandItem = props => {
     switch (props.command.code) {
       case COMMAND.MESSAGE:
         title = '文章:';
-        contents = listMessageContents(...parameters);//<td style={{ whiteSpace: 'pre-line' }}>{parameters[0]}</td>;
+        contents = listMessageContents(...parameters);
         break;
       case COMMAND.MENU:
         title = 'メニュー表示:';
@@ -375,8 +444,9 @@ const CommandItem = props => {
         title = 'メニュー終了:';
         contents = listEndMenuContents(...parameters);
         break;
-      case COMMAND.MESSAGEOUTWAIT:
-        title = '文章無待機解除';
+      case COMMAND.MESSAGESETTINGS:
+        title = '文章設定';
+        contents = listMessageSettingsContents(...parameters);
         break;
       case COMMAND.MESSAGECLOSEWAIT:
         title = '文章閉じ待機';
@@ -399,6 +469,14 @@ const CommandItem = props => {
       case COMMAND.OPERATESLOT:
         title = 'スロット演算:';
         contents = listOperateSlotContents(...parameters);
+        break;
+      case COMMAND.ASSIGNFIXDATA:
+        title = '固定データ取得:';
+        contents = listAssignFixDataContents(...parameters);
+        break;
+      case COMMAND.ASSIGNGAMEDATA:
+        title = 'ゲームデータ取得:';
+        contents = listAssignGameDataContents(...parameters);
         break;
       case COMMAND.GOODS:
         title = '商品の設定:';
