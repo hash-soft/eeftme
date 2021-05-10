@@ -77,9 +77,18 @@ const CommandItem = props => {
     return message;
   }
 
-  const listMenuContents = (menuId, slotId) => {
+  // メニュー表示
+  const listMenuContents = (menuId, initIndex, parentId, slotId, countSlotId, cancelIndex, closeType) => {
     const menuName = Utils.getDispName(windowsets, menuId);
-    return <td>{menuName}, 格納スロット({dispSlotName(slotId)})</td>
+    const parentName = parentId > 0 ? ', 親:' + Utils.getDispName(windowsets, parentId) : '';
+    const slotName = slotId > 0 ? ', 追加:' + dispSlotName(slotId) : '';
+    const countSlotName = countSlotId > 0 ? ', 追加数:' + dispSlotName(countSlotId) : '';
+    const cancelName = cancelIndex >= 0 ? ', キャンセル:' + cancelIndex : '';
+    return (
+      <td>{menuName}, 初期位置:{initIndex}{parentName}
+      {slotName}{countSlotName}
+      {cancelName}, 閉じる:{closeType}</td>
+    )
   }
   
   const listEndMenuContents = (menuId) => {
@@ -106,9 +115,10 @@ const CommandItem = props => {
     return <td>{settingText}{valueText}</td>;
   }
 
-  const listEmbeddedContents = (menuId, slotId) => {
+  // 組み込みメニュー
+  const listEmbeddedContents = (menuId, startPos) => {
     const menuName = `[${menuId}]`;
-    return <td>{menuName}, 格納スロット({dispSlotName(slotId)})</td>
+    return <td>{menuName}, 開始位置({startPos})</td>
   }
   
   const listFlagContents = (parameters) => {
@@ -363,19 +373,26 @@ const CommandItem = props => {
     return <td>{typeText}(行先:{warpIdText}),方向:{direction}</td>
   }
 
+  // 移動の設定
   const listMoveSettingsContents = (type, value) => {
     const typeText = _getMoveSettingsText(type, value);
     return <td>{typeText}</td>
   }
 
   const _getMoveSettingsText = (type, value) => {
-    switch(type) {
+    switch (type) {
       case 0:
-        return '[フェード]' + (value === 0 ? 'なし' : 'あり');
+        return '[画面消去]' + Utils.getMoveSettingsScreenOffList()[value];
       case 1:
-        return '[中央からのずれを反映]' + (value === 0 ? 'しない' : 'する');
+        return '[画面表示]' + Utils.getMoveSettingsScreenOnList()[value];
       case 2:
-        return '[隊列]' + (value === 0 ? '集合' : '一列');
+        return '[隊列]' + Utils.getMoveSettingsFollowerList()[value];
+      case 3:
+        return '[効果音]' + dispSeName(value);
+      case 4:
+        return '[ずらす横座標スロット]' + dispSlotName(value);
+      case 5:
+        return '[ずらす縦座標スロット]' + dispSlotName(value);
       default:
         return '???';
     }
@@ -397,8 +414,10 @@ const CommandItem = props => {
     return <td>対象{target} ({type === 0 ? '共通' : 'マップ'},ルートId={routeId})</td>
   }
 
+  // 隊列の操作
   const listFollowerControlContents = (type) => {
-    const typeText = type === 0 ? '集合' : '一列';
+    const texts = ['再設定', '一列', '集合' ]
+    const typeText = texts[type];
     return <td>{typeText}</td>
   }
 
@@ -406,6 +425,7 @@ const CommandItem = props => {
     return <td>{frame}フレーム</td>
   }
 
+  // 効果音
   const listSeContents = (id) => {
     return <td>{dispSeName(id)}</td>
   }

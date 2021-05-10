@@ -6,6 +6,7 @@ import {
   MapEventSelectBox, CommonEventSelectBox
 } from './selectBoxSet'
 import { NumberEdit } from './editBoxSet'
+import Utils from './utils'
 import { COMMAND, VARIABLERANGE } from './define';
 import './index.css';
 
@@ -80,16 +81,42 @@ const Menu = props => {
 
   const data = sliceParameters(props.command.parameters);
   // 0: メニューId
-  // 1: 格納スロットId
-  const parametersRef = React.useRef(data || [1, 1]);
+  // 1: 初期インデックス -1なら記憶インデックス
+  // 2: 親ウィンドウ
+  // 3: 追加データを格納する開始スロットId
+  // 4: 追加データ数を格納するスロットId
+  // 5: キャンセルインデックス
+  // 6: クローズタイプ
+  const parametersRef = React.useRef(data || [1, -1, 0, 0, 0, -1, 0]);
   const parameters = parametersRef.current;
+  const closeTypeList = ['閉じない', '閉じる', 'キャンセル時だけ閉じる'];
 
   const onMenuChange = (e) => {
     parameters[0] = parseInt(e.target.value);
   }
 
+  const onInitIndexFocusOff = (value) => {
+    parameters[1] = value;
+  }
+
+  const onParentChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  }
+
   const onSlotChange = (e) => {
-    parameters[1] = parseInt(e.target.value);
+    parameters[3] = parseInt(e.target.value);
+  }
+
+  const onCountSlotChange = (e) => {
+    parameters[4] = parseInt(e.target.value);
+  }
+
+  const onCancelFocusOff = (value) => {
+    parameters[5] = value;
+  }
+
+  const onCloseTypeChange = (e) => {
+    parameters[6] = parseInt(e.target.value);
   }
 
   const onUpdate = () => {
@@ -102,16 +129,58 @@ const Menu = props => {
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
-      <font>メニューId：</font>
-      <MenuSelectBox
-        selectValue={parameters[0]}
-        onChange={(e) => onMenuChange(e)}
-      />
-      <SlotSelectBox
-        selectValue={parameters[1]}
-        onChange={(e) => onSlotChange(e)}
-        unuse={true}
-      />
+      <div>
+        <font>メニューId：</font>
+        <MenuSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onMenuChange(e)}
+        />
+      </div>
+      <div>
+        <font>初期位置：</font>
+        <NumberEdit
+          min={-1}
+          max={50}
+          value={parameters[1]}
+          onValueFocusOff={onInitIndexFocusOff}
+        />
+      </div>
+      <div>
+        <font>親Id：</font>
+        <MenuSelectBox
+          selectValue={parameters[2]}
+          onChange={(e) => onParentChange(e)}
+        />
+      </div>
+      <div>
+        <font>追加データ開始格納スロットId：</font>
+        <SlotSelectBox
+          selectValue={parameters[3]}
+          onChange={(e) => onSlotChange(e)}
+          unuse={true}
+        />
+      </div>
+      <div>
+        <font>追加データ数格納スロットId：</font>
+        <SlotSelectBox
+          selectValue={parameters[4]}
+          onChange={(e) => onCountSlotChange(e)}
+          unuse={true}
+        />
+      </div>
+      <div>
+        <font>キャンセルインデックス：</font>
+        <NumberEdit
+          min={-1}
+          max={50}
+          value={parameters[5]}
+          onValueFocusOff={onCancelFocusOff}
+        />
+      </div>
+      <font>クローズタイプ：</font>
+        <select defaultValue={parameters[6]} onChange={(e) => onCloseTypeChange(e)}>
+          {simpleSelectItems(closeTypeList)}
+        </select>
     </CommandBase>
   );
 }
@@ -259,16 +328,16 @@ const Embedded = props => {
 
   const data = sliceParameters(props.command.parameters);
   // 0: メニューId
-  // 1: 格納スロットId
-  const parametersRef = React.useRef(data || [1, 1]);
+  // 1: 開始位置
+  const parametersRef = React.useRef(data || [1, 0]);
   const parameters = parametersRef.current;
 
   const onValueFocusOff = (value) => {
     parameters[0] = value;
   }
 
-  const onSlotChange = (e) => {
-    parameters[1] = parseInt(e.target.value);
+  const onStartPosFocusOff = (value) => {
+    parameters[1] = value;
   }
 
   const onUpdate = () => {
@@ -288,10 +357,12 @@ const Embedded = props => {
         value={parameters[0]}
         onValueFocusOff={onValueFocusOff}
       />
-      <SlotSelectBox
-        selectValue={parameters[1]}
-        onChange={(e) => onSlotChange(e)}
-        unuse={true}
+      <font>開始位置：</font>
+      <NumberEdit
+        min={0}
+        max={100}
+        value={parameters[1]}
+        onValueFocusOff={onStartPosFocusOff}
       />
     </CommandBase>
   );
@@ -1723,34 +1794,51 @@ const MoveSettings = props => {
   const data = sliceParameters(props.command.parameters);
   // 0: タイプ
   // 1: 値
-  const parametersRef = React.useRef(data || [0, 1]);
+  const parametersRef = React.useRef(data || [0, 0]);
   const parameters = parametersRef.current;
-  let fade = parameters[1];
-  let adjust = parameters[1];
+  let screenOff = parameters[1];
+  let screenOn = parameters[1];
   let follower = parameters[1];
+  let soundId = parameters[1];
+  let shiftXId = parameters[1];
+  let shiftYId = parameters[1];
 
-  const fadeList = [{ value: 0, text: 'なし' }, { value: 1, text: 'あり' }];
-  const adjustList = [{ value: 0, text: 'しない' }, { value: 1, text: 'する' }];
-  const followerList = [{ value: 0, text: '集合' }, { value: 1, text: '一列' }];
- 
+  const screenOffList = Utils.getMoveSettingsScreenOffList();
+  const screenOnList = Utils.getMoveSettingsScreenOnList();
+  const followerList = Utils.getMoveSettingsFollowerList();
+
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
   }
 
-  const onFadeChange = (e) => {
-    fade = parseInt(e.target.value);
+  const onScreenOffChange = (e) => {
+    screenOff = parseInt(e.target.value);
   }
 
-  const onAdjustChange = (e) => {
-    adjust = parseInt(e.target.value);
+  const onScreenOnChange = (e) => {
+    screenOn = parseInt(e.target.value);
   }
 
   const onFollowerChange = (e) => {
     follower = parseInt(e.target.value);
   }
 
+  const onSoundIdChange = (e) => {
+    soundId = parseInt(e.target.value);
+  }
+
+  const onShiftXIdChange = (e) => {
+    shiftXId = parseInt(e.target.value);
+  }
+
+  const onShiftYIdChange = (e) => {
+    shiftYId = parseInt(e.target.value);
+  }
+
+  
+
   const onUpdate = () => {
-    const values = [fade, adjust, follower];
+    const values = [screenOff, screenOn, follower, soundId, shiftXId, shiftYId];
     parameters[1] = values[parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
@@ -1765,17 +1853,17 @@ const MoveSettings = props => {
       <div>
         <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
-        />フェード
-        <select defaultValue={fade} onChange={(e) => onFadeChange(e)}>
-          {pairSelectItems(fadeList)}
+        />画面消去
+        <select defaultValue={screenOff} onChange={(e) => onScreenOffChange(e)}>
+          {simpleSelectItems(screenOffList)}
         </select>
       </div>
       <div>
         <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
-        />中央からのずれを反映
-        <select defaultValue={adjust} onChange={(e) => onAdjustChange(e)}>
-          {pairSelectItems(adjustList)}
+        />画面表示
+        <select defaultValue={screenOn} onChange={(e) => onScreenOnChange(e)}>
+          {simpleSelectItems(screenOnList)}
         </select>
       </div>
       <div>
@@ -1783,8 +1871,38 @@ const MoveSettings = props => {
           onChange={(e) => onRadioChange(e)}
         />隊列
         <select defaultValue={follower} onChange={(e) => onFollowerChange(e)}>
-          {pairSelectItems(followerList)}
+          {simpleSelectItems(followerList)}
         </select>
+      </div>
+      <div>
+        <input type="radio" name="type" value="3" defaultChecked={parameters[0] === 3 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />効果音
+        <SeSelectBox
+          selectValue={soundId}
+          onChange={(e) => onSoundIdChange(e)}
+          unuse={true}
+        />
+      </div>
+      <div>
+        <input type="radio" name="type" value="4" defaultChecked={parameters[0] === 4 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />ずらす横座標格納スロット:
+        <SlotSelectBox
+          selectValue={shiftXId}
+          unuse={true}
+          onChange={(e) => onShiftXIdChange(e)}
+        />
+      </div>
+      <div>
+        <input type="radio" name="type" value="5" defaultChecked={parameters[0] === 5 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />ずらす縦座標格納スロット:
+        <SlotSelectBox
+          selectValue={shiftYId}
+          unuse={true}
+          onChange={(e) => onShiftYIdChange(e)}
+        />
       </div>
     </CommandBase>
   );
@@ -1942,7 +2060,7 @@ const MoveRoute = props => {
 const FollowerControl = props => {
 
   const data = sliceParameters(props.command.parameters);
-  // 0: 0 集合 1 一列
+  // 0: 0 再設定 1 一列 2 集合
   const parametersRef = React.useRef(data || [0]);
   const parameters = parametersRef.current;
 
@@ -1963,10 +2081,13 @@ const FollowerControl = props => {
       <div>
         <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
-        />集合
+        />再設定
       <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />一列
+         <input type="radio" name="type" value="2" defaultChecked={parameters[0] === 2 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />集合
       </div>
 
     </CommandBase>

@@ -56,4 +56,16 @@ Utils.addBracket = function(text) {
   return '[' + text + ']';
 }
 
+Utils.getMoveSettingsScreenOffList = function(){
+  return ['フェードアウト', '消去しない'];
+}
+
+Utils.getMoveSettingsScreenOnList = function(){
+  return ['フェードイン', '瞬時'];
+}
+
+Utils.getMoveSettingsFollowerList = function(){
+  return ['そのまま', '集合', '一列'];
+}
+
 export default Utils;
