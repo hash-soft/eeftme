@@ -50,6 +50,7 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.MAPSCRIPT)}>マップスクリプト</button>
           <button onClick={() => props.closePopup(COMMAND.COMMONSCRIPT)}>コモンスクリプト</button>
           <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
+          <button onClick={() => props.closePopup(COMMAND.GATHERFOLLOWERS)}>隊列の集合</button>
           <button onClick={() => props.closePopup(COMMAND.SE)}>効果音</button>
           <button onClick={() => props.closePopup(COMMAND.BGMPLAY)}>BGM演奏</button>
           <button onClick={() => props.closePopup(COMMAND.BGMINTERRUPT)}>BGM割込</button>

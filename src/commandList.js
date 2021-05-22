@@ -220,7 +220,7 @@ const CommandItem = props => {
    */
   const listAssignGameDataContents = (slotId, type, param1, param2) => {
     const slotText = dispSlotName(slotId);
-    const typeText = ['表示メンバー', 'パーティ'][type];
+    const typeText = ['パーティメンバー', '登録メンバー', 'パーティ', 'プレイヤー'][type];
     const paramText = _getAssignGameDataParamText(type, param1, param2);
     return <td>{slotText} = {typeText}:{paramText}</td>
   }
@@ -228,9 +228,13 @@ const CommandItem = props => {
   const _getAssignGameDataParamText = (type, param1, param2) => {
     switch(type) {
       case 0:
-        return `位置 ${param1}[${param2}]`;
+        return `${dispSlotName(param1)} の登録id`;
       case 1:
-        return `[${param2}]`
+        return `${dispSlotName(param1)} ${Utils.getRegistMemberInfoSelectList()[param2]}`
+      case 2:
+        return `${Utils.getPartyInfoSelectList()[param2]}`
+      case 3:
+        return `${dispSlotName(param1)} ${Utils.getPlayerInfoSelectList()[param2]}`
       default:
         return '';
     }
@@ -337,6 +341,7 @@ const CommandItem = props => {
     return <td>{type === 0 ? '戻す' : '置き換える'}(レイヤー={layerIndex})</td>
   }
 
+  // 場所移動
   const listMoveContents = (type, mapId, x, y, direction) => {
     const [typeText, mapIdText, xText, yText] = _getMoveTypeText(type, mapId, x, y);
     return <td>{typeText}(map:{mapIdText},X:{xText},Y:{yText}),方向:{direction}</td>
@@ -371,6 +376,26 @@ const CommandItem = props => {
       }
     })();
     return <td>{typeText}(行先:{warpIdText}),方向:{direction}</td>
+  }
+
+  // 位置設定
+  const listLocationContents = (target, type, value1, value2, direction) => {
+    const typeList = ['直接', 'スロット', '交換'];
+    return <td>対象{target} ({typeList[type]}:{_getLocationTypeText(type, value1, value2)},
+      方向:{direction})</td>
+  }
+
+  const _getLocationTypeText = (type, value1, value2) => {
+    switch(type){
+      case 0:
+        return `${value1},${value2}`;
+      case 1:
+        return `${dispSlotName(value1)},${dispSlotName(value2)}`;
+      case 2:
+        return `${value1}`;
+      default:
+        return '???';
+    }
   }
 
   // 移動の設定
@@ -421,8 +446,16 @@ const CommandItem = props => {
     return <td>{typeText}</td>
   }
 
+  // 待機
   const listWaitContents = (frame) => {
     return <td>{frame}フレーム</td>
+  }
+
+  // 隊列の集合
+  const listGatherFollowersContents = (type) => {
+    const texts = Utils.getGatherFollowersTypeList();
+    const typeText = texts[type];
+    return <td>{typeText}</td>
   }
 
   // 効果音
@@ -574,6 +607,10 @@ const CommandItem = props => {
         title = 'ワープ:';
         contents = listWarpContents(...parameters);
         break;
+      case COMMAND.LOCATION:
+        title = '位置設定:';
+        contents = listLocationContents(...parameters);
+        break;
       case COMMAND.MOVESETTINGS:
         title = '移動の設定:';
         contents = listMoveSettingsContents(...parameters);
@@ -596,6 +633,10 @@ const CommandItem = props => {
       case COMMAND.WAIT:
         title = '待機:';
         contents = listWaitContents(...parameters);
+        break;
+      case COMMAND.GATHERFOLLOWERS:
+        title = '隊列の集合:';
+        contents = listGatherFollowersContents(...parameters);
         break;
       case COMMAND.SE:
         title = '効果音:';

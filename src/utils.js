@@ -68,4 +68,25 @@ Utils.getMoveSettingsFollowerList = function(){
   return ['そのまま', '集合', '一列'];
 }
 
+Utils.getDirectionSelectList = function(){
+  return [{ value: -1, text: 'そのまま' }, { value: 0, text: '下' },
+  { value: 1, text: '右' }, { value: 2, text: '左' }, { value: 3, text: '上' }];
+}
+
+Utils.getRegistMemberInfoSelectList = function() {
+  return ['並び位置',　'表示位置', 'メンバーid', 'レベル'];
+}
+
+Utils.getPartyInfoSelectList = function() {
+  return ['所持金', '人数', '生存人数'];
+}
+
+Utils.getPlayerInfoSelectList = function() {
+  return ['マップX', 'マップY', '向き', '画像id', '画像インデックス'];
+}
+
+Utils.getGatherFollowersTypeList = function() {
+  return ['通常', '集合位置で消える'];
+}
+
 export default Utils;
