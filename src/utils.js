@@ -74,15 +74,27 @@ Utils.getDirectionSelectList = function(){
 }
 
 Utils.getRegistMemberInfoSelectList = function() {
-  return ['並び位置',　'表示位置', 'メンバーid', 'レベル'];
+  return ['並び位置',　'表示位置', 'メンバーid', '名前', 'レベル'];
 }
 
 Utils.getPartyInfoSelectList = function() {
-  return ['所持金', '人数', '生存人数'];
+  return ['所持金', '人数', '生存人数', '表示人数'];
 }
 
 Utils.getPlayerInfoSelectList = function() {
-  return ['マップX', 'マップY', '向き', '画像id', '画像インデックス'];
+  return ['登録id', 'マップX', 'マップY', '向き', '画像id', '画像インデックス'];
+}
+
+Utils.getFollowerSettingsTypeList = function() {
+  return ['追いかけ', '間隔'];
+}
+
+Utils.getFollowerSettingsChaseList = function() {
+  return ['する', 'しない'];
+}
+
+Utils.getChangeTransparentTypeList = function() {
+  return ['透明にする', '解除する'];
 }
 
 Utils.getGatherFollowersTypeList = function() {

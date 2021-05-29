@@ -451,11 +451,13 @@ const CommandItem = props => {
     return <td>{frame}フレーム</td>
   }
 
-  // 隊列の集合
-  const listGatherFollowersContents = (type) => {
-    const texts = Utils.getGatherFollowersTypeList();
+  // 隊列の操作
+  const listFollowerSettingsContents = (type, param) => {
+    const texts = Utils.getFollowerSettingsTypeList();
     const typeText = texts[type];
-    return <td>{typeText}</td>
+    const paramText = type === 0 ?
+      Utils.getFollowerSettingsChaseList()[param] : '未作成';
+    return <td>{typeText}:{paramText}</td>
   }
 
   // 効果音
@@ -473,6 +475,20 @@ const CommandItem = props => {
 
   const listEventTriggerContents = (id) => {
     return <td>id:{id}</td>
+  }
+
+  // 透明状態変更
+  const listChangeTransparentContents = (type) => {
+    const texts = Utils.getChangeTransparentTypeList();
+    const typeText = texts[type];
+    return <td>{typeText}</td>
+  }
+
+  // 隊列の集合
+  const listGatherFollowersContents = (type) => {
+    const texts = Utils.getGatherFollowersTypeList();
+    const typeText = texts[type];
+    return <td>{typeText}</td>
   }
 
   const listCommentContents = (text) => {
@@ -563,6 +579,9 @@ const CommandItem = props => {
         title = 'ラベルジャンプ:';
         contents = listJumpContents(...parameters);
         break;
+      case COMMAND.EXIT:
+        title = '以降実行しない:';
+        break;
       case COMMAND.GAINITEM:
         title = '道具を追加:';
         contents = listGainItemContents(...parameters);
@@ -634,9 +653,12 @@ const CommandItem = props => {
         title = '待機:';
         contents = listWaitContents(...parameters);
         break;
-      case COMMAND.GATHERFOLLOWERS:
-        title = '隊列の集合:';
-        contents = listGatherFollowersContents(...parameters);
+      case COMMAND.ERASEEVEMT:
+        title = 'イベントの消去:';
+        break;
+      case COMMAND.FOLLOWERSETTINGS:
+        title = '隊列の設定:';
+        contents = listFollowerSettingsContents(...parameters);
         break;
       case COMMAND.SE:
         title = '効果音:';
@@ -659,6 +681,14 @@ const CommandItem = props => {
         break;
       case COMMAND.SCREENFADEIN:
         title = '画面のフェードイン:';
+        break;
+      case COMMAND.CHANGETRANSPARENT:
+        title = '透明状態変更:';
+        contents = listChangeTransparentContents(...parameters);
+        break;
+      case COMMAND.GATHERFOLLOWERS:
+        title = '隊列の集合:';
+        contents = listGatherFollowersContents(...parameters);
         break;
       case COMMAND.COMMENT:
         title = '';

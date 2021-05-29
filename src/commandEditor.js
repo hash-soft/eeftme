@@ -2415,27 +2415,36 @@ const Wait = props => {
   );
 }
 
-// 隊列の集合
-const GatherFollowers = props => {
+// 隊列の設定
+const FollowerSettings = props => {
 
   const data = sliceParameters(props.command.parameters);
-  // 0: 種類 > 0 通常 1 集合位置で消える
-  const parametersRef = React.useRef(data || [0]);
+  // 0: 種類 > 0 追いかけ 1 間隔
+  // 1: 追いかけ > 0 する 1 しない
+  //    間隔
+  const parametersRef = React.useRef(data || [0, 0]);
   const parameters = parametersRef.current;
-  const list = Utils.getGatherFollowersTypeList();
+  let chase = parameters[0] === 0 ? parameters[1] : 0
+  const list = Utils.getFollowerSettingsTypeList();
+  const chaseList = Utils.getFollowerSettingsChaseList();
 
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
   }
 
+  const onchaseRadioChange = (e) => {
+    chase = parseInt(e.target.value);
+  }
+
   const onUpdate = () => {
+    parameters[1] = [chase][parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
   }
 
   return (
     <CommandBase
-      title={'隊列の集合'}
+      title={'隊列の設定'}
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
@@ -2443,6 +2452,14 @@ const GatherFollowers = props => {
         <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />{list[0]}
+        <div>
+          <input type="radio" name="chase" value="0" defaultChecked={chase === 0 ? 'checked' : ''}
+            onChange={(e) => onchaseRadioChange(e)}
+          />{chaseList[0]}
+          <input type="radio" name="chase" value="1" defaultChecked={chase === 1 ? 'checked' : ''}
+            onChange={(e) => onchaseRadioChange(e)}
+          />{chaseList[1]}
+        </div>
       <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />{list[1]}
@@ -2584,6 +2601,80 @@ const EventTrigger = props => {
   );
 }
 
+// 透明状態変更
+const ChangeTransparent = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 透明状態 > 0 透明にする 1 解除する
+  const parametersRef = React.useRef(data || [0]);
+  const parameters = parametersRef.current;
+  const list = Utils.getChangeTransparentTypeList();
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      title={'透明状態変更'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />{list[0]}
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />{list[1]}
+      </div>
+
+    </CommandBase>
+  );
+}
+
+// 隊列の集合
+const GatherFollowers = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 種類 > 0 通常 1 集合位置で消える
+  const parametersRef = React.useRef(data || [0]);
+  const parameters = parametersRef.current;
+  const list = Utils.getGatherFollowersTypeList();
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      title={'隊列の集合'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />{list[0]}
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />{list[1]}
+      </div>
+
+    </CommandBase>
+  );
+}
+
 // コメント
 const Comment = props => {
 
@@ -2718,8 +2809,8 @@ const CommandEditor = props => {
       case COMMAND.WAIT:
         return <Wait
           {...props} />
-      case COMMAND.GATHERFOLLOWERS:
-        return <GatherFollowers
+      case COMMAND.FOLLOWERSETTINGS:
+        return <FollowerSettings
           {...props} />
       case COMMAND.SE:
         return <Se
@@ -2732,6 +2823,12 @@ const CommandEditor = props => {
           {...props} />
       case COMMAND.EVENTTRIGGER:
         return <EventTrigger
+          {...props} />
+      case COMMAND.CHANGETRANSPARENT:
+        return <ChangeTransparent
+          {...props} />
+      case COMMAND.GATHERFOLLOWERS:
+        return <GatherFollowers
           {...props} />
       case COMMAND.COMMENT:
         return <Comment
