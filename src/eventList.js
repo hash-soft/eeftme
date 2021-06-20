@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from 'react';
+import Utils from './utils'
 import './index.css';
 
 // イベントリスト
@@ -38,10 +39,9 @@ const EventList = React.forwardRef((props, ref) =>{
   const listItem = names.map((name, move) => {
     const num = move + 1;
     const keyText = num.toString();
-    const dispNum = ('000' + num).slice(-3);
+    const dispNum = Utils.leftFillNum(num, 3);
     return <option key={keyText} value={move}>{dispNum + ':'}{name}</option>
   })
-  //<select size="10" value={props.index} onChange={(e) => props.changeEvent(e)}>
 
   const onSizeChange = (e) => {
     const newSize = e.target.value;
@@ -54,13 +54,14 @@ const EventList = React.forwardRef((props, ref) =>{
       {listItem}
       </select>
       <div>
-        <font>数：</font>
         <input type="number" min="1" max="200"
           value={size}
           onChange={(e) => onSizeChange(e)}
         />
-        <button onClick={props.eventSizeClick}>変更</button>
-        <button onClick={props.eventDeleteClick}>削除</button>
+        <button onClick={props.eventSizeClick}>変</button>
+        <button onClick={props.eventDeleteClick}>除</button>
+        <button onClick={props.eventPasteClick}>貼</button>
+        <button onClick={props.eventCopyClick}>写</button>
       </div>
     </div>
   )

@@ -138,6 +138,7 @@ const CommandItem = props => {
     return <td>{variableName} {opeTexts[opecode]} {id}</td>
   }
 
+  // スロット演算
   // type:代入タイプ
   //  0:直値 1:文字列 2:json 3:変数 4:スロット 5:乱数 6:ゲームデータ
   // param:代入タイプによって変わるパラメータ
@@ -184,7 +185,7 @@ const CommandItem = props => {
   }
 
   const _getOpecodeText = (code) => {
-    const text = ['=', '+=', '-=', '*=', '/=', '%='];
+    const text = ['=', '+=', '-=', '*=', '/=', '%=', '|=', '&='];
     return text[code];
   }
 
@@ -334,7 +335,7 @@ const CommandItem = props => {
   }
 
   const listChangeTileContents = (layerIndex, id, x, y) => {
-    return <td>レイヤー{layerIndex}, タイル{id}({x},{y})</td>
+    return <td>レイヤー={layerIndex}, パーツ={id}({x},{y})</td>
   }
 
   const listSwapTileContents = (type, layerIndex) => {
@@ -344,7 +345,8 @@ const CommandItem = props => {
   // 場所移動
   const listMoveContents = (type, mapId, x, y, direction) => {
     const [typeText, mapIdText, xText, yText] = _getMoveTypeText(type, mapId, x, y);
-    return <td>{typeText}(map:{mapIdText},X:{xText},Y:{yText}),方向:{direction}</td>
+    const directionTexts = Utils.getDirectionInfoList();
+    return <td>{typeText}(map:{mapIdText},X:{xText},Y:{yText}),{directionTexts[direction + 1]}</td>
   }
 
   const _getMoveTypeText = (type, mapId, x, y) =>{
@@ -451,13 +453,20 @@ const CommandItem = props => {
     return <td>{frame}フレーム</td>
   }
 
-  // 隊列の操作
+  // 隊列の設定
   const listFollowerSettingsContents = (type, param) => {
     const texts = Utils.getFollowerSettingsTypeList();
     const typeText = texts[type];
     const paramText = type === 0 ?
       Utils.getFollowerSettingsChaseList()[param] : '未作成';
     return <td>{typeText}:{paramText}</td>
+  }
+
+  // 隊列の設定
+  const listAddressSettingsContents = (type, warpId) => {
+    const texts = Utils.getAOrDList();
+    const typeText = texts[type];
+    return <td>{typeText}:{dispWarpName(warpId)}</td>
   }
 
   // 効果音
@@ -580,7 +589,7 @@ const CommandItem = props => {
         contents = listJumpContents(...parameters);
         break;
       case COMMAND.EXIT:
-        title = '以降実行しない:';
+        title = '以降実行しない';
         break;
       case COMMAND.GAINITEM:
         title = '道具を追加:';
@@ -654,11 +663,15 @@ const CommandItem = props => {
         contents = listWaitContents(...parameters);
         break;
       case COMMAND.ERASEEVEMT:
-        title = 'イベントの消去:';
+        title = 'イベントの消去';
         break;
       case COMMAND.FOLLOWERSETTINGS:
         title = '隊列の設定:';
         contents = listFollowerSettingsContents(...parameters);
+        break;
+      case COMMAND.ADDRESSSETTINGS:
+        title = '行先の設定:';
+        contents = listAddressSettingsContents(...parameters);
         break;
       case COMMAND.SE:
         title = '効果音:';

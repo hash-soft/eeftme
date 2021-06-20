@@ -585,6 +585,12 @@ const OperateSlot = props => {
         <input type="radio" name="code" value="5" defaultChecked={code === 5 ? 'checked' : ''}
           onChange={(e) => onCodeChange(e)}
         /><font>%</font>
+        <input type="radio" name="code" value="6" defaultChecked={code === 6 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>|</font>
+        <input type="radio" name="code" value="7" defaultChecked={code === 7 ? 'checked' : ''}
+          onChange={(e) => onCodeChange(e)}
+        /><font>&amp;</font>
       </div>
       <div>
         <input type="radio" name="type" value="0" defaultChecked={type === 0 ? 'checked' : ''}
@@ -1440,11 +1446,11 @@ const Recover = props => {
 const ChangeTile = props => {
 
   const data = sliceParameters(props.command.parameters);
-  // 0: 変更するレイヤー
-  // 1: タイルid
+  // 0: 変更するレイヤー(-1は全部)
+  // 1: パーツid
   // 2: x座標
   // 3: y座標
-  const parametersRef = React.useRef(data || [0, 1, 0, 0]);
+  const parametersRef = React.useRef(data || [-1, 1, 0, 0]);
   const parameters = parametersRef.current;
 
   const onValueFocusOff = (value, i) => {
@@ -1458,13 +1464,14 @@ const ChangeTile = props => {
 
   return (
     <CommandBase
+      title={'タイル変更'}
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
       <div>
         <font>変更するレイヤー：</font>
         <NumberEdit
-          min={0}
+          min={-1}
           max={3}
           value={parameters[0]}
           onValueFocusOff={(value) => onValueFocusOff(value, 0)}
@@ -1473,8 +1480,8 @@ const ChangeTile = props => {
       <div>
         <font>タイルid：</font>
         <NumberEdit
-          min={0}
-          max={9999}
+          min={1}
+          max={999}
           value={parameters[1]}
           onValueFocusOff={(value) => onValueFocusOff(value, 1)}
         />
@@ -1504,17 +1511,12 @@ const ChangeTile = props => {
 const SwapTile = props => {
 
   const data = sliceParameters(props.command.parameters);
-  // 0: 0 戻す 1 置き換える
-  // 1: 切り替えるレイヤー
-  const parametersRef = React.useRef(data || [1, 0]);
+  // 0: 切り替えるタイルgid
+  const parametersRef = React.useRef(data || [0]);
   const parameters = parametersRef.current;
 
-  const onRadioChange = (e) => {
-    parameters[0] = parseInt(e.target.value);
-  }
-
   const onValueFocusOff = (value) => {
-    parameters[1] = value;
+    parameters[0] = value;
   }
 
   const onUpdate = () => {
@@ -1524,22 +1526,15 @@ const SwapTile = props => {
 
   return (
     <CommandBase
+      title={'タイル切替'}
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
-      <div>
-        <input type="radio" name="replace" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
-          onChange={(e) => onRadioChange(e)}
-        />元のタイル
-      <input type="radio" name="replace" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
-          onChange={(e) => onRadioChange(e)}
-        />設定タイル
-      </div>
-      <font>置き換えるレイヤー：</font>
+      <font>タイルgid：</font>
       <NumberEdit
         min={0}
-        max={3}
-        value={parameters[1]}
+        max={9999}
+        value={parameters[0]}
         onValueFocusOff={onValueFocusOff}
       />
     </CommandBase>
@@ -2469,6 +2464,55 @@ const FollowerSettings = props => {
   );
 }
 
+// 行先の設定
+const AddressSettings = props => {
+
+  const data = sliceParameters(props.command.parameters);
+  // 0: 種類 > 0 追加 1 削除
+  // 1: 行先id
+  const parametersRef = React.useRef(data || [0, 1]);
+  const parameters = parametersRef.current;
+  const list = Utils.getAOrDList();
+  
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  }
+
+  const onPositionIdChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  }
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  }
+
+  return (
+    <CommandBase
+      title={'行先の設定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input type="radio" name="type" value="0" defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />{list[0]}
+      <input type="radio" name="type" value="1" defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />{list[1]}
+      </div>
+      <div>
+      <font>行先Id：</font>
+        <WarpSelectBox
+          selectValue={parameters[1]}
+          onChange={(e) => onPositionIdChange(e)}
+        />
+      </div>
+    </CommandBase>
+  );
+}
+
+
 // 効果音
 const Se = props => {
 
@@ -2811,6 +2855,9 @@ const CommandEditor = props => {
           {...props} />
       case COMMAND.FOLLOWERSETTINGS:
         return <FollowerSettings
+          {...props} />
+      case COMMAND.ADDRESSSETTINGS:
+        return <AddressSettings
           {...props} />
       case COMMAND.SE:
         return <Se

@@ -105,7 +105,7 @@ const SlotSelectBox = props => {
   return (
     <SelectBoxBase
       items={slots}
-      digits={2}
+      digits={3}
       single={true}
       {...props}
     >

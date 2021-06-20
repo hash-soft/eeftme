@@ -73,6 +73,7 @@ const EventEditor = React.forwardRef((props, ref) => {
   const conditionsRef = useRef(null);
   const commandsRef = useRef(null);
   const nameRef = useRef(null);
+  const copyRef = React.useRef({conditions: [], list: [], enable: false});
 
   // 親が参照できる機能
   React.useImperativeHandle(ref, () => {
@@ -84,7 +85,6 @@ const EventEditor = React.forwardRef((props, ref) => {
 
   const refreshEventList = () => {
     const names = listRef.current.refreshNames(props.eventsRef.current);
-    console.log(names);
     listRef.current.updateNames(names);
     listRef.current.updateSize(names.length);
   }
@@ -188,6 +188,31 @@ const EventEditor = React.forwardRef((props, ref) => {
     refreshEvents(events, index);
   }
 
+  // 選択イベントコピー
+  const onEventCopyClick = () => {
+    const events = props.eventsRef.current;
+    const index = listRef.current.index;
+    const event = events[index];
+
+    copyRef.current.conditions = event.conditions.slice();
+    copyRef.current.list = event.list.slice();
+    copyRef.current.enable = true;
+  }
+
+  // 選択イベント貼り付け
+  const onEventPasteClick = () => {
+    if (!copyRef.current.enable) {
+      return;
+    }
+    const events = props.eventsRef.current;
+    const index = listRef.current.index;
+    const event = events[index];
+
+    event.conditions = copyRef.current.conditions.slice();
+    event.list = copyRef.current.list.slice();
+    refreshEvents(events, index);
+  }
+
   React.useEffect(() => {
     console.log('EventEditor effect');
   });
@@ -206,6 +231,8 @@ const EventEditor = React.forwardRef((props, ref) => {
         changeEvent={onSelectChange}
         eventSizeClick={onEventSizeClick}
         eventDeleteClick={onEventDeleteClick}
+        eventCopyClick={onEventCopyClick}
+        eventPasteClick={onEventPasteClick}
         ref={listRef}
       />
       <Event

@@ -1,7 +1,11 @@
 function Utils() { }
 
 Utils.alignId = function(id, digits) {
-  return (('000000') + id).slice(-1 * digits);
+  return this.leftFillNum(id, digits);
+}
+
+Utils.leftFillNum = function(num, length) {
+  return num.toString().padStart(length, 0);
 }
 
 Utils.getDispValue = function(data, id, idEnd = id) {
@@ -70,7 +74,15 @@ Utils.getMoveSettingsFollowerList = function(){
 
 Utils.getDirectionSelectList = function(){
   return [{ value: -1, text: 'そのまま' }, { value: 0, text: '下' },
-  { value: 1, text: '右' }, { value: 2, text: '左' }, { value: 3, text: '上' }];
+  { value: 1, text: '左' }, { value: 2, text: '右' }, { value: 3, text: '上' }];
+}
+
+Utils.getDirectionInfoList = function(){
+  return this.getDirectionSelectList().map(info => info.text);
+}
+
+Utils.getAOrDList = function() {
+  return ['追加',　'削除'];
 }
 
 Utils.getRegistMemberInfoSelectList = function() {

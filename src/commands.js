@@ -53,6 +53,7 @@ const CommandPopup = props => {
           <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
           <button onClick={() => props.closePopup(COMMAND.FOLLOWERSETTINGS)}>隊員の設定変更</button>
           <button onClick={() => props.closePopup(COMMAND.ERASEEVEMT)}>イベントの消去</button>
+          <button onClick={() => props.closePopup(COMMAND.ADDRESSSETTINGS)}>行先の設定</button>
           <button onClick={() => props.closePopup(COMMAND.SE)}>効果音</button>
           <button onClick={() => props.closePopup(COMMAND.BGMPLAY)}>BGM演奏</button>
           <button onClick={() => props.closePopup(COMMAND.BGMINTERRUPT)}>BGM割込</button>
