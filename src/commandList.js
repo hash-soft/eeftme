@@ -1,12 +1,10 @@
 import React from 'react';
 import './index.css';
 import { COMMAND, CommandKeys, NoParamKeys } from './define';
-import { Dataset, MapEventsRef, CommonEventsRef } from './contents'
-import Utils from './utils'
+import { Dataset, MapEventsRef, CommonEventsRef } from './contents';
+import Utils from './utils';
 
-
-const CommandItem = props => {
-
+const CommandItem = (props) => {
   const dataset = React.useContext(Dataset);
   const musics = dataset.musics;
   const sounds = dataset.sounds;
@@ -24,84 +22,110 @@ const CommandItem = props => {
 
   const dispFlagName = (id, idEnd = id) => {
     return Utils.getDispValue(flags, id, idEnd);
-  }
+  };
 
   const dispVariableName = (id, idEnd = id) => {
     return Utils.getDispValue(variables, id, idEnd);
-  }
+  };
 
   const dispSlotName = (id, idEnd = id) => {
     return Utils.getDispValue(slots, id, idEnd);
-  }
+  };
 
   const dispItemName = (id) => {
     return Utils.getDispName(items, id);
-  }
+  };
 
   const dispMemberName = (id) => {
     return Utils.getDispName(members, id);
-  }
+  };
 
   const dispMapEventName = (id) => {
     return Utils.getDispName(mapEventsRef.current, id);
-  }
+  };
 
   const dispCommonEventName = (id) => {
     return Utils.getDispName(commonEventsRef.current, id);
-  }
+  };
 
   const dispSeName = (id) => {
     return Utils.getDispNameSound(sounds, id);
-  }
+  };
 
   const dispBgmName = (id) => {
     return Utils.getDispNameSound(musics, id);
-  }
+  };
 
   const dispMapName = (id) => {
     return Utils.getDispName(mapList, id);
-  }
+  };
 
   const dispPositionName = (id) => {
     return Utils.getDispName(positions, id);
-  }
+  };
 
   const dispWarpName = (id) => {
     return Utils.getDispName(warpPlaces, id);
-  }
+  };
 
   const listMessageContents = (text, type) => {
-    const header = ['[次段落]','[次行]','[基準行]'][type];
-    const message = <td style={{ whiteSpace: 'pre-line' }}>{header}{'\n'}{text}</td>;
-    
+    const header = ['[次段落]', '[次行]', '[基準行]'][type];
+    const message = (
+      <td style={{ whiteSpace: 'pre-line' }}>
+        {header}
+        {'\n'}
+        {text}
+      </td>
+    );
+
     return message;
-  }
+  };
 
   // メニュー表示
-  const listMenuContents = (menuId, initIndex, parentId, slotId, countSlotId, cancelIndex, closeType) => {
+  const listMenuContents = (
+    menuId,
+    initIndex,
+    parentId,
+    slotId,
+    countSlotId,
+    cancelIndex,
+    closeType
+  ) => {
     const menuName = Utils.getDispName(windowsets, menuId);
-    const parentName = parentId > 0 ? ', 親:' + Utils.getDispName(windowsets, parentId) : '';
+    const parentName =
+      parentId > 0 ? ', 親:' + Utils.getDispName(windowsets, parentId) : '';
     const slotName = slotId > 0 ? ', 追加:' + dispSlotName(slotId) : '';
-    const countSlotName = countSlotId > 0 ? ', 追加数:' + dispSlotName(countSlotId) : '';
+    const countSlotName =
+      countSlotId > 0 ? ', 追加数:' + dispSlotName(countSlotId) : '';
     const cancelName = cancelIndex >= 0 ? ', キャンセル:' + cancelIndex : '';
     return (
-      <td>{menuName}, 初期位置:{initIndex}{parentName}
-      {slotName}{countSlotName}
-      {cancelName}, 閉じる:{closeType}</td>
-    )
-  }
-  
+      <td>
+        {menuName}, 初期位置:{initIndex}
+        {parentName}
+        {slotName}
+        {countSlotName}
+        {cancelName}, 閉じる:{closeType}
+      </td>
+    );
+  };
+
   const listEndMenuContents = (menuId) => {
     const menuName = Utils.getDispName(windowsets, menuId);
-    return <td>{menuName}</td>
-  }
+    return <td>{menuName}</td>;
+  };
 
   const listMessageSettingsContents = (type, value) => {
-    const settingText = ['[待機]',
-      '[自動待機速度]', '自動待機する',
-      '自動待機しない', '一時停止', '[メッセージ音]', '[字下げ]'][type];
+    const settingText = [
+      '[待機]',
+      '[自動待機速度]',
+      '自動待機する',
+      '自動待機しない',
+      '一時停止',
+      '[メッセージ音]',
+      '[字下げ]',
+    ][type];
     const valueText = (() => {
-      switch(type) {
+      switch (type) {
         case 0:
         case 1:
         case 6:
@@ -112,52 +136,86 @@ const CommandItem = props => {
           return '';
       }
     })();
-    return <td>{settingText}{valueText}</td>;
-  }
+    return (
+      <td>
+        {settingText}
+        {valueText}
+      </td>
+    );
+  };
 
   // 組み込みメニュー
   const listEmbeddedContents = (menuId, startPos) => {
     const menuName = `[${menuId}]`;
-    return <td>{menuName}, 開始位置({startPos})</td>
-  }
-  
-  const listFlagContents = (parameters) => {
-    const flagId = parameters[0]; // まとめての場合parameters[1]を使用する
-    const control = parameters[2];
-    const flagName = dispFlagName(flagId);
-    return <td>{flagName} = {control === 0 ? 'OFF' : 'ON'}</td>
-  }
-  
-  const listVariableContents = (parameters, variables) => {
-    const variableId = parameters[0]; // まとめての場合parameters[1]を使用する
-    const opecode = parameters[2];
-    //const operand = parameters[3];  // 定数以外いるか不明なので未実装
-    const id = parameters[4];
-    const variableName = '[' + Utils.alignId(variableId, 3) + ':' + Utils.getValue(variables, variableId) + ']';
-    const opeTexts = ['=', '+=', '-='];
-    return <td>{variableName} {opeTexts[opecode]} {id}</td>
-  }
+    return (
+      <td>
+        {menuName}, 開始位置({startPos})
+      </td>
+    );
+  };
+
+  // フラグ
+  const listFlagContents = (flagId, flagEndId, control) => {
+    const flagName = dispFlagName(flagId, flagEndId);
+    return (
+      <td>
+        {flagName} = {control === 0 ? 'OFF' : 'ON'}
+      </td>
+    );
+  };
+
+  // 変数
+  // operand は多分いらないので死にデータ
+  const listVariableContents = (
+    variableId,
+    variableEndId,
+    opecode,
+    operand,
+    value
+  ) => {
+    const variableName = dispVariableName(variableId, variableEndId);
+
+    return (
+      <td>
+        {variableName} {_getOpecodeText(opecode)} {value}
+      </td>
+    );
+  };
 
   // スロット演算
   // type:代入タイプ
   //  0:直値 1:文字列 2:json 3:変数 4:スロット 5:乱数 6:ゲームデータ
   // param:代入タイプによって変わるパラメータ
-  const listOperateSlotContents = (beginId, endId, code, type, param1, param2) => {
+  const listOperateSlotContents = (
+    beginId,
+    endId,
+    code,
+    type,
+    param1,
+    param2
+  ) => {
     const slotText = dispSlotName(beginId, endId);
     const codeText = _getOpecodeText(code);
     const paramText = _getOperateSlotParamText(type, param1, param2);
     const checkText = code === 0 ? '' : [1].includes(type) ? '★不正！' : '';
-    return <td>{slotText}{codeText}{paramText}{checkText}</td>
-  }
+    return (
+      <td>
+        {slotText}
+        {codeText}
+        {paramText}
+        {checkText}
+      </td>
+    );
+  };
 
   const _getOperateSlotParamText = (type, param1, param2) => {
-    switch(type) {
+    switch (type) {
       case 0:
         return param1;
       case 1:
         return param1;
       case 2:
-        return 'フラグ:' + dispFlagName(param1);;
+        return 'フラグ:' + dispFlagName(param1);
       case 3:
         return '変数:' + dispVariableName(param1);
       case 4:
@@ -169,10 +227,10 @@ const CommandItem = props => {
       default:
         return '';
     }
-  }
+  };
 
   const _getOperateSlotGameDataText = (param) => {
-    switch(param) {
+    switch (param) {
       case 0:
         return '所持金';
       case 1:
@@ -182,133 +240,183 @@ const CommandItem = props => {
       default:
         return '';
     }
-  }
+  };
 
   const _getOpecodeText = (code) => {
-    const text = ['=', '+=', '-=', '*=', '/=', '%=', '|=', '&='];
-    return text[code];
-  }
+    return Utils.getOpecodeSelectList()[code];
+  };
 
   /**
    * 固定データ取得
-   * @param {*} slotId 
-   * @param {*} type 
-   * @param {*} param1 
-   * @param {*} param2 
+   * @param {*} slotId
+   * @param {*} type
+   * @param {*} param1
+   * @param {*} param2
    */
   const listAssignFixDataContents = (slotId, type, param1, param2) => {
     const slotText = dispSlotName(slotId);
     const typeText = ['道具'][type];
     const paramText = _getAssignFixDataParamText(type, param1, param2);
-    return <td>{slotText} = {typeText}:{paramText}</td>
-  }
+    return (
+      <td>
+        {slotText} = {typeText}:{paramText}
+      </td>
+    );
+  };
 
   const _getAssignFixDataParamText = (type, param1, param2) => {
-    switch(type) {
+    switch (type) {
       case 0:
         return `${dispItemName(param1)}[${param2}]`;
       default:
         return '';
     }
-  }
+  };
 
   /**
    * ゲームデータ取得
    * @param {*} slotId 格納するスロットId
    * @param {*} type 種類
-   * @param {*} param1 
-   * @param {*} param2 
+   * @param {*} param1
+   * @param {*} param2
    */
   const listAssignGameDataContents = (slotId, type, param1, param2) => {
     const slotText = dispSlotName(slotId);
-    const typeText = ['パーティメンバー', '登録メンバー', 'パーティ', 'プレイヤー'][type];
+    const typeText = Utils.getGameDataTypeSelectList()[type];
     const paramText = _getAssignGameDataParamText(type, param1, param2);
-    return <td>{slotText} = {typeText}:{paramText}</td>
-  }
+    return (
+      <td>
+        {slotText} = {typeText}:{paramText}
+      </td>
+    );
+  };
 
   const _getAssignGameDataParamText = (type, param1, param2) => {
-    switch(type) {
+    switch (type) {
       case 0:
         return `${dispSlotName(param1)} の登録id`;
       case 1:
-        return `${dispSlotName(param1)} ${Utils.getRegistMemberInfoSelectList()[param2]}`
+        return `${dispSlotName(param1)} ${
+          Utils.getRegistMemberInfoSelectList()[param2]
+        }`;
       case 2:
-        return `${Utils.getPartyInfoSelectList()[param2]}`
+        return `${Utils.getPartyInfoSelectList()[param2]}`;
       case 3:
-        return `${dispSlotName(param1)} ${Utils.getPlayerInfoSelectList()[param2]}`
+        return `${dispSlotName(param1)} ${
+          Utils.getPlayerInfoSelectList()[param2]
+        }`;
+      case 4:
+        return `${dispSlotName(param1)} の${dispItemName(param2)} の個数`;
       default:
         return '';
     }
-  }
+  };
 
   const listGoodsContents = (parameters) => {
-    const text = parameters.map(value => dispItemName(value)).join(',');
-    return <td>{text}</td>
-  }
+    const text = parameters.map((value) => dispItemName(value)).join(',');
+    return <td>{text}</td>;
+  };
 
   const listCompareSlotContents = (id, code, type, param) => {
     const slotText = dispSlotName(id);
     const codeText = _getCompareText(code);
     const paramText = _getNumberOrSlotParamText(type, param);
-    return <td>{slotText}{codeText}{paramText}</td>
-  }
+    return (
+      <td>
+        {slotText}
+        {codeText}
+        {paramText}
+      </td>
+    );
+  };
 
   const _getCompareText = (code) => {
     const text = ['=', '>=', '<=', '>', '<', '!=', '&'];
     return text[code];
-  }
+  };
 
   const listCaseContents = (result) => {
-    return <td>結果が {result} の場合</td>
-  }
+    return <td>結果が {result} の場合</td>;
+  };
 
   const listLabelContents = (name) => {
-    return <td>{name}</td>
-  }
+    return <td>{name}</td>;
+  };
 
   const listJumpContents = (name) => {
-    return <td>{name}</td>
-  }
-  
+    return <td>{name}</td>;
+  };
+
   const listGainItemContents = (type, id, memberSlotId) => {
     // 直接指定
-    if(type === 0) {
+    if (type === 0) {
       const itemName = `[${id}:道具名]`;
-      return <td>{itemName}を追加, 入手者格納スロット({dispSlotName(memberSlotId)})</td>
+      return (
+        <td>
+          {itemName}を追加, 入手者格納スロット({dispSlotName(memberSlotId)})
+        </td>
+      );
     } else {
-      return <td>スロット({id})の道具(id指定)を追加, 入手者格納スロット({dispSlotName(memberSlotId)})</td>
+      return (
+        <td>
+          スロット({id})の道具(id指定)を追加, 入手者格納スロット(
+          {dispSlotName(memberSlotId)})
+        </td>
+      );
     }
-  }
+  };
 
   const listChangeGoldContents = (op, type, value) => {
     const opText = op === 0 ? '+' : '-';
     const paramText = _getNumberOrSlotParamText(type, value);
-    return <td>{opText}{paramText}</td>
-  }
+    return (
+      <td>
+        {opText}
+        {paramText}
+      </td>
+    );
+  };
 
   const _getNumberOrSlotParamText = (type, param) => {
-    switch(type) {
+    switch (type) {
       case 0:
-      return param;
-    case 1:
-      return 'スロット:' + dispSlotName(param);
-    default:
-      return '';
+        return param;
+      case 1:
+        return 'スロット:' + dispSlotName(param);
+      default:
+        return '';
     }
-  }
+  };
 
   const listChangePartyContents = (type, variableId) => {
     const typeText = type === 0 ? '加える' : '外す';
-    return <td>{typeText}{dispVariableName(variableId)}</td>
-  }
+    return (
+      <td>
+        {typeText}
+        {dispVariableName(variableId)}
+      </td>
+    );
+  };
 
-  const listRecoverContents = (type, param, hprate, mprate, beginState, endState) => {
+  const listRecoverContents = (
+    type,
+    param,
+    hprate,
+    mprate,
+    beginState,
+    endState
+  ) => {
     const typeText = _getRecoverTypeText(type, param);
-    return <td>{typeText}hp+={hprate}%, mp+={mprate}%, 状態-=優先{beginState}～{endState}</td>
-  }
+    return (
+      <td>
+        {typeText}hp+={hprate}%, mp+={mprate}%, 状態-=優先{beginState}～
+        {endState}
+      </td>
+    );
+  };
 
   const _getRecoverTypeText = (type, param) => {
-    switch(type) {
+    switch (type) {
       case 0:
         return 'パーティ：';
       case 1:
@@ -320,49 +428,87 @@ const CommandItem = props => {
       default:
         return '???：';
     }
-  }
-  
+  };
+
   const listMapScriptContents = (type, id) => {
     const typeText = type === 0 ? '直接：' : 'スロット：';
     const idText = type === 0 ? dispMapEventName(id) : dispSlotName(id);
-    return <td>{typeText}{idText}</td>
-  }
-  
+    return (
+      <td>
+        {typeText}
+        {idText}
+      </td>
+    );
+  };
+
   const listCommonScriptContents = (type, id) => {
     const typeText = type === 0 ? '直接：' : 'スロット：';
     const idText = type === 0 ? dispCommonEventName(id) : dispSlotName(id);
-    return <td>{typeText}{idText}</td>
-  }
+    return (
+      <td>
+        {typeText}
+        {idText}
+      </td>
+    );
+  };
 
   const listChangeTileContents = (layerIndex, id, x, y) => {
-    return <td>レイヤー={layerIndex}, パーツ={id}({x},{y})</td>
-  }
+    return (
+      <td>
+        レイヤー={layerIndex}, パーツ={id}({x},{y})
+      </td>
+    );
+  };
 
   const listSwapTileContents = (type, layerIndex) => {
-    return <td>{type === 0 ? '戻す' : '置き換える'}(レイヤー={layerIndex})</td>
-  }
+    return (
+      <td>
+        {type === 0 ? '戻す' : '置き換える'}(レイヤー={layerIndex})
+      </td>
+    );
+  };
 
   // 場所移動
   const listMoveContents = (type, mapId, x, y, direction) => {
-    const [typeText, mapIdText, xText, yText] = _getMoveTypeText(type, mapId, x, y);
+    const [typeText, mapIdText, xText, yText] = _getMoveTypeText(
+      type,
+      mapId,
+      x,
+      y
+    );
     const directionTexts = Utils.getDirectionInfoList();
-    return <td>{typeText}(map:{mapIdText},X:{xText},Y:{yText}),{directionTexts[direction + 1]}</td>
-  }
+    return (
+      <td>
+        {typeText}(map:{mapIdText},X:{xText},Y:{yText}),
+        {directionTexts[direction + 1]}
+      </td>
+    );
+  };
 
-  const _getMoveTypeText = (type, mapId, x, y) =>{
+  const _getMoveTypeText = (type, mapId, x, y) => {
     if (type === 0) {
       return ['直接', dispMapName(mapId), x, y];
     } else {
-      return ['スロット', dispSlotName(mapId), dispSlotName(x), dispSlotName(y)];
+      return [
+        'スロット',
+        dispSlotName(mapId),
+        dispSlotName(x),
+        dispSlotName(y),
+      ];
     }
-  }
+  };
 
   const listMoveFromPositionContents = (type, positionId, direction) => {
-    const [typeText, positionIdText] = type === 0 ? 
-      ['直接', dispPositionName(positionId)] : 
-      ['スロット', dispSlotName(positionId)];
-    return <td>{typeText}(位置:{positionIdText}),方向:{direction}</td>
-  }
+    const [typeText, positionIdText] =
+      type === 0
+        ? ['直接', dispPositionName(positionId)]
+        : ['スロット', dispSlotName(positionId)];
+    return (
+      <td>
+        {typeText}(位置:{positionIdText}),方向:{direction}
+      </td>
+    );
+  };
 
   const listWarpContents = (type, warpId, direction) => {
     const [typeText, warpIdText] = (() => {
@@ -377,18 +523,26 @@ const CommandItem = props => {
           return ['???', ''];
       }
     })();
-    return <td>{typeText}(行先:{warpIdText}),方向:{direction}</td>
-  }
+    return (
+      <td>
+        {typeText}(行先:{warpIdText}),方向:{direction}
+      </td>
+    );
+  };
 
   // 位置設定
   const listLocationContents = (target, type, value1, value2, direction) => {
     const typeList = ['直接', 'スロット', '交換'];
-    return <td>対象{target} ({typeList[type]}:{_getLocationTypeText(type, value1, value2)},
-      方向:{direction})</td>
-  }
+    return (
+      <td>
+        対象{target} ({typeList[type]}:
+        {_getLocationTypeText(type, value1, value2)}, 方向:{direction})
+      </td>
+    );
+  };
 
   const _getLocationTypeText = (type, value1, value2) => {
-    switch(type){
+    switch (type) {
       case 0:
         return `${value1},${value2}`;
       case 1:
@@ -398,13 +552,13 @@ const CommandItem = props => {
       default:
         return '???';
     }
-  }
+  };
 
   // 移動の設定
   const listMoveSettingsContents = (type, value) => {
     const typeText = _getMoveSettingsText(type, value);
-    return <td>{typeText}</td>
-  }
+    return <td>{typeText}</td>;
+  };
 
   const _getMoveSettingsText = (type, value) => {
     switch (type) {
@@ -423,87 +577,124 @@ const CommandItem = props => {
       default:
         return '???';
     }
-  }
+  };
 
   const listScrollContents = (type, distanceX, distanceY, speed, wait) => {
     const typeText = ['固定', '固定解除', 'ずらす', '戻す'][type];
     const distanceText = type === 2 ? `[X:${distanceX} Y:${distanceY}]` : '';
-    const speedList = ['1/8倍', '1/4倍', '1/2倍', '1倍', '2倍', '4倍', '8倍','瞬時']; 
-    const speedText = [2,3].includes(type) ? ` ${speedList[speed > 6 ? 7 : speed]}` : '';
-    const waitText = [2,3].includes(type) ? ` ${wait > 0 ? '待機する' : '待機しない'}` : '';
-    return <td>{typeText}{distanceText}{speedText}{waitText}</td>
-  }
+    const speedList = [
+      '1/8倍',
+      '1/4倍',
+      '1/2倍',
+      '1倍',
+      '2倍',
+      '4倍',
+      '8倍',
+      '瞬時',
+    ];
+    const speedText = [2, 3].includes(type)
+      ? ` ${speedList[speed > 6 ? 7 : speed]}`
+      : '';
+    const waitText = [2, 3].includes(type)
+      ? ` ${wait > 0 ? '待機する' : '待機しない'}`
+      : '';
+    return (
+      <td>
+        {typeText}
+        {distanceText}
+        {speedText}
+        {waitText}
+      </td>
+    );
+  };
 
   const listMoveRouteContents = (target, type, routeId) => {
-    if(typeof routeId === 'object') {
+    if (typeof routeId === 'object') {
       routeId = 1;
     }
-    return <td>対象{target} ({type === 0 ? '共通' : 'マップ'},ルートId={routeId})</td>
-  }
+    return (
+      <td>
+        対象{target} ({type === 0 ? '共通' : 'マップ'},ルートId={routeId})
+      </td>
+    );
+  };
 
   // 隊列の操作
   const listFollowerControlContents = (type) => {
-    const texts = ['再設定', '一列', '集合' ]
+    const texts = ['再設定', '一列', '集合'];
     const typeText = texts[type];
-    return <td>{typeText}</td>
-  }
+    return <td>{typeText}</td>;
+  };
 
   // 待機
   const listWaitContents = (frame) => {
-    return <td>{frame}フレーム</td>
-  }
+    return <td>{frame}フレーム</td>;
+  };
 
   // 隊列の設定
   const listFollowerSettingsContents = (type, param) => {
     const texts = Utils.getFollowerSettingsTypeList();
     const typeText = texts[type];
-    const paramText = type === 0 ?
-      Utils.getFollowerSettingsChaseList()[param] : '未作成';
-    return <td>{typeText}:{paramText}</td>
-  }
+    const paramText =
+      type === 0 ? Utils.getFollowerSettingsChaseList()[param] : '未作成';
+    return (
+      <td>
+        {typeText}:{paramText}
+      </td>
+    );
+  };
 
   // 隊列の設定
   const listAddressSettingsContents = (type, warpId) => {
     const texts = Utils.getAOrDList();
     const typeText = texts[type];
-    return <td>{typeText}:{dispWarpName(warpId)}</td>
-  }
+    return (
+      <td>
+        {typeText}:{dispWarpName(warpId)}
+      </td>
+    );
+  };
 
   // 効果音
   const listSeContents = (id) => {
-    return <td>{dispSeName(id)}</td>
-  }
+    return <td>{dispSeName(id)}</td>;
+  };
 
   const listBgmPlay = (id) => {
-    return <td>{dispBgmName(id)}</td>
-  }
+    return <td>{dispBgmName(id)}</td>;
+  };
 
   const listBgmInterrupt = (id) => {
-    return <td>{dispBgmName(id)}</td>
-  }
+    return <td>{dispBgmName(id)}</td>;
+  };
 
   const listEventTriggerContents = (id) => {
-    return <td>id:{id}</td>
-  }
+    return <td>id:{id}</td>;
+  };
 
   // 透明状態変更
   const listChangeTransparentContents = (type) => {
     const texts = Utils.getChangeTransparentTypeList();
     const typeText = texts[type];
-    return <td>{typeText}</td>
-  }
+    return <td>{typeText}</td>;
+  };
 
   // 隊列の集合
   const listGatherFollowersContents = (type) => {
     const texts = Utils.getGatherFollowersTypeList();
     const typeText = texts[type];
-    return <td>{typeText}</td>
-  }
+    return <td>{typeText}</td>;
+  };
 
   const listCommentContents = (text) => {
-    const message = <td style={{ color: 'lime', whiteSpace: 'pre-line' }}>{'#'}{text}</td>;
+    const message = (
+      <td style={{ color: 'lime', whiteSpace: 'pre-line' }}>
+        {'#'}
+        {text}
+      </td>
+    );
     return message;
-  }
+  };
 
   const viewCommand = () => {
     const parameters = props.command.parameters;
@@ -538,11 +729,11 @@ const CommandItem = props => {
         break;
       case COMMAND.FLAG:
         title = 'フラグ:';
-        contents = listFlagContents(parameters);
+        contents = listFlagContents(...parameters);
         break;
       case COMMAND.VARIABLE:
         title = '変数:';
-        contents = listVariableContents(parameters, variables);
+        contents = listVariableContents(...parameters);
         break;
       case COMMAND.OPERATESLOT:
         title = 'スロット演算:';
@@ -713,35 +904,39 @@ const CommandItem = props => {
 
     if (props.command.code !== COMMAND.COMMENT) {
       return (
-        <table style={{ marginLeft: props.nest * 15 + 'px' }}><tbody><tr>
-          <td style={{ color: 'gray' }}>★{title}</td>
-          {contents}
-        </tr></tbody></table>
-      )
+        <table style={{ marginLeft: props.nest * 15 + 'px' }}>
+          <tbody>
+            <tr>
+              <td style={{ color: 'gray' }}>★{title}</td>
+              {contents}
+            </tr>
+          </tbody>
+        </table>
+      );
     } else {
       return (
-        <table style={{ marginLeft: props.nest * 15 + 'px' }}><tbody><tr>
-          {contents}
-        </tr></tbody></table>
-      )
+        <table style={{ marginLeft: props.nest * 15 + 'px' }}>
+          <tbody>
+            <tr>{contents}</tr>
+          </tbody>
+        </table>
+      );
     }
-  }
+  };
 
   // 編集ボタン
   // パラメータなしか不明なコマンドの場合は表示しない
   const editButton = () => {
     const code = props.command.code;
-    if(NoParamKeys.includes(code) || !CommandKeys.includes(code)) {
+    if (NoParamKeys.includes(code) || !CommandKeys.includes(code)) {
       return null;
     }
-    return <button onClick={() => props.onEditClick(props.index)}>編</button>
-  }
+    return <button onClick={() => props.onEditClick(props.index)}>編</button>;
+  };
 
   return (
     <div className="command-item">
-      <div>
-      {viewCommand()}
-      </div>
+      <div>{viewCommand()}</div>
       <button onClick={() => props.onAddClick(props.index)}>↑加</button>
       {editButton()}
       <button onClick={() => props.onDeleteClick(props.index)}>除</button>
@@ -749,29 +944,27 @@ const CommandItem = props => {
       <button onClick={() => props.onCopyClick(props.index)}>写</button>
     </div>
   );
-}
+};
 
-const CommandItemLast = props => {
+const CommandItemLast = (props) => {
   return (
     <div className="command-item">
       <button onClick={() => props.onAddClick(props.index)}>追加</button>
       <button onClick={() => props.onPasteClick(props.index)}>貼る</button>
     </div>
   );
-}
+};
 
-
-
-const CommandList = props => {
-
+const CommandList = (props) => {
   let nest = 0;
 
   const listItems = props.list.map((command, index) => {
-    if(COMMAND.ENDBRANCH === command.code) {
+    if (COMMAND.ENDBRANCH === command.code) {
       nest -= 1;
     }
     const result = (
-      <CommandItem key={index}
+      <CommandItem
+        key={index}
         index={index}
         nest={nest}
         command={command}
@@ -781,33 +974,35 @@ const CommandList = props => {
         onPasteClick={props.onPasteClick}
         onCopyClick={props.onCopyClick}
       />
-    )
-    if([COMMAND.CASE, COMMAND.ELSE].includes(command.code)) {
+    );
+    if ([COMMAND.CASE, COMMAND.ELSE].includes(command.code)) {
       nest += 1;
     }
 
     return result;
-  })
+  });
 
   const getCommandList = () => {
-    listItems.push(<CommandItemLast
-      key={listItems.length}
-      index={listItems.length}
-      onAddClick={props.onAddClick}
-      onPasteClick={props.onPasteClick}
-    />);
+    listItems.push(
+      <CommandItemLast
+        key={listItems.length}
+        index={listItems.length}
+        onAddClick={props.onAddClick}
+        onPasteClick={props.onPasteClick}
+      />
+    );
     return listItems;
-  }
+  };
 
   const listStyle = () => {
     return { pointerEvents: props.listEnable ? 'auto' : 'none' };
-  }
+  };
 
   return (
     <div className="command-list" style={listStyle()}>
       {getCommandList()}
     </div>
   );
-}
+};
 
 export default CommandList;
