@@ -11,6 +11,7 @@ const CommandItem = (props) => {
   const flags = dataset.flags;
   const variables = dataset.variables;
   const slots = dataset.slots;
+  const messages = dataset.messages;
   const members = dataset.members;
   const items = dataset.items;
   const windowsets = dataset.windowsets;
@@ -30,6 +31,10 @@ const CommandItem = (props) => {
 
   const dispSlotName = (id, idEnd = id) => {
     return Utils.getDispValue(slots, id, idEnd);
+  };
+
+  const dispMessage = (id) => {
+    return Utils.getDispValue(messages, id);
   };
 
   const dispItemName = (id) => {
@@ -255,7 +260,7 @@ const CommandItem = (props) => {
    */
   const listAssignFixDataContents = (slotId, type, param1, param2) => {
     const slotText = dispSlotName(slotId);
-    const typeText = ['道具'][type];
+    const typeText = Utils.getFixDataTypeSelectList()[type];
     const paramText = _getAssignFixDataParamText(type, param1, param2);
     return (
       <td>
@@ -267,7 +272,11 @@ const CommandItem = (props) => {
   const _getAssignFixDataParamText = (type, param1, param2) => {
     switch (type) {
       case 0:
-        return `${dispItemName(param1)}[${param2}]`;
+        return `${dispMessage(param1)}`;
+      case 1:
+        return `${dispItemName(param1)}の[${
+          Utils.getItemInfoSelectList()[param2]
+        }]`;
       default:
         return '';
     }
@@ -430,24 +439,30 @@ const CommandItem = (props) => {
     }
   };
 
-  const listMapScriptContents = (type, id) => {
-    const typeText = type === 0 ? '直接：' : 'スロット：';
+  // マップスクリプト
+  const listMapScriptContents = (type, id, timing) => {
+    const typeText = Utils.getDirectOrSlotList()[type];
     const idText = type === 0 ? dispMapEventName(id) : dispSlotName(id);
+    const timingText = Utils.getCallScriptTimingList()[timing];
     return (
       <td>
         {typeText}
         {idText}
+        {timingText}
       </td>
     );
   };
 
-  const listCommonScriptContents = (type, id) => {
+  // コモンスクリプト
+  const listCommonScriptContents = (type, id, timing) => {
     const typeText = type === 0 ? '直接：' : 'スロット：';
     const idText = type === 0 ? dispCommonEventName(id) : dispSlotName(id);
+    const timingText = Utils.getCallScriptTimingList()[timing];
     return (
       <td>
         {typeText}
         {idText}
+        {timingText}
       </td>
     );
   };

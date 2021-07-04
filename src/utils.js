@@ -86,12 +86,24 @@ Utils.getDirectionInfoList = function () {
   return this.getDirectionSelectList().map((info) => info.text);
 };
 
+Utils.getDirectOrSlotList = function () {
+  return ['直接', 'スロット'];
+};
+
 Utils.getOpecodeSelectList = function () {
   return ['=', '+=', '-=', '*=', '/=', '%=', '|=', '&='];
 };
 
 Utils.getAOrDList = function () {
   return ['追加', '削除'];
+};
+
+Utils.getFixDataTypeSelectList = function () {
+  return ['メッセージ', 'どうぐ'];
+};
+
+Utils.getItemInfoSelectList = function () {
+  return ['名前'];
 };
 
 Utils.getGameDataTypeSelectList = function () {
@@ -130,6 +142,10 @@ Utils.getChangeTransparentTypeList = function () {
 
 Utils.getGatherFollowersTypeList = function () {
   return ['通常', '集合位置で消える'];
+};
+
+Utils.getCallScriptTimingList = function () {
+  return ['即座', '予約'];
 };
 
 export default Utils;

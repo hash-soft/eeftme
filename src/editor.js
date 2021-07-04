@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import EventEditor from './eventEditor'
-import { simpleSelectItems　} from './selectBoxSet'
-import {Dataset, MapEventsRef, CommonEventsRef} from './contents'
+import EventEditor from './eventEditor';
+import { simpleSelectItems } from './selectBoxSet';
+import { Dataset, MapEventsRef, CommonEventsRef } from './contents';
 import './index.css';
-
-
 
 // ファイル読み込みボタン
 const LoadButton = (props) => {
@@ -12,20 +10,24 @@ const LoadButton = (props) => {
   const commonEventsRef = React.useContext(CommonEventsRef);
 
   const showOpenFileDialog = (text) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = '.json, application/json';
-      input.onchange = event => { resolve(event.target.files[0]); };
+      input.onchange = (event) => {
+        resolve(event.target.files[0]);
+      };
       input.click();
     });
-  }
+  };
 
-  const readAsText = file => {
-    return new Promise(resolve => {
-        const reader = new FileReader();
-        reader.readAsText(file);
-        reader.onload = () => { resolve(reader.result); };
+  const readAsText = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsText(file);
+      reader.onload = () => {
+        resolve(reader.result);
+      };
     });
   };
 
@@ -37,7 +39,7 @@ const LoadButton = (props) => {
     const json = JSON.parse(contents);
 
     // ファイルの中身チェックをやっておきたいが。。。
-    
+
     if (props.type === 'events') {
       refreshEvents(json, contents, file.name.split(/\.(?=[^.]+$)/));
     } else if (props.type === 'common') {
@@ -45,13 +47,13 @@ const LoadButton = (props) => {
     } else if (props.type === 'dataset') {
       refreshDataset(json, contents);
     }
-  }
+  };
 
   const refreshEvents = (json, contents, filename) => {
     // 最初の要素は表示しないので除去する
     json.shift();
     // モードがマップの時だけ更新
-    if(props.modeRef.current === 0) {
+    if (props.modeRef.current === 0) {
       props.eventEditorRef.current.refreshEvents(json);
       props.eventFileNameRef.current.updateName(filename[0]);
     } else {
@@ -62,13 +64,13 @@ const LoadButton = (props) => {
     }
     localStorage.setItem('events', contents);
     localStorage.setItem('filename', filename[0]);
-  }
+  };
 
   const refreshCommonEvents = (json, contents, filename) => {
     // 最初の要素は表示しないので除去する
     json.shift();
     // モードが共通の時だけ更新
-    if(props.modeRef.current === 1) {
+    if (props.modeRef.current === 1) {
       commonEventsRef.current = json;
       props.commonNameRef.current = filename[0];
       props.eventEditorRef.current.refreshEvents(json);
@@ -79,22 +81,20 @@ const LoadButton = (props) => {
     }
     localStorage.setItem('commonEvents', contents);
     localStorage.setItem('commonFilename', filename[0]);
-  }
+  };
 
   const refreshDataset = (json, contents) => {
     props.shiftDataset(json);
     props.update(json);
     localStorage.setItem('dataset', contents);
-  }
+  };
 
   React.useEffect(() => {
     console.log('Button effect');
   });
 
-  return (
-    <button onClick={() => loadFile()}>{props.label}</button>
-  )
-}
+  return <button onClick={() => loadFile()}>{props.label}</button>;
+};
 
 // ファイル保存ボタン
 const SaveButton = (props) => {
@@ -103,7 +103,7 @@ const SaveButton = (props) => {
 
   const saveData = (current, events) => {
     const eventsText = JSON.stringify(events);
-    switch(props.modeRef.current) {
+    switch (props.modeRef.current) {
       case 0:
         // マップデータを更新する
         mapEventsRef.current = current;
@@ -116,24 +116,29 @@ const SaveButton = (props) => {
         commonEventsRef.current = current;
         // ローカルストレージに保存
         localStorage.setItem('commonEvents', eventsText);
-        localStorage.setItem('commonFilename', props.eventFileNameRef.current.name);
+        localStorage.setItem(
+          'commonFilename',
+          props.eventFileNameRef.current.name
+        );
         break;
       default:
         break;
     }
-  }
+  };
 
   const download = (events) => {
-    if(props.type !== 'download') {
+    if (props.type !== 'download') {
       return;
     }
-    const blob = new Blob([JSON.stringify(events, null, '  ')], {type: 'application/json'});
-    const link = document.createElement('a')
-    link.href = window.URL.createObjectURL(blob)
-    link.download = props.eventFileNameRef.current.name + '.json'
+    const blob = new Blob([JSON.stringify(events, null, '  ')], {
+      type: 'application/json',
+    });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = props.eventFileNameRef.current.name + '.json';
     link.click();
     window.URL.revokeObjectURL(link.href);
-  }
+  };
 
   const saveFile = () => {
     const editEvents = props.eventsRef.current;
@@ -145,12 +150,10 @@ const SaveButton = (props) => {
     download(events);
 
     saveData(editEvents, events);
-  }
+  };
 
-  return (
-    <button onClick={() => saveFile()}>{props.label}</button>
-  )
-}
+  return <button onClick={() => saveFile()}>{props.label}</button>;
+};
 
 // ファイル読み書きボタン
 const FileButtons = (props) => {
@@ -168,29 +171,29 @@ const FileButtons = (props) => {
   const onModeChange = (e) => {
     // 編集が反映されていないので保存
     props.eventEditorRef.current.setEditEvent();
-    switch(e.target.value) {
-    case '0':
-      modeRef.current = 0;
-      commonNameRef.current = props.eventFileNameRef.current.name;
-      props.eventFileNameRef.current.updateName(mapNameRef.current);
-      props.eventEditorRef.current.refreshEvents(mapEventsRef.current);
-      break;
-    case '1':
-      modeRef.current = 1;
-      mapNameRef.current = props.eventFileNameRef.current.name;
-      props.eventFileNameRef.current.updateName(commonNameRef.current);
-      props.eventEditorRef.current.refreshEvents(commonEventsRef.current);
-      break;
-    default:
-      modeRef.current = 99;
-      break;
+    switch (e.target.value) {
+      case '0':
+        modeRef.current = 0;
+        commonNameRef.current = props.eventFileNameRef.current.name;
+        props.eventFileNameRef.current.updateName(mapNameRef.current);
+        props.eventEditorRef.current.refreshEvents(mapEventsRef.current);
+        break;
+      case '1':
+        modeRef.current = 1;
+        mapNameRef.current = props.eventFileNameRef.current.name;
+        props.eventFileNameRef.current.updateName(commonNameRef.current);
+        props.eventEditorRef.current.refreshEvents(commonEventsRef.current);
+        break;
+      default:
+        modeRef.current = 99;
+        break;
     }
-  }
+  };
 
   return (
     <div className="load-area">
       <select defaultValue={0} onChange={(e) => onModeChange(e)}>
-          {simpleSelectItems(['個別', '共通'])}
+        {simpleSelectItems(['個別', '共通'])}
       </select>
       <LoadButton
         label={'コマンドを開く'}
@@ -231,35 +234,31 @@ const FileButtons = (props) => {
         type={'download'}
       />
     </div>
-  )
-}
+  );
+};
 
 const EventFileName = React.forwardRef((props, ref) => {
   const [name, updateName] = useState(props.name);
 
   React.useImperativeHandle(ref, () => {
     return {
-      name : name,
-      updateName : updateName
-    }
+      name: name,
+      updateName: updateName,
+    };
   });
 
   const onNameChange = (e) => {
-    const cname = e.target.value
+    const cname = e.target.value;
     updateName(cname);
-  }
+  };
 
   return (
     <div className="event-file-name">
-      <font size="3" >保存名：</font>
-      <input 
-        value={name}
-        onChange={(e) => onNameChange(e)}
-      />
+      <font size="3">保存名：</font>
+      <input value={name} onChange={(e) => onNameChange(e)} />
     </div>
-  )
+  );
 });
-
 
 // 入出力
 const InOut = (props) => {
@@ -267,62 +266,63 @@ const InOut = (props) => {
 
   return (
     <div className="inout-area">
-      <EventFileName
-        name={props.fileName}
-        ref={eventFileNameRef}
-      />
-      <FileButtons
-        {...props}
-        eventFileNameRef={eventFileNameRef}
-      />
+      <EventFileName name={props.fileName} ref={eventFileNameRef} />
+      <FileButtons {...props} eventFileNameRef={eventFileNameRef} />
     </div>
-  )
-}
+  );
+};
 
 // レイアウトベース
 const Editor = () => {
-
   const eventEditorRef = React.useRef(null);
 
   const initFileName = () => {
     const fileNameText = localStorage.getItem('filename');
-    if( fileNameText == null) {
+    if (fileNameText == null) {
       return 'event01';
     }
     return fileNameText;
-  }
+  };
 
   const initCommonFileName = () => {
     const fileNameText = localStorage.getItem('commonFilename');
-    if( fileNameText == null) {
+    if (fileNameText == null) {
       return 'commonScriptset';
     }
     return fileNameText;
-  }
+  };
 
   const initEvents = () => {
     const eventsText = localStorage.getItem('events');
-    if(eventsText == null) {
-      return [{id:1, name: 'a', conditions: [], list: []}, {id:2, name: 'b', conditions: [], list: []},{id:3, name: 'c', conditions: [], list: []}];
+    if (eventsText == null) {
+      return [
+        { id: 1, name: 'a', conditions: [], list: [] },
+        { id: 2, name: 'b', conditions: [], list: [] },
+        { id: 3, name: 'c', conditions: [], list: [] },
+      ];
     }
     const events = JSON.parse(eventsText);
     events.shift();
     return events;
-  }
+  };
 
   const initCommonEvents = () => {
     const eventsText = localStorage.getItem('commonEvents');
-    if(eventsText == null) {
-      return [{id:1, name: 'a', conditions: [], list: []}, {id:2, name: 'b', conditions: [], list: []},{id:3, name: 'c', conditions: [], list: []}];
+    if (eventsText == null) {
+      return [
+        { id: 1, name: 'a', conditions: [], list: [] },
+        { id: 2, name: 'b', conditions: [], list: [] },
+        { id: 3, name: 'c', conditions: [], list: [] },
+      ];
     }
     const events = JSON.parse(eventsText);
     events.shift();
     return events;
-  }
+  };
 
   const initDataset = () => {
     const datasetText = localStorage.getItem('dataset');
-    if(datasetText == null) {
+    if (datasetText == null) {
       return {
         musics: [],
         sounds: [],
@@ -332,29 +332,30 @@ const Editor = () => {
         members: [],
         items: [],
         windowsets: [],
-        mapList:[],
-        positions:[],
-        warpPlaces:[]
-      }
+        mapList: [],
+        positions: [],
+        warpPlaces: [],
+      };
     }
     const dataset = JSON.parse(datasetText);
     shiftDataset(dataset);
     return dataset;
-  }
+  };
 
   const shiftDataset = (dataset) => {
-    if(dataset.musics) dataset.musics.shift();
-    if(dataset.sounds) dataset.sounds.shift();
-    dataset.flags.shift();
-    dataset.variables.shift();
-    dataset.slots.shift();
-    dataset.members.shift();
-    if(dataset.items) dataset.items.shift();
-    dataset.windowsets.shift();
-    if(dataset.mapList) dataset.mapList.shift();
-    if(dataset.positions) dataset.positions.shift();
+    dataset.musics?.shift();
+    dataset.sounds?.shift();
+    dataset.flags?.shift();
+    dataset.variables?.shift();
+    dataset.slots?.shift();
+    dataset.messages?.shift();
+    dataset.members?.shift();
+    dataset.items?.shift();
+    dataset.windowsets?.shift();
+    dataset.mapList?.shift();
+    dataset.positions?.shift();
     dataset.warpPlaces?.shift();
-  }
+  };
 
   const eventsRef = React.useRef(initEvents());
   const mapEventsRef = React.useRef(eventsRef.current);
@@ -368,25 +369,22 @@ const Editor = () => {
   return (
     <div className="editor">
       <Dataset.Provider value={dataset}>
-      <MapEventsRef.Provider value={mapEventsRef}>
-      <CommonEventsRef.Provider value={commonEventsRef}>
-      <InOut
-        fileName={initFileName()}
-        commonFileName={initCommonFileName()}
-        eventsRef={eventsRef}
-        shiftDataset={shiftDataset}
-        updateDataset={updateDataset}
-        eventEditorRef={eventEditorRef}
-      />
-      <EventEditor
-        eventsRef={eventsRef}
-        ref={eventEditorRef}
-      />
-      </CommonEventsRef.Provider>
-      </MapEventsRef.Provider>
+        <MapEventsRef.Provider value={mapEventsRef}>
+          <CommonEventsRef.Provider value={commonEventsRef}>
+            <InOut
+              fileName={initFileName()}
+              commonFileName={initCommonFileName()}
+              eventsRef={eventsRef}
+              shiftDataset={shiftDataset}
+              updateDataset={updateDataset}
+              eventEditorRef={eventEditorRef}
+            />
+            <EventEditor eventsRef={eventsRef} ref={eventEditorRef} />
+          </CommonEventsRef.Provider>
+        </MapEventsRef.Provider>
       </Dataset.Provider>
     </div>
   );
-}
+};
 
 export default Editor;
