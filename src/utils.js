@@ -91,7 +91,7 @@ Utils.getDirectOrSlotList = function () {
 };
 
 Utils.getOpecodeSelectList = function () {
-  return ['=', '+=', '-=', '*=', '/=', '%=', '|=', '&='];
+  return ['=', '+=', '-=', '*=', '/=', '%=', '|=', '&=', '&=~'];
 };
 
 Utils.getAOrDList = function () {
@@ -113,6 +113,7 @@ Utils.getGameDataTypeSelectList = function () {
     'パーティ',
     'プレイヤー',
     'どうぐ',
+    'オブジェクト',
   ];
 };
 
@@ -146,6 +147,10 @@ Utils.getGatherFollowersTypeList = function () {
 
 Utils.getCallScriptTimingList = function () {
   return ['即座', '予約'];
+};
+
+Utils.getReferenceTypeList = function () {
+  return ['絶対', '相対'];
 };
 
 export default Utils;

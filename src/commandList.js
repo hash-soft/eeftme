@@ -316,6 +316,10 @@ const CommandItem = (props) => {
         }`;
       case 4:
         return `${dispSlotName(param1)} の${dispItemName(param2)} の個数`;
+      case 5:
+        return `[オブジェクトId:${param1}] ${
+          Utils.getPlayerInfoSelectList()[param2]
+        }`;
       default:
         return '';
     }
@@ -397,7 +401,19 @@ const CommandItem = (props) => {
     }
   };
 
+  // パーティの変更
   const listChangePartyContents = (type, variableId) => {
+    const typeText = type === 0 ? '加える' : '外す';
+    return (
+      <td>
+        {typeText}
+        {dispVariableName(variableId)}
+      </td>
+    );
+  };
+
+  // NPCの変更
+  const listChangeNpcContents = (type, variableId) => {
     const typeText = type === 0 ? '加える' : '外す';
     return (
       <td>
@@ -484,7 +500,7 @@ const CommandItem = (props) => {
   };
 
   // 場所移動
-  const listMoveContents = (type, mapId, x, y, direction) => {
+  const listMoveContents = (type, mapId, x, y, direction, pos) => {
     const [typeText, mapIdText, xText, yText] = _getMoveTypeText(
       type,
       mapId,
@@ -495,7 +511,7 @@ const CommandItem = (props) => {
     return (
       <td>
         {typeText}(map:{mapIdText},X:{xText},Y:{yText}),
-        {directionTexts[direction + 1]}
+        {directionTexts[direction + 1]},{Utils.getReferenceTypeList()[pos]}
       </td>
     );
   };
@@ -808,6 +824,10 @@ const CommandItem = (props) => {
       case COMMAND.CHANGEPARTY:
         title = 'パーティの変更:';
         contents = listChangePartyContents(...parameters);
+        break;
+      case COMMAND.CHANGENPC:
+        title = 'NPCの変更:';
+        contents = listChangeNpcContents(...parameters);
         break;
       case COMMAND.RECOVER:
         title = '回復:';
