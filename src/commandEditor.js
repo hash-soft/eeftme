@@ -243,15 +243,16 @@ const EndMenu = (props) => {
 
 // 文章の設定
 const MessageSettings = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: 設定タイプ
   // 1: 値
-  const parametersRef = React.useRef(data || [0, 0]);
-  const parameters = parametersRef.current;
+  const parameters = GetParameters(props.command.parameters, [0, 0]);
   let waitCount = parameters[1];
   let waitSpeed = parameters[1];
   let wordsSoundId = parameters[1];
   let indent = parameters[1];
+  let suspend = parameters[1];
+  const selectList = Utils.getMessageOptionTypeSelectList();
+  const orNotList = Utils.getOrNotSelectList();
 
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
@@ -273,16 +274,31 @@ const MessageSettings = (props) => {
     indent = value;
   };
 
+  const onSuspendRadioChange = (e) => {
+    suspend = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
-    parameters[1] = [waitCount, waitSpeed, 0, 0, 0, wordsSoundId, indent][
-      parameters[0]
-    ];
+    parameters[1] = [
+      waitCount,
+      waitSpeed,
+      0,
+      0,
+      0,
+      wordsSoundId,
+      indent,
+      suspend,
+    ][parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
   };
 
   return (
-    <CommandBase onUpdate={onUpdate} onCancel={props.onCancel}>
+    <CommandBase
+      title={'文章の設定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
       <div>
         <input
           type="radio"
@@ -291,7 +307,7 @@ const MessageSettings = (props) => {
           defaultChecked={parameters[0] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        待機
+        {selectList[0]}
         <NumberEdit
           min={0}
           max={100}
@@ -307,7 +323,7 @@ const MessageSettings = (props) => {
           defaultChecked={parameters[0] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        自動待機速度
+        {selectList[1]}
         <NumberEdit
           min={0}
           max={8}
@@ -323,7 +339,7 @@ const MessageSettings = (props) => {
           defaultChecked={parameters[0] === 2 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        自動待機する
+        {selectList[2]}
       </div>
       <div>
         <input
@@ -333,7 +349,7 @@ const MessageSettings = (props) => {
           defaultChecked={parameters[0] === 3 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        自動待機しない
+        {selectList[3]}
       </div>
       <div>
         <input
@@ -343,7 +359,7 @@ const MessageSettings = (props) => {
           defaultChecked={parameters[0] === 4 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        一時停止
+        {selectList[4]}
       </div>
       <div>
         <input
@@ -353,7 +369,7 @@ const MessageSettings = (props) => {
           defaultChecked={parameters[0] === 5 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        メッセージ音
+        {selectList[5]}
         <SeSelectBox
           selectValue={wordsSoundId}
           onChange={(e) => onWordsSoundIdChange(e)}
@@ -368,13 +384,39 @@ const MessageSettings = (props) => {
           defaultChecked={parameters[0] === 6 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        字下げ
+        {selectList[6]}
         <NumberEdit
           min={0}
           max={5}
           value={indent}
           onValueFocusOff={onIndentFocusOff}
         />
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="7"
+          defaultChecked={parameters[0] === 7 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[7]}
+        <input
+          type="radio"
+          name="suspend"
+          value="0"
+          defaultChecked={suspend === 0 ? 'checked' : ''}
+          onChange={(e) => onSuspendRadioChange(e)}
+        />
+        {orNotList[0]}
+        <input
+          type="radio"
+          name="suspend"
+          value="1"
+          defaultChecked={suspend === 1 ? 'checked' : ''}
+          onChange={(e) => onSuspendRadioChange(e)}
+        />
+        {orNotList[1]}
       </div>
     </CommandBase>
   );
@@ -2355,17 +2397,16 @@ const Warp = (props) => {
 
 // 位置設定
 const Location = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: 対象 -1 プレイヤー 0:自キャラ その他：番号のキャラ
-  // 1: 0 直接指定 1 スロット指定 2:交換
-  // 2: x座標 or 交換id
+  // 1: 0 直接指定 1 スロット指定 2:交換 3:仲間の位置にする
+  // 2: x座標 or 交換id or 仲間の並びslotId
   // 3: y座標
   // 4: 方向
-  const parametersRef = React.useRef(data || [0, 0, 0, 0, -1]);
-  const parameters = parametersRef.current;
+  const parameters = GetParameters(props.command.parameters, [0, 0, 0, 0, -1]);
   let [x, y] = [parameters[2], parameters[3]];
   let [slotX, slotY] = [parameters[2], parameters[3]];
   let exchange = parameters[2];
+  let orderSlotId = parameters[1] === 3 ? parameters[2] : 1;
 
   const onValueFocusOff = (value, i) => {
     parameters[i] = value;
@@ -2399,8 +2440,12 @@ const Location = (props) => {
     parameters[5] = parseInt(e.target.value);
   };
 
+  const onOrderSlotChange = (e) => {
+    orderSlotId = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
-    const values2 = [x, slotX, exchange];
+    const values2 = [x, slotX, exchange, orderSlotId];
     const values3 = [y, slotY, 0];
     parameters[2] = values2[parameters[1]];
     parameters[3] = values3[parameters[1]];
@@ -2410,7 +2455,11 @@ const Location = (props) => {
   };
 
   return (
-    <CommandBase onUpdate={onUpdate} onCancel={props.onCancel}>
+    <CommandBase
+      title={'位置設定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
       <font>対象：</font>
       <NumberEdit
         min={-1}
@@ -2455,16 +2504,20 @@ const Location = (props) => {
           />
           スロット指定
           <div>
-            <font>X：</font>
-            <SlotSelectBox
-              selectValue={slotX}
-              onChange={(e) => onXSlotChange(e)}
-            />
-            <font>Y：</font>
-            <SlotSelectBox
-              selectValue={slotX}
-              onChange={(e) => onYSlotChange(e)}
-            />
+            <div>
+              <font>X：</font>
+              <SlotSelectBox
+                selectValue={slotX}
+                onChange={(e) => onXSlotChange(e)}
+              />
+            </div>
+            <div>
+              <font>Y：</font>
+              <SlotSelectBox
+                selectValue={slotX}
+                onChange={(e) => onYSlotChange(e)}
+              />
+            </div>
           </div>
         </div>
         <div>
@@ -2482,6 +2535,23 @@ const Location = (props) => {
               max={1000}
               value={parameters[0]}
               onValueFocusOff={(value) => onExchangeFocusOff(value)}
+            />
+          </div>
+        </div>
+        <div>
+          <input
+            type="radio"
+            name="type"
+            value="3"
+            defaultChecked={parameters[1] === 3 ? 'checked' : ''}
+            onChange={(e) => onRadioChange(e)}
+          />
+          仲間の位置にする
+          <div>
+            <font>並び位置：</font>
+            <SlotSelectBox
+              selectValue={orderSlotId}
+              onChange={(e) => onOrderSlotChange(e)}
             />
           </div>
         </div>
@@ -3272,13 +3342,16 @@ const BgmPlay = (props) => {
 
 // BGM割込
 const BgmInterrupt = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: 効果音Id
-  const parametersRef = React.useRef(data || [0]);
-  const parameters = parametersRef.current;
+  // 1: 0:待機しない 1:待機する
+  const parameters = GetParameters(props.command.parameters, [0, 0]);
 
   const onChange = (e) => {
     parameters[0] = parseInt(e.target.value);
+  };
+
+  const onWaitCheck = (e) => {
+    parameters[1] = e.target.checked;
   };
 
   const onUpdate = () => {
@@ -3287,13 +3360,28 @@ const BgmInterrupt = (props) => {
   };
 
   return (
-    <CommandBase onUpdate={onUpdate} onCancel={props.onCancel}>
-      <font>BGMId：</font>
-      <BgmSelectBox
-        selectValue={parameters[0]}
-        onChange={(e) => onChange(e)}
-        unuse={true}
-      />
+    <CommandBase
+      title={'BGM割り込み'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>BGMId：</font>
+        <BgmSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onChange(e)}
+          unuse={true}
+        />
+      </div>
+      <div>
+        <input
+          type="checkbox"
+          name="multi"
+          defaultChecked={parameters[1] ? 'checked' : ''}
+          onChange={(e) => onWaitCheck(e)}
+        />
+        待機する
+      </div>
     </CommandBase>
   );
 };
@@ -3419,9 +3507,7 @@ const GatherFollowers = (props) => {
 
 // コメント
 const Comment = (props) => {
-  const data = sliceParameters(props.command.parameters);
-  const parametersRef = React.useRef(data || ['']);
-  const parameters = parametersRef.current;
+  const parameters = GetParameters(props.command.parameters, ['']);
 
   const onChange = (e) => {
     parameters[0] = e.target.value;
@@ -3445,6 +3531,12 @@ const Comment = (props) => {
       </div>
     </CommandBase>
   );
+};
+
+const GetParameters = (settingData, initData) => {
+  const data = sliceParameters(settingData);
+  const parametersRef = React.useRef(data || initData);
+  return parametersRef.current;
 };
 
 const CommandEditor = (props) => {

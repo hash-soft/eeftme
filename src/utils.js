@@ -86,6 +86,23 @@ Utils.getDirectionInfoList = function () {
   return this.getDirectionSelectList().map((info) => info.text);
 };
 
+Utils.getMessageOptionTypeSelectList = function () {
+  return [
+    '待機',
+    '自動待機速度',
+    '自動待機する',
+    '自動待機しない',
+    '一時停止',
+    'メッセージ音',
+    '字下げ',
+    '休止',
+  ];
+};
+
+Utils.getOrNotSelectList = function () {
+  return ['しない', 'する'];
+};
+
 Utils.getDirectOrSlotList = function () {
   return ['直接', 'スロット'];
 };

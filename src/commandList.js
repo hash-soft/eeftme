@@ -119,26 +119,22 @@ const CommandItem = (props) => {
     return <td>{menuName}</td>;
   };
 
+  // 文章の設定
   const listMessageSettingsContents = (type, value) => {
-    const settingText = [
-      '[待機]',
-      '[自動待機速度]',
-      '自動待機する',
-      '自動待機しない',
-      '一時停止',
-      '[メッセージ音]',
-      '[字下げ]',
-    ][type];
-    const valueText = (() => {
+    const [settingText, valueText] = (() => {
       switch (type) {
         case 0:
         case 1:
         case 6:
-          return value;
+        case 7:
+          return [`[${Utils.getMessageOptionTypeSelectList()[type]}]`, value];
         case 5:
-          return dispSeName(value);
+          return [
+            `[${Utils.getMessageOptionTypeSelectList()[type]}]`,
+            dispSeName(value),
+          ];
         default:
-          return '';
+          return [Utils.getMessageOptionTypeSelectList()[type], ''];
       }
     })();
     return (
@@ -563,7 +559,7 @@ const CommandItem = (props) => {
 
   // 位置設定
   const listLocationContents = (target, type, value1, value2, direction) => {
-    const typeList = ['直接', 'スロット', '交換'];
+    const typeList = ['直接', 'スロット', '交換', '仲間の位置にする'];
     return (
       <td>
         対象{target} ({typeList[type]}:
@@ -580,6 +576,8 @@ const CommandItem = (props) => {
         return `${dispSlotName(value1)},${dispSlotName(value2)}`;
       case 2:
         return `${value1}`;
+      case 3:
+        return dispSlotName(value1);
       default:
         return '???';
     }
@@ -695,8 +693,12 @@ const CommandItem = (props) => {
     return <td>{dispBgmName(id)}</td>;
   };
 
-  const listBgmInterrupt = (id) => {
-    return <td>{dispBgmName(id)}</td>;
+  const listBgmInterrupt = (id, wait) => {
+    return (
+      <td>
+        {dispBgmName(id)}:{wait > 0 ? '待機する' : ''}
+      </td>
+    );
   };
 
   const listEventTriggerContents = (id) => {
