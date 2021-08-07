@@ -2853,7 +2853,11 @@ const MoveRoute = (props) => {
   };
 
   return (
-    <CommandBase onUpdate={onUpdate} onCancel={props.onCancel}>
+    <CommandBase
+      title={'移動ルート'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
       <font>対象：</font>
       <NumberEdit
         min={-1}
@@ -2886,6 +2890,52 @@ const MoveRoute = (props) => {
         value={parameters[2]}
         onValueFocusOff={(value) => onValueFocusOff(value, 2)}
       />
+    </CommandBase>
+  );
+};
+
+// 移動ルート待機
+const MoveRouteWait = (props) => {
+  const data = sliceParameters(props.command.parameters);
+  // 0: 待機中の足踏み 0:しない 1:する
+  const parametersRef = React.useRef(data || [0]);
+  const parameters = parametersRef.current;
+  const orNotList = Utils.getOrNotSelectList();
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'移動ルート待機'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>待機中の足踏み：</font>
+      <div>
+        <input
+          type="radio"
+          name="step"
+          value="0"
+          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {orNotList[0]}
+        <input
+          type="radio"
+          name="step"
+          value="1"
+          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {orNotList[1]}
+      </div>
     </CommandBase>
   );
 };
@@ -3344,7 +3394,8 @@ const BgmPlay = (props) => {
 const BgmInterrupt = (props) => {
   // 0: 効果音Id
   // 1: 0:待機しない 1:待機する
-  const parameters = GetParameters(props.command.parameters, [0, 0]);
+  // 2: 0:終了後リジュームしない 1:する
+  const parameters = GetParameters(props.command.parameters, [0, 0, 0]);
 
   const onChange = (e) => {
     parameters[0] = parseInt(e.target.value);
@@ -3352,6 +3403,10 @@ const BgmInterrupt = (props) => {
 
   const onWaitCheck = (e) => {
     parameters[1] = e.target.checked;
+  };
+
+  const onNoResumeCheck = (e) => {
+    parameters[2] = e.target.checked;
   };
 
   const onUpdate = () => {
@@ -3381,6 +3436,15 @@ const BgmInterrupt = (props) => {
           onChange={(e) => onWaitCheck(e)}
         />
         待機する
+      </div>
+      <div>
+        <input
+          type="checkbox"
+          name="noResume"
+          defaultChecked={parameters[2] ? 'checked' : ''}
+          onChange={(e) => onNoResumeCheck(e)}
+        />
+        終了後再開しない
       </div>
     </CommandBase>
   );
@@ -3600,6 +3664,8 @@ const CommandEditor = (props) => {
         return <Scroll {...props} />;
       case COMMAND.MOVEROUTE:
         return <MoveRoute {...props} />;
+      case COMMAND.MOVEROUTEWAIT:
+        return <MoveRouteWait {...props} />;
       case COMMAND.FOLLOWERCONTROL:
         return <FollowerControl {...props} />;
       case COMMAND.MAPSCRIPT:

@@ -637,6 +637,7 @@ const CommandItem = (props) => {
     );
   };
 
+  // 移動ルート
   const listMoveRouteContents = (target, type, routeId) => {
     if (typeof routeId === 'object') {
       routeId = 1;
@@ -646,6 +647,11 @@ const CommandItem = (props) => {
         対象{target} ({type === 0 ? '共通' : 'マップ'},ルートId={routeId})
       </td>
     );
+  };
+
+  // 移動ルート待機
+  const listMoveRouteWaitContents = (stepType) => {
+    return <td>足踏み:{Utils.getOrNotSelectList()[stepType]})</td>;
   };
 
   // 隊列の操作
@@ -693,10 +699,11 @@ const CommandItem = (props) => {
     return <td>{dispBgmName(id)}</td>;
   };
 
-  const listBgmInterrupt = (id, wait) => {
+  const listBgmInterrupt = (id, wait, noResume) => {
     return (
       <td>
-        {dispBgmName(id)}:{wait > 0 ? '待機する' : ''}
+        {dispBgmName(id)},{wait > 0 ? '待機する' : ''},
+        {noResume > 0 ? '終了後リジュームしない' : ''}
       </td>
     );
   };
@@ -881,6 +888,7 @@ const CommandItem = (props) => {
         break;
       case COMMAND.MOVEROUTEWAIT:
         title = '移動ルート待機:';
+        contents = listMoveRouteWaitContents(...parameters);
         break;
       case COMMAND.FOLLOWERCONTROL:
         title = '隊列の操作:';

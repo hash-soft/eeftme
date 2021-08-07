@@ -139,7 +139,7 @@ Utils.getRegistMemberInfoSelectList = function () {
 };
 
 Utils.getPartyInfoSelectList = function () {
-  return ['所持金', '人数', '生存人数', '表示人数'];
+  return ['所持金', 'メンバー数', '生存人数', '表示人数', '生存＋NPC人数'];
 };
 
 Utils.getPlayerInfoSelectList = function () {
