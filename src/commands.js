@@ -46,6 +46,7 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.ASSIGNGAMEDATA)}>
             ゲームデータ取得
           </button>
+          {commandButton(COMMAND.ASSIGNSYSTEMSLOT, 'システムスロットに代入')}
           <button onClick={() => props.closePopup(COMMAND.ITEMSPACE)}>
             道具追加可能判定
           </button>
@@ -55,9 +56,8 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.GOODS)}>
             商品の設定
           </button>
-          <button onClick={() => props.closePopup(COMMAND.COMPARESLOT)}>
-            スロット比較
-          </button>
+          {commandButton(COMMAND.COMPARESLOT, 'スロット比較')}
+          {commandButton(COMMAND.ASSIGNRESULT, '結果代入')}
           <button onClick={() => props.closePopup(COMMAND.CASE)}>CASE</button>
           <button onClick={() => props.closePopup(COMMAND.ELSE)}>ELSE</button>
           <button onClick={() => props.closePopup(COMMAND.ENDBRANCH)}>
@@ -82,9 +82,8 @@ const CommandPopup = (props) => {
             パーティの変更
           </button>
           {commandButton(COMMAND.CHANGENPC, 'NPCの変更')}
-          <button onClick={() => props.closePopup(COMMAND.RECOVER)}>
-            回復
-          </button>
+          {commandButton(COMMAND.RECOVER, '回復')}
+          {commandButton(COMMAND.CHANGESTATE, '状態変更')}
           <button onClick={() => props.closePopup(COMMAND.CHANGETILE)}>
             タイル変更
           </button>
@@ -142,18 +141,15 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.EVENTTRIGGER)}>
             イベント起動
           </button>
-          <button onClick={() => props.closePopup(COMMAND.SCREENFADEOUT)}>
-            画面のフェードアウト
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.SCREENFADEIN)}>
-            画面のフェードイン
-          </button>
+          {commandButton(COMMAND.SCREENFADEOUT, '画面のフェードアウト')}
+          {commandButton(COMMAND.SCREENFADEIN, '画面のフェードイン')}
           <button onClick={() => props.closePopup(COMMAND.CHANGETRANSPARENT)}>
             透明状態変更
           </button>
           <button onClick={() => props.closePopup(COMMAND.GATHERFOLLOWERS)}>
             隊列の集合
           </button>
+          {commandButton(COMMAND.RESETOBJECTS, 'オブジェクトの再設定')}
           <button onClick={() => props.closePopup(COMMAND.COMMENT)}>
             コメント
           </button>

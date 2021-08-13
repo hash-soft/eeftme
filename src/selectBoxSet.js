@@ -16,6 +16,20 @@ const simpleSelectItems = (items) => {
   return selectItems;
 };
 
+const simpleSelectStrings = (strings) => {
+  const selectItems = strings.map((value, index) => {
+    const num = index;
+    const keyText = num.toString();
+    return (
+      <option key={keyText} value={value}>
+        {value}
+      </option>
+    );
+  });
+
+  return selectItems;
+};
+
 const pairSelectItems = (items) => {
   const selectItems = items.map((value, index) => {
     const keyText = index.toString();
@@ -29,28 +43,55 @@ const pairSelectItems = (items) => {
   return selectItems;
 };
 
+const pairSelectObjects = (objects) => {
+  const selectItems = objects.entries.map(([name, id], index) => {
+    const keyText = index.toString();
+    return (
+      <option key={keyText} value={id}>
+        {name}
+      </option>
+    );
+  });
+
+  return selectItems;
+};
+
 const SelectBoxBase = (props) => {
   const selectItems = () => {
-    const selectItems = props.items.map((value, index) => {
-      const num = index + 1;
-      const keyText = num.toString();
-      const dispNum = Utils.alignId(num, props.digits);
-      if (props.single) {
-        return (
-          <option key={keyText} value={num}>
-            {dispNum + ':'}
-            {value}
-          </option>
-        );
-      } else {
-        return (
-          <option key={keyText} value={num}>
-            {dispNum + ':'}
-            {value.name}
-          </option>
-        );
-      }
-    });
+    const preItems = props.preItems ? pairSelectItems(props.preItems) : [];
+    const selectItems = [
+      ...preItems,
+      ...props.items.map((value, index) => {
+        const num = index + 1;
+        const keyText = num.toString();
+        const dispNum = Utils.alignId(num, props.digits);
+        if (props.single) {
+          return (
+            <option key={keyText} value={num}>
+              {dispNum + ':'}
+              {value}
+            </option>
+          );
+        } else {
+          return (
+            <option key={keyText} value={num}>
+              {dispNum + ':'}
+              {value.name}
+            </option>
+          );
+        }
+      }),
+    ];
+
+    // 未使用選択可能な場合は先頭にindex0の項目を追加する
+    if (props.unuse) {
+      const text = props.unuseText ? props.unuseText : 'なし';
+      selectItems.unshift(
+        <option key={0} value={0}>
+          {text}
+        </option>
+      );
+    }
 
     const selectValue = props.selectValue;
     // 選択している変数がなくなっていた場合の対策
@@ -59,16 +100,6 @@ const SelectBoxBase = (props) => {
         <option key={selectValue.toString()} value={selectValue}>
           {'削除:'}
           {selectValue}
-        </option>
-      );
-    }
-
-    // 未使用選択可能な場合は先頭にindex0の項目を追加する
-    if (props.unuse) {
-      const text = props.unuseText ? props.unuseText : 'なし';
-      selectItems.unshift(
-        <option key={0} value={0}>
-          {text}
         </option>
       );
     }
@@ -149,6 +180,21 @@ const MessageSelectBox = (props) => {
   );
 };
 
+// システムスロットIdセレクトボックス
+const SystemSlotIdSelectBox = (props) => {
+  const dataset = React.useContext(Dataset);
+  const strings = Object.keys(dataset.slotIds);
+
+  return (
+    <select
+      defaultValue={props.selectValue}
+      onChange={(e) => props.onChange(e)}
+    >
+      {simpleSelectStrings(strings)}
+    </select>
+  );
+};
+
 // 道具セレクトボックス
 const ItemSelectBox = (props) => {
   const dataset = React.useContext(Dataset);
@@ -163,6 +209,14 @@ const MemberSelectBox = (props) => {
   const members = dataset.members;
 
   return <SelectBoxBase items={members} digits={3} {...props}></SelectBoxBase>;
+};
+
+// 状態セレクトボックス
+const StateSelectBox = (props) => {
+  const dataset = React.useContext(Dataset);
+  const states = dataset.states;
+
+  return <SelectBoxBase items={states} digits={3} {...props}></SelectBoxBase>;
 };
 
 // メニューセレクトボックス
@@ -259,13 +313,17 @@ const CommonEventSelectBox = (props) => {
 
 export {
   simpleSelectItems,
+  simpleSelectStrings,
   pairSelectItems,
+  pairSelectObjects,
   FlagSelectBox,
   VariableSelectBox,
   SlotSelectBox,
   MessageSelectBox,
+  SystemSlotIdSelectBox,
   ItemSelectBox,
   MemberSelectBox,
+  StateSelectBox,
   MenuSelectBox,
   MapSelectBox,
   PositionSelectBox,

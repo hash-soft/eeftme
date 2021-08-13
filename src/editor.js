@@ -335,6 +335,8 @@ const Editor = () => {
         mapList: [],
         positions: [],
         warpPlaces: [],
+        states: [],
+        slotIds: {},
       };
     }
     const dataset = JSON.parse(datasetText);
@@ -355,6 +357,7 @@ const Editor = () => {
     dataset.mapList?.shift();
     dataset.positions?.shift();
     dataset.warpPlaces?.shift();
+    dataset.states?.shift();
   };
 
   const eventsRef = React.useRef(initEvents());

@@ -12,8 +12,8 @@ const CommandItem = (props) => {
   const variables = dataset.variables;
   const slots = dataset.slots;
   const messages = dataset.messages;
-  const members = dataset.members;
   const items = dataset.items;
+  const states = dataset.states;
   const windowsets = dataset.windowsets;
   const mapList = dataset.mapList;
   const positions = dataset.positions;
@@ -41,8 +41,8 @@ const CommandItem = (props) => {
     return Utils.getDispName(items, id);
   };
 
-  const dispMemberName = (id) => {
-    return Utils.getDispName(members, id);
+  const dispStateName = (id) => {
+    return Utils.getDispName(states, id);
   };
 
   const dispMapEventName = (id) => {
@@ -109,7 +109,7 @@ const CommandItem = (props) => {
         {parentName}
         {slotName}
         {countSlotName}
-        {cancelName}, 閉じる:{closeType}
+        {cancelName}, 決定時:{closeType}
       </td>
     );
   };
@@ -210,21 +210,24 @@ const CommandItem = (props) => {
   };
 
   const _getOperateSlotParamText = (type, param1, param2) => {
+    const assignList = Utils.getAssignSelectList();
     switch (type) {
       case 0:
         return param1;
       case 1:
         return param1;
       case 2:
-        return 'フラグ:' + dispFlagName(param1);
+        return `${assignList[type]}:` + dispFlagName(param1);
       case 3:
-        return '変数:' + dispVariableName(param1);
+        return `${assignList[type]}:` + dispVariableName(param1);
       case 4:
-        return 'スロット:' + dispSlotName(param1);
+        return `${assignList[type]}:` + dispSlotName(param1);
       case 5:
         return param1 + '～' + param2;
       case 6:
         return _getOperateSlotGameDataText(param1);
+      case 7:
+        return `${assignList[type]}:` + dispSlotName(param1);
       default:
         return '';
     }
@@ -273,6 +276,8 @@ const CommandItem = (props) => {
         return `${dispItemName(param1)}の[${
           Utils.getItemInfoSelectList()[param2]
         }]`;
+      case 2:
+        return param1;
       default:
         return '';
     }
@@ -316,16 +321,30 @@ const CommandItem = (props) => {
         return `[オブジェクトId:${param1}] ${
           Utils.getPlayerInfoSelectList()[param2]
         }`;
+      case 6:
+        return `${dispSlotName(param1)} が${dispStateName(param2)} かどうか`;
       default:
         return '';
     }
   };
 
+  // システムスロットに代入
+  const listAssignSystemSlotContents = (systemSlotName, slotId) => {
+    const slotText = dispSlotName(slotId);
+    return (
+      <td>
+        {slotText} = {systemSlotName}
+      </td>
+    );
+  };
+
+  // 商品の設定
   const listGoodsContents = (parameters) => {
     const text = parameters.map((value) => dispItemName(value)).join(',');
     return <td>{text}</td>;
   };
 
+  // スロット比較
   const listCompareSlotContents = (id, code, type, param) => {
     const slotText = dispSlotName(id);
     const codeText = _getCompareText(code);
@@ -342,6 +361,12 @@ const CommandItem = (props) => {
   const _getCompareText = (code) => {
     const text = ['=', '>=', '<=', '>', '<', '!=', '&'];
     return text[code];
+  };
+
+  // 結果代入
+  const listAssignResultContents = (slotId) => {
+    const slotText = dispSlotName(slotId);
+    return <td>結果 = {slotText}</td>;
   };
 
   const listCaseContents = (result) => {
@@ -419,6 +444,7 @@ const CommandItem = (props) => {
     );
   };
 
+  // 回復
   const listRecoverContents = (
     type,
     param,
@@ -437,18 +463,33 @@ const CommandItem = (props) => {
   };
 
   const _getRecoverTypeText = (type, param) => {
+    const list = Utils.getRecoverTypeSelectList();
     switch (type) {
       case 0:
-        return 'パーティ：';
+        return `${list[type]}：`;
       case 1:
-        return '仲間全部：';
+        return `${list[type]}：`;
       case 2:
-        return 'メンバーId：' + dispMemberName(param);
-      case 3:
-        return param + '番目：';
+        return `${list[type]}：` + dispSlotName(param);
       default:
         return '???：';
     }
+  };
+
+  // 状態変更
+  const listChangeStateContents = (slotId, type, stateId) => {
+    const slotText =
+      slotId <= 0
+        ? Utils.getPreRegistIdSelectList().find(
+            (value) => value.value === slotId
+          )?.text
+        : dispSlotName(slotId);
+    return (
+      <td>
+        {slotText}の{dispStateName(stateId)}を
+        {Utils.getChangeStateTypeList()[type]}
+      </td>
+    );
   };
 
   // マップスクリプト
@@ -651,7 +692,7 @@ const CommandItem = (props) => {
 
   // 移動ルート待機
   const listMoveRouteWaitContents = (stepType) => {
-    return <td>足踏み:{Utils.getOrNotSelectList()[stepType]})</td>;
+    return <td>足踏み:{Utils.getOrNotSelectList()[stepType]}</td>;
   };
 
   // 隊列の操作
@@ -710,6 +751,16 @@ const CommandItem = (props) => {
 
   const listEventTriggerContents = (id) => {
     return <td>id:{id}</td>;
+  };
+
+  // 画面のフェードアウト
+  const listScreenFadeOutContents = (wait) => {
+    return <td>待機:{Utils.getOrNotSelectList()[wait]}</td>;
+  };
+
+  // 画面のフェードイン
+  const listScreenFadeInContents = (wait) => {
+    return <td>待機:{Utils.getOrNotSelectList()[wait]}</td>;
   };
 
   // 透明状態変更
@@ -787,6 +838,10 @@ const CommandItem = (props) => {
         title = 'ゲームデータ取得:';
         contents = listAssignGameDataContents(...parameters);
         break;
+      case COMMAND.ASSIGNSYSTEMSLOT:
+        title = 'システムスロットに代入:';
+        contents = listAssignSystemSlotContents(...parameters);
+        break;
       case COMMAND.GOODS:
         title = '商品の設定:';
         contents = listGoodsContents(parameters);
@@ -800,6 +855,10 @@ const CommandItem = (props) => {
       case COMMAND.COMPARESLOT:
         title = 'スロット比較';
         contents = listCompareSlotContents(...parameters);
+        break;
+      case COMMAND.ASSIGNRESULT:
+        title = '結果代入';
+        contents = listAssignResultContents(...parameters);
         break;
       case COMMAND.CASE:
         title = 'CASE:';
@@ -841,6 +900,10 @@ const CommandItem = (props) => {
       case COMMAND.RECOVER:
         title = '回復:';
         contents = listRecoverContents(...parameters);
+        break;
+      case COMMAND.CHANGESTATE:
+        title = '状態変更:';
+        contents = listChangeStateContents(...parameters);
         break;
       case COMMAND.MAPSCRIPT:
         title = 'マップスクリプト:';
@@ -927,9 +990,11 @@ const CommandItem = (props) => {
         break;
       case COMMAND.SCREENFADEOUT:
         title = '画面のフェードアウト:';
+        contents = listScreenFadeOutContents(...parameters);
         break;
       case COMMAND.SCREENFADEIN:
         title = '画面のフェードイン:';
+        contents = listScreenFadeInContents(...parameters);
         break;
       case COMMAND.CHANGETRANSPARENT:
         title = '透明状態変更:';
@@ -938,6 +1003,9 @@ const CommandItem = (props) => {
       case COMMAND.GATHERFOLLOWERS:
         title = '隊列の集合:';
         contents = listGatherFollowersContents(...parameters);
+        break;
+      case COMMAND.RESETOBJECTS:
+        title = 'オブジェクトの再設定';
         break;
       case COMMAND.COMMENT:
         title = '';

@@ -111,12 +111,25 @@ Utils.getOpecodeSelectList = function () {
   return ['=', '+=', '-=', '*=', '/=', '%=', '|=', '&=', '&=~'];
 };
 
+Utils.getAssignSelectList = function () {
+  return [
+    '定数',
+    '文字列',
+    'フラグ',
+    '変数',
+    'スロット',
+    '乱数',
+    'ゲームデータ',
+    'スロット値の参照',
+  ];
+};
+
 Utils.getAOrDList = function () {
   return ['追加', '削除'];
 };
 
 Utils.getFixDataTypeSelectList = function () {
-  return ['メッセージ', 'どうぐ'];
+  return ['メッセージ', 'どうぐ', 'システムスロットId'];
 };
 
 Utils.getItemInfoSelectList = function () {
@@ -131,7 +144,12 @@ Utils.getGameDataTypeSelectList = function () {
     'プレイヤー',
     'どうぐ',
     'オブジェクト',
+    '状態',
   ];
+};
+
+Utils.getRecoverTypeSelectList = function () {
+  return ['仲間全体', 'パーティ', '登録Id'];
 };
 
 Utils.getRegistMemberInfoSelectList = function () {
@@ -168,6 +186,17 @@ Utils.getCallScriptTimingList = function () {
 
 Utils.getReferenceTypeList = function () {
   return ['絶対', '相対'];
+};
+
+Utils.getChangeStateTypeList = function () {
+  return ['付加', '除去'];
+};
+
+Utils.getPreRegistIdSelectList = function () {
+  return [
+    { value: -1, text: '仲間全体' },
+    { value: 0, text: 'パーティ' },
+  ];
 };
 
 export default Utils;
