@@ -156,8 +156,11 @@ const CommandItem = (props) => {
   };
 
   // フラグ
-  const listFlagContents = (flagId, flagEndId, control) => {
-    const flagName = dispFlagName(flagId, flagEndId);
+  const listFlagContents = (flagId, flagEndId, control, type = 0) => {
+    const flagName =
+      type === 0
+        ? dispFlagName(flagId, flagEndId)
+        : `参照：${dispSlotName(flagId)}`;
     return (
       <td>
         {flagName} = {control === 0 ? 'OFF' : 'ON'}
@@ -193,15 +196,17 @@ const CommandItem = (props) => {
     code,
     type,
     param1,
-    param2
+    param2,
+    refType = 0
   ) => {
+    const refText = Utils.getDirectOrRefList()[refType];
     const slotText = dispSlotName(beginId, endId);
     const codeText = _getOpecodeText(code);
     const paramText = _getOperateSlotParamText(type, param1, param2);
     const checkText = code === 0 ? '' : [1].includes(type) ? '★不正！' : '';
     return (
       <td>
-        {slotText}
+        {refText}：{slotText}
         {codeText}
         {paramText}
         {checkText}
@@ -257,10 +262,14 @@ const CommandItem = (props) => {
    * @param {*} param1
    * @param {*} param2
    */
-  const listAssignFixDataContents = (slotId, type, param1, param2) => {
+  const listAssignFixDataContents = (slotId, type, param1, param2, ref = 0) => {
     const slotText = dispSlotName(slotId);
     const typeText = Utils.getFixDataTypeSelectList()[type];
-    const paramText = _getAssignFixDataParamText(type, param1, param2);
+    const paramText =
+      ref === 0
+        ? _getAssignFixDataParamText(type, param1, param2)
+        : `参照->${dispSlotName(param1)}`;
+
     return (
       <td>
         {slotText} = {typeText}:{paramText}
@@ -333,7 +342,7 @@ const CommandItem = (props) => {
     const slotText = dispSlotName(slotId);
     return (
       <td>
-        {slotText} = {systemSlotName}
+        {systemSlotName} = {slotText}
       </td>
     );
   };
@@ -870,6 +879,12 @@ const CommandItem = (props) => {
       case COMMAND.ENDBRANCH:
         title = 'ENDBRANCH';
         break;
+      case COMMAND.BEGINLOOP:
+        title = 'ループ開始';
+        break;
+      case COMMAND.ENDLOOP:
+        title = 'ループ終端';
+        break;
       case COMMAND.LABEL:
         title = 'ラベル:';
         contents = listLabelContents(...parameters);
@@ -880,6 +895,9 @@ const CommandItem = (props) => {
         break;
       case COMMAND.EXIT:
         title = '以降実行しない';
+        break;
+      case COMMAND.EXITLOOP:
+        title = 'ループ中断';
         break;
       case COMMAND.GAINITEM:
         title = '道具を追加:';
@@ -972,6 +990,9 @@ const CommandItem = (props) => {
         title = '行先の設定:';
         contents = listAddressSettingsContents(...parameters);
         break;
+      case COMMAND.SAVE:
+        title = 'セーブ';
+        break;
       case COMMAND.SE:
         title = '効果音:';
         contents = listSeContents(...parameters);
@@ -1016,11 +1037,19 @@ const CommandItem = (props) => {
     }
 
     if (props.command.code !== COMMAND.COMMENT) {
+      const mark = [COMMAND.ELSE, COMMAND.ENDBRANCH, COMMAND.ENDLOOP].includes(
+        props.command.code
+      )
+        ? '：'
+        : '★';
       return (
         <table style={{ marginLeft: props.nest * 15 + 'px' }}>
           <tbody>
             <tr>
-              <td style={{ color: 'gray' }}>★{title}</td>
+              <td style={{ color: 'gray' }}>
+                {mark}
+                {title}
+              </td>
               {contents}
             </tr>
           </tbody>
@@ -1072,7 +1101,7 @@ const CommandList = (props) => {
   let nest = 0;
 
   const listItems = props.list.map((command, index) => {
-    if (COMMAND.ENDBRANCH === command.code) {
+    if ([COMMAND.ENDBRANCH, COMMAND.ENDLOOP].includes(command.code)) {
       nest -= 1;
     }
     const result = (
@@ -1088,7 +1117,9 @@ const CommandList = (props) => {
         onCopyClick={props.onCopyClick}
       />
     );
-    if ([COMMAND.CASE, COMMAND.ELSE].includes(command.code)) {
+    if (
+      [COMMAND.CASE, COMMAND.ELSE, COMMAND.BEGINLOOP].includes(command.code)
+    ) {
       nest += 1;
     }
 

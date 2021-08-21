@@ -466,17 +466,19 @@ const Embedded = (props) => {
 
 // フラグ
 const Flag = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: 先頭Id
   // 1: 終端Id
   // 2: ONOFF
-  const parametersRef = React.useRef(data || [1, 1, 1]);
-  const parameters = parametersRef.current;
+  // 3: 0 直接 1 スロット参照
+  const parameters = GetParameters(props.command.parameters, [1, 1, 1, 0]);
   const opecode = parameters[2];
+  let direct = parameters[3] === 0 ? parameters[0] : 1;
+  let refId = parameters[3] === 1 ? parameters[0] : 1;
   let multi = parameters[0] !== parameters[1];
+  const typeList = Utils.getDirectOrSlotList();
 
   const onFlagChange = (e) => {
-    parameters[0] = parseInt(e.target.value);
+    direct = parseInt(e.target.value);
   };
 
   const onFlagEndChange = (e) => {
@@ -487,17 +489,27 @@ const Flag = (props) => {
     multi = e.target.checked;
   };
 
+  const onSlotChange = (e) => {
+    refId = parseInt(e.target.value);
+  };
+
   const onRadioChange = (e) => {
     parameters[2] = parseInt(e.target.value);
   };
 
+  const onTypeRadioChange = (e) => {
+    parameters[3] = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
-    if (!multi) {
+    parameters[0] = [direct, refId][parameters[3]];
+    if (!multi || parameters[3] === 1) {
       parameters[1] = parameters[0];
     } else {
       const values = parameters.slice(0, 2).sort((a, b) => a - b);
       parameters.splice(0, 2, ...values);
     }
+
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
   };
@@ -508,21 +520,42 @@ const Flag = (props) => {
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
-      <FlagSelectBox
-        selectValue={parameters[0]}
-        onChange={(e) => onFlagChange(e)}
-      />
-      ～
-      <input
-        type="checkbox"
-        name="multi"
-        defaultChecked={multi ? 'checked' : ''}
-        onChange={(e) => onMultiCheck(e)}
-      />
-      <FlagSelectBox
-        selectValue={parameters[1]}
-        onChange={(e) => onFlagEndChange(e)}
-      />
+      <div>
+        <div>
+          <input
+            type="radio"
+            name="type"
+            value="0"
+            defaultChecked={parameters[3] === 0 ? 'checked' : ''}
+            onChange={(e) => onTypeRadioChange(e)}
+          />
+          {typeList[0]}
+        </div>
+        <FlagSelectBox selectValue={direct} onChange={(e) => onFlagChange(e)} />
+        ～
+        <input
+          type="checkbox"
+          name="multi"
+          defaultChecked={multi ? 'checked' : ''}
+          onChange={(e) => onMultiCheck(e)}
+        />
+        <FlagSelectBox
+          selectValue={parameters[1]}
+          onChange={(e) => onFlagEndChange(e)}
+        />
+        <div>
+          <input
+            type="radio"
+            name="type"
+            value="1"
+            defaultChecked={parameters[3] === 1 ? 'checked' : ''}
+            onChange={(e) => onTypeRadioChange(e)}
+          />
+          {typeList[1]}
+        </div>
+        <SlotSelectBox selectValue={refId} onChange={(e) => onSlotChange(e)} />
+      </div>
+      <font>操作：</font>
       <div>
         <input
           type="radio"
@@ -590,7 +623,11 @@ const Variable = (props) => {
   };
 
   return (
-    <CommandBase onUpdate={onUpdate} onCancel={props.onCancel}>
+    <CommandBase
+      title={'変数の処理'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
       <VariableSelectBox
         selectValue={parameters[0]}
         onChange={(e) => onVariableChange(e)}
@@ -645,15 +682,17 @@ const Variable = (props) => {
 
 // スロット演算
 const OperateSlot = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: 先頭Id
   // 1: 終端Id
   // 2: 演算子
   // 3: 演算タイプ
   // 4: パラメータ1
   // 5: パラメータ2
-  const parametersRef = React.useRef(data || [1, 1, 0, 0, 0, 0]);
-  const parameters = parametersRef.current;
+  // 6: 0 直接 1 スロット参照
+  const parameters = GetParameters(
+    props.command.parameters,
+    [1, 1, 0, 0, 0, 0, 0]
+  );
   const code = parameters[2];
   const type = parameters[3];
   let num = type === 0 ? parameters[4] : 0;
@@ -668,6 +707,7 @@ const OperateSlot = (props) => {
   const gameList = ['所持金', 'パーティ生存人数', 'パーティ人数'];
   const opeList = Utils.getOpecodeSelectList();
   const assignList = Utils.getAssignSelectList();
+  const typeList = Utils.getDirectOrRefList();
 
   const onSlotChange = (e) => {
     parameters[0] = parseInt(e.target.value);
@@ -725,6 +765,10 @@ const OperateSlot = (props) => {
     refSlotId = parseInt(e.target.value);
   };
 
+  const onRefTypeRadioChange = (e) => {
+    parameters[6] = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     const values1 = [
       num,
@@ -771,6 +815,25 @@ const OperateSlot = (props) => {
         selectValue={parameters[1]}
         onChange={(e) => onSlotEndChange(e)}
       />
+      <div>
+        <font>操作対象：</font>
+        <input
+          type="radio"
+          name="reftype"
+          value="0"
+          defaultChecked={parameters[6] === 0 ? 'checked' : ''}
+          onChange={(e) => onRefTypeRadioChange(e)}
+        />
+        {typeList[0]}
+        <input
+          type="radio"
+          name="reftype"
+          value="1"
+          defaultChecked={parameters[6] === 1 ? 'checked' : ''}
+          onChange={(e) => onRefTypeRadioChange(e)}
+        />
+        {typeList[1]}
+      </div>
       <div>
         <input
           type="radio"
@@ -976,18 +1039,18 @@ const OperateSlot = (props) => {
  * @param {*} props
  */
 const AssignFixData = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: スロットId
   // 1: データの種類
   // 2: パラメータ1
   // 3: パラメータ2
-  const parametersRef = React.useRef(data || [1, 0, 1, 0]);
-  const parameters = parametersRef.current;
+  // 4: 参照にするかどうか
+  const parameters = GetParameters(props.command.parameters, [1, 0, 1, 0, 0]);
   const type = parameters[1];
   let messageId = type === 0 ? parameters[2] : 1;
   let itemId = type === 1 ? parameters[2] : 1;
   let itemProperty = type === 1 ? parameters[3] : 0;
   let systemSlotName = type === 2 ? parameters[2] : '';
+  let refId = parameters[4] === 1 ? parameters[2] : 1;
   const typeList = Utils.getFixDataTypeSelectList();
 
   const onSlotChange = (e) => {
@@ -1014,11 +1077,22 @@ const AssignFixData = (props) => {
     systemSlotName = e.target.value;
   };
 
+  const onRefCheckChange = (e) => {
+    parameters[4] = e.target.checked ? 1 : 0;
+  };
+
+  const onRefSlotChange = (e) => {
+    refId = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     const values1 = [messageId, itemId, systemSlotName];
     const values2 = [0, itemProperty];
     const newType = parameters[1];
     [parameters[2], parameters[3]] = [values1[newType], values2[newType]];
+    if (parameters[4] === 1) {
+      parameters[2] = refId;
+    }
 
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
@@ -1089,6 +1163,16 @@ const AssignFixData = (props) => {
           />
         </div>
       </div>
+      <div>
+        <input
+          type="checkbox"
+          name="wait"
+          defaultChecked={parameters[4] === 1 ? 'checked' : ''}
+          onChange={(e) => onRefCheckChange(e)}
+        />
+        対象を参照にする
+      </div>
+      <SlotSelectBox selectValue={refId} onChange={(e) => onRefSlotChange(e)} />
     </CommandBase>
   );
 };

@@ -58,20 +58,19 @@ const CommandPopup = (props) => {
           </button>
           {commandButton(COMMAND.COMPARESLOT, 'スロット比較')}
           {commandButton(COMMAND.ASSIGNRESULT, '結果代入')}
-          <button onClick={() => props.closePopup(COMMAND.CASE)}>CASE</button>
-          <button onClick={() => props.closePopup(COMMAND.ELSE)}>ELSE</button>
-          <button onClick={() => props.closePopup(COMMAND.ENDBRANCH)}>
-            ENDBRANCH
-          </button>
+          {commandButton(COMMAND.CASE, 'CASE')}
+          {commandButton(COMMAND.ELSE, 'ELSE')}
+          {commandButton(COMMAND.ENDBRANCH, 'ENDBRANCH')}
+          {commandButton(COMMAND.BEGINLOOP, 'ループ')}
+          {commandButton(COMMAND.ENDLOOP, 'ループ終端')}
           <button onClick={() => props.closePopup(COMMAND.LABEL)}>
             ラベル
           </button>
           <button onClick={() => props.closePopup(COMMAND.JUMP)}>
             ラベルジャンプ
           </button>
-          <button onClick={() => props.closePopup(COMMAND.EXIT)}>
-            以降実行しない
-          </button>
+          {commandButton(COMMAND.EXIT, '以降実行しない')}
+          {commandButton(COMMAND.EXITLOOP, 'ループ中断')}
           <button onClick={() => props.closePopup(COMMAND.GAINITEM)}>
             道具を追加
           </button>
@@ -128,9 +127,8 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.ERASEEVEMT)}>
             イベントの消去
           </button>
-          <button onClick={() => props.closePopup(COMMAND.ADDRESSSETTINGS)}>
-            行先の設定
-          </button>
+          {commandButton(COMMAND.SAVE, 'セーブ')}
+          {commandButton(COMMAND.ADDRESSSETTINGS, '行先の設定')}
           <button onClick={() => props.closePopup(COMMAND.SE)}>効果音</button>
           <button onClick={() => props.closePopup(COMMAND.BGMPLAY)}>
             BGM演奏
@@ -233,6 +231,11 @@ const Commands = React.forwardRef((props, ref) => {
       if ([COMMAND.CASE, COMMAND.ELSE].includes(command.code)) {
         const command2 = { code: COMMAND.ENDBRANCH, parameters: [] };
         newList.splice(editInfo.index, 0, command, command2);
+      } else if (command.code === COMMAND.BEGINLOOP) {
+        newList.splice(editInfo.index, 0, command, {
+          code: COMMAND.ENDLOOP,
+          parameters: [],
+        });
       } else {
         newList.splice(editInfo.index, 0, command);
       }

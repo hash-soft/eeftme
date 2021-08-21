@@ -107,6 +107,10 @@ Utils.getDirectOrSlotList = function () {
   return ['直接', 'スロット'];
 };
 
+Utils.getDirectOrRefList = function () {
+  return ['直接', '参照'];
+};
+
 Utils.getOpecodeSelectList = function () {
   return ['=', '+=', '-=', '*=', '/=', '%=', '|=', '&=', '&=~'];
 };
@@ -153,7 +157,15 @@ Utils.getRecoverTypeSelectList = function () {
 };
 
 Utils.getRegistMemberInfoSelectList = function () {
-  return ['並び位置', '表示位置', 'メンバーid', '名前', 'レベル'];
+  return [
+    '並び位置',
+    '表示位置',
+    'メンバーid',
+    '名前',
+    'レベル',
+    '必要経験値',
+    '最大レベル',
+  ];
 };
 
 Utils.getPartyInfoSelectList = function () {
