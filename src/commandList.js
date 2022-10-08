@@ -127,6 +127,7 @@ const CommandItem = (props) => {
         case 1:
         case 6:
         case 7:
+        case 8:
           return [`[${Utils.getMessageOptionTypeSelectList()[type]}]`, value];
         case 5:
           return [
@@ -316,7 +317,7 @@ const CommandItem = (props) => {
         return `${dispSlotName(param1)} の登録id`;
       case 1:
         return `${dispSlotName(param1)} ${
-          Utils.getRegistMemberInfoSelectList()[param2]
+          Utils.getRegisterMemberInfoSelectList()[param2]
         }`;
       case 2:
         return `${Utils.getPartyInfoSelectList()[param2]}`;
@@ -332,6 +333,8 @@ const CommandItem = (props) => {
         }`;
       case 6:
         return `${dispSlotName(param1)} が${dispStateName(param2)} かどうか`;
+      case 7:
+        return Utils.getGameDataTextSelectList()[param1];
       default:
         return '';
     }

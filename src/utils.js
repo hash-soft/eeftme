@@ -96,6 +96,7 @@ Utils.getMessageOptionTypeSelectList = function () {
     'メッセージ音',
     '字下げ',
     '休止',
+    '自動一時停止',
   ];
 };
 
@@ -149,14 +150,19 @@ Utils.getGameDataTypeSelectList = function () {
     'どうぐ',
     'オブジェクト',
     '状態',
+    'テキスト',
   ];
+};
+
+Utils.getGameDataTextSelectList = function () {
+  return ['パーティの呼び名', '敵のむれ呼び名', '全体の呼び名'];
 };
 
 Utils.getRecoverTypeSelectList = function () {
   return ['仲間全体', 'パーティ', '登録Id'];
 };
 
-Utils.getRegistMemberInfoSelectList = function () {
+Utils.getRegisterMemberInfoSelectList = function () {
   return [
     '並び位置',
     '表示位置',

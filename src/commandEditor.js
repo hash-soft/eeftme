@@ -252,6 +252,7 @@ const MessageSettings = (props) => {
   let wordsSoundId = parameters[1];
   let indent = parameters[1];
   let suspend = parameters[1];
+  let autoPause = parameters[1];
   const selectList = Utils.getMessageOptionTypeSelectList();
   const orNotList = Utils.getOrNotSelectList();
 
@@ -279,6 +280,10 @@ const MessageSettings = (props) => {
     suspend = parseInt(e.target.value);
   };
 
+  const onAutoPauseChange = (e) => {
+    autoPause = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     parameters[1] = [
       waitCount,
@@ -289,6 +294,7 @@ const MessageSettings = (props) => {
       wordsSoundId,
       indent,
       suspend,
+      autoPause,
     ][parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
@@ -416,6 +422,32 @@ const MessageSettings = (props) => {
           value="1"
           defaultChecked={suspend === 1 ? 'checked' : ''}
           onChange={(e) => onSuspendRadioChange(e)}
+        />
+        {orNotList[1]}
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="8"
+          defaultChecked={parameters[0] === 8 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[8]}
+        <input
+          type="radio"
+          name="autoPause"
+          value="0"
+          defaultChecked={suspend === 0 ? 'checked' : ''}
+          onChange={(e) => onAutoPauseChange(e)}
+        />
+        {orNotList[0]}
+        <input
+          type="radio"
+          name="autoPause"
+          value="1"
+          defaultChecked={suspend === 1 ? 'checked' : ''}
+          onChange={(e) => onAutoPauseChange(e)}
         />
         {orNotList[1]}
       </div>
@@ -1192,7 +1224,7 @@ const AssignGameData = (props) => {
   const type = parameters[1];
   let partySlotId = type === 0 ? parameters[2] : 1;
   let memberSlotId = type === 1 ? parameters[2] : 1;
-  let registMemberProperty = type === 1 ? parameters[3] : 0;
+  let registerMemberProperty = type === 1 ? parameters[3] : 0;
   let partyProperty = type === 2 ? parameters[3] : 0;
   let playerSlotId = type === 3 ? parameters[2] : 1;
   let playerProperty = type === 3 ? parameters[3] : 0;
@@ -1202,6 +1234,7 @@ const AssignGameData = (props) => {
   let objectProperty = type === 5 ? parameters[3] : 0;
   let stateSubjectSlotId = type === 6 ? parameters[2] : 1;
   let stateId = type === 6 ? parameters[3] : 1;
+  let textType = type === 7 ? parameters[2] : 0;
   const typeList = Utils.getGameDataTypeSelectList();
 
   const onSlotChange = (e) => {
@@ -1220,8 +1253,8 @@ const AssignGameData = (props) => {
     memberSlotId = parseInt(e.target.value);
   };
 
-  const onRegistMemberPropertyChange = (e) => {
-    registMemberProperty = parseInt(e.target.value);
+  const onRegisterMemberPropertyChange = (e) => {
+    registerMemberProperty = parseInt(e.target.value);
   };
 
   const onPartyPropertyChange = (e) => {
@@ -1260,6 +1293,10 @@ const AssignGameData = (props) => {
     stateId = parseInt(e.target.value);
   };
 
+  const onTextTypeChange = (e) => {
+    textType = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     const values1 = [
       partySlotId,
@@ -1269,15 +1306,17 @@ const AssignGameData = (props) => {
       itemSubjectSlotId,
       objectId,
       stateSubjectSlotId,
+      textType,
     ];
     const values2 = [
       0,
-      registMemberProperty,
+      registerMemberProperty,
       partyProperty,
       playerProperty,
       itemId,
       objectProperty,
       stateId,
+      0,
     ];
     const newType = parameters[1];
     [parameters[2], parameters[3]] = [values1[newType], values2[newType]];
@@ -1332,10 +1371,10 @@ const AssignGameData = (props) => {
           />
           の
           <select
-            defaultValue={registMemberProperty}
-            onChange={(e) => onRegistMemberPropertyChange(e)}
+            defaultValue={registerMemberProperty}
+            onChange={(e) => onRegisterMemberPropertyChange(e)}
           >
-            {simpleSelectItems(Utils.getRegistMemberInfoSelectList())}
+            {simpleSelectItems(Utils.getRegisterMemberInfoSelectList())}
           </select>
         </div>
       </div>
@@ -1450,6 +1489,19 @@ const AssignGameData = (props) => {
           />
           になっている
         </div>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="7"
+          defaultChecked={type === 7 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[7]}：</font>
+        <select defaultValue={textType} onChange={(e) => onTextTypeChange(e)}>
+          {simpleSelectItems(Utils.getGameDataTextSelectList())}
+        </select>
       </div>
     </CommandBase>
   );
