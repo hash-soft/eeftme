@@ -180,6 +180,16 @@ const MessageSelectBox = (props) => {
   );
 };
 
+// エフェクトセレクトボックス
+const EffectSelectBox = (props) => {
+  const dataset = React.useContext(Dataset);
+  const animations = dataset.animations;
+
+  return (
+    <SelectBoxBase items={animations} digits={3} {...props}></SelectBoxBase>
+  );
+};
+
 // システムスロットIdセレクトボックス
 const SystemSlotIdSelectBox = (props) => {
   const dataset = React.useContext(Dataset);
@@ -320,6 +330,7 @@ export {
   VariableSelectBox,
   SlotSelectBox,
   MessageSelectBox,
+  EffectSelectBox,
   SystemSlotIdSelectBox,
   ItemSelectBox,
   MemberSelectBox,

@@ -19,16 +19,16 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.ENDMENU)}>
             メニュー終了
           </button>
-          <button onClick={() => props.closePopup(COMMAND.MESSAGESETTINGS)}>
+          <button onClick={() => props.closePopup(COMMAND.MessageSettings)}>
             文章の設定
           </button>
-          <button onClick={() => props.closePopup(COMMAND.MESSAGECLOSEWAIT)}>
+          <button onClick={() => props.closePopup(COMMAND.MessageCloseWait)}>
             文章閉じ待機
           </button>
           <button onClick={() => props.closePopup(COMMAND.EMBEDDED)}>
             組み込みメニュー
           </button>
-          <button onClick={() => props.closePopup(COMMAND.ENDEMBEDDED)}>
+          <button onClick={() => props.closePopup(COMMAND.EndEmbedded)}>
             組み込みメニュー終了
           </button>
           <button onClick={() => props.closePopup(COMMAND.FLAG)}>
@@ -50,7 +50,7 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.ITEMSPACE)}>
             道具追加可能判定
           </button>
-          <button onClick={() => props.closePopup(COMMAND.JUDGETRIGGER)}>
+          <button onClick={() => props.closePopup(COMMAND.JudgeTrigger)}>
             起動起因判定
           </button>
           <button onClick={() => props.closePopup(COMMAND.GOODS)}>
@@ -124,7 +124,7 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.FOLLOWERSETTINGS)}>
             隊員の設定変更
           </button>
-          <button onClick={() => props.closePopup(COMMAND.ERASEEVEMT)}>
+          <button onClick={() => props.closePopup(COMMAND.EraseEvent)}>
             イベントの消去
           </button>
           {commandButton(COMMAND.SAVE, 'セーブ')}
@@ -147,7 +147,12 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.GATHERFOLLOWERS)}>
             隊列の集合
           </button>
-          {commandButton(COMMAND.RESETOBJECTS, 'オブジェクトの再設定')}
+          {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
+          {commandButton(COMMAND.PushActionResult, '戦闘行動結果追加')}
+          {commandButton(COMMAND.BattleMessage, '戦闘文章指定')}
+          {commandButton(COMMAND.BattleMessageSettings, '戦闘文章の設定')}
+          {commandButton(COMMAND.BattleEffect, '戦闘エフェクト指定')}
+          {commandButton(COMMAND.BattleTarget, '戦闘行動対象指定')}
           <button onClick={() => props.closePopup(COMMAND.COMMENT)}>
             コメント
           </button>

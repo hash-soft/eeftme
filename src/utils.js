@@ -86,6 +86,10 @@ Utils.getDirectionInfoList = function () {
   return this.getDirectionSelectList().map((info) => info.text);
 };
 
+Utils.getMessageTypeList = function () {
+  return ['次段落', '次行', '基準行'];
+};
+
 Utils.getMessageOptionTypeSelectList = function () {
   return [
     '待機',
@@ -97,11 +101,20 @@ Utils.getMessageOptionTypeSelectList = function () {
     '字下げ',
     '休止',
     '自動一時停止',
+    'モード',
+    'ベースライン巻き上げ',
+    '基点行を追加',
+    '基点行を削除',
+    '行をリセット',
   ];
 };
 
 Utils.getOrNotSelectList = function () {
   return ['しない', 'する'];
+};
+
+Utils.getMessageModeList = function () {
+  return ['戦闘中', '戦闘結果'];
 };
 
 Utils.getDirectOrSlotList = function () {
@@ -210,7 +223,7 @@ Utils.getChangeStateTypeList = function () {
   return ['付加', '除去'];
 };
 
-Utils.getPreRegistIdSelectList = function () {
+Utils.getPreRegisterIdSelectList = function () {
   return [
     { value: -1, text: '仲間全体' },
     { value: 0, text: 'パーティ' },

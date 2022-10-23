@@ -6,6 +6,7 @@ import {
   VariableSelectBox,
   SlotSelectBox,
   MessageSelectBox,
+  EffectSelectBox,
   SystemSlotIdSelectBox,
   ItemSelectBox,
   StateSelectBox,
@@ -47,6 +48,7 @@ const Message = (props) => {
   // 1: 追加タイプ
   const parametersRef = React.useRef(data || ['', 0]);
   const parameters = parametersRef.current;
+  const typeList = Utils.getMessageTypeList();
 
   const onChange = (e) => {
     parameters[0] = e.target.value;
@@ -80,7 +82,7 @@ const Message = (props) => {
           defaultChecked={parameters[1] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        次段落
+        {typeList[0]}
         <input
           type="radio"
           name="type"
@@ -88,7 +90,7 @@ const Message = (props) => {
           defaultChecked={parameters[1] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        次行
+        {typeList[1]}
         <input
           type="radio"
           name="type"
@@ -96,7 +98,7 @@ const Message = (props) => {
           defaultChecked={parameters[1] === 2 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        基準行
+        {typeList[2]}
       </div>
     </CommandBase>
   );
@@ -253,8 +255,12 @@ const MessageSettings = (props) => {
   let indent = parameters[1];
   let suspend = parameters[1];
   let autoPause = parameters[1];
+  let mode = parameters[1];
+  let hoist = parameters[1];
+
   const selectList = Utils.getMessageOptionTypeSelectList();
   const orNotList = Utils.getOrNotSelectList();
+  const modeList = Utils.getMessageModeList();
 
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
@@ -284,6 +290,14 @@ const MessageSettings = (props) => {
     autoPause = parseInt(e.target.value);
   };
 
+  const onModeChange = (e) => {
+    mode = parseInt(e.target.value);
+  };
+
+  const onHoistChange = (e) => {
+    hoist = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     parameters[1] = [
       waitCount,
@@ -295,6 +309,11 @@ const MessageSettings = (props) => {
       indent,
       suspend,
       autoPause,
+      mode,
+      hoist,
+      0,
+      0,
+      0,
     ][parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
@@ -450,6 +469,88 @@ const MessageSettings = (props) => {
           onChange={(e) => onAutoPauseChange(e)}
         />
         {orNotList[1]}
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="9"
+          defaultChecked={parameters[0] === 9 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[9]}
+        <input
+          type="radio"
+          name="mode"
+          value="0"
+          defaultChecked={suspend === 0 ? 'checked' : ''}
+          onChange={(e) => onModeChange(e)}
+        />
+        {modeList[0]}
+        <input
+          type="radio"
+          name="mode"
+          value="1"
+          defaultChecked={suspend === 1 ? 'checked' : ''}
+          onChange={(e) => onModeChange(e)}
+        />
+        {modeList[1]}
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="10"
+          defaultChecked={parameters[0] === 10 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[10]}
+        <input
+          type="radio"
+          name="hoist"
+          value="0"
+          defaultChecked={suspend === 0 ? 'checked' : ''}
+          onChange={(e) => onHoistChange(e)}
+        />
+        {orNotList[0]}
+        <input
+          type="radio"
+          name="hoist"
+          value="1"
+          defaultChecked={suspend === 1 ? 'checked' : ''}
+          onChange={(e) => onHoistChange(e)}
+        />
+        {orNotList[1]}
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="11"
+          defaultChecked={parameters[0] === 11 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[11]}
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="12"
+          defaultChecked={parameters[0] === 12 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[12]}
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="13"
+          defaultChecked={parameters[0] === 13 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[13]}
       </div>
     </CommandBase>
   );
@@ -2292,7 +2393,7 @@ const ChangeState = (props) => {
         <font>登録id：</font>
         <SlotSelectBox
           selectValue={parameters[0]}
-          preItems={Utils.getPreRegistIdSelectList()}
+          preItems={Utils.getPreRegisterIdSelectList()}
           onChange={(e) => onSlotChange(e)}
         />
       </div>
@@ -4027,6 +4128,167 @@ const GatherFollowers = (props) => {
   );
 };
 
+/**
+ * 戦闘メッセージ指定
+ * @param {*} props
+ */
+const BattleMessage = (props) => {
+  // 0: メッセージId
+  // 1: タイプId
+  const parameters = GetParameters(props.command.parameters, [1, 0]);
+  const typeList = Utils.getMessageTypeList();
+
+  const onMessageIdChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onRadioChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'戦闘文章指定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>{typeList[0]}：</font>
+        <div>
+          <MessageSelectBox
+            selectValue={parameters[0]}
+            onChange={(e) => onMessageIdChange(e)}
+          />
+        </div>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={parameters[1] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {typeList[0]}
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={parameters[1] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {typeList[1]}
+        <input
+          type="radio"
+          name="type"
+          value="2"
+          defaultChecked={parameters[1] === 2 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {typeList[2]}
+      </div>
+    </CommandBase>
+  );
+};
+
+// 戦闘文章の設定
+const BattleMessageSettings = (props) => {
+  // 0: 設定タイプ
+  const parameters = GetParameters(props.command.parameters, [11]);
+  const selectList = Utils.getMessageOptionTypeSelectList();
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'戦闘文章の設定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="11"
+          defaultChecked={parameters[0] === 11 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[11]}
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="12"
+          defaultChecked={parameters[0] === 12 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[12]}
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="13"
+          defaultChecked={parameters[0] === 13 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[13]}
+      </div>
+    </CommandBase>
+  );
+};
+
+/**
+ * 戦闘エフェクト指定
+ * @param {*} props
+ * @returns
+ */
+const BattleEffect = (props) => {
+  // 0: エフェクトId
+  const parameters = GetParameters(props.command.parameters, [0]);
+
+  const onEffectIdChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'戦闘エフェクト指定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>エフェクト：</font>
+        <div>
+          <EffectSelectBox
+            selectValue={parameters[0]}
+            unuse={true}
+            onChange={(e) => onEffectIdChange(e)}
+          />
+        </div>
+      </div>
+    </CommandBase>
+  );
+};
+
 // コメント
 const Comment = (props) => {
   const parameters = GetParameters(props.command.parameters, ['']);
@@ -4070,7 +4332,7 @@ const CommandEditor = (props) => {
         return <Menu {...props} />;
       case COMMAND.ENDMENU:
         return <EndMenu {...props} />;
-      case COMMAND.MESSAGESETTINGS:
+      case COMMAND.MessageSettings:
         return <MessageSettings {...props} />;
       case COMMAND.EMBEDDED:
         return <Embedded {...props} />;
@@ -4158,6 +4420,12 @@ const CommandEditor = (props) => {
         return <ChangeTransparent {...props} />;
       case COMMAND.GATHERFOLLOWERS:
         return <GatherFollowers {...props} />;
+      case COMMAND.BattleMessage:
+        return <BattleMessage {...props} />;
+      case COMMAND.BattleMessageSettings:
+        return <BattleMessageSettings {...props} />;
+      case COMMAND.BattleEffect:
+        return <BattleEffect {...props} />;
       case COMMAND.COMMENT:
         return <Comment {...props} />;
       default:

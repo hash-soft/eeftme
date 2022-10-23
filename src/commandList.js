@@ -18,6 +18,7 @@ const CommandItem = (props) => {
   const mapList = dataset.mapList;
   const positions = dataset.positions;
   const warpPlaces = dataset.warpPlaces;
+  const animations = dataset.animations;
   const mapEventsRef = React.useContext(MapEventsRef);
   const commonEventsRef = React.useContext(CommonEventsRef);
 
@@ -73,12 +74,17 @@ const CommandItem = (props) => {
     return Utils.getDispName(warpPlaces, id);
   };
 
+  const dispEffectName = (id) => {
+    return Utils.getDispName(animations, id);
+  };
+
+  // 文章表示
   const listMessageContents = (text, type) => {
-    const header = ['[次段落]', '[次行]', '[基準行]'][type];
+    const header = `[${Utils.getMessageTypeList()[type]}]`;
     const message = (
       <td style={{ whiteSpace: 'pre-line' }}>
         {header}
-        {'\n'}
+        <br />
         {text}
       </td>
     );
@@ -128,11 +134,17 @@ const CommandItem = (props) => {
         case 6:
         case 7:
         case 8:
+        case 10:
           return [`[${Utils.getMessageOptionTypeSelectList()[type]}]`, value];
         case 5:
           return [
             `[${Utils.getMessageOptionTypeSelectList()[type]}]`,
             dispSeName(value),
+          ];
+        case 9:
+          return [
+            `[${Utils.getMessageOptionTypeSelectList()[type]}]`,
+            `${Utils.getMessageModeList()[value]}`,
           ];
         default:
           return [Utils.getMessageOptionTypeSelectList()[type], ''];
@@ -492,7 +504,7 @@ const CommandItem = (props) => {
   const listChangeStateContents = (slotId, type, stateId) => {
     const slotText =
       slotId <= 0
-        ? Utils.getPreRegistIdSelectList().find(
+        ? Utils.getPreRegisterIdSelectList().find(
             (value) => value.value === slotId
           )?.text
         : dispSlotName(slotId);
@@ -789,6 +801,30 @@ const CommandItem = (props) => {
     return <td>{typeText}</td>;
   };
 
+  // 戦闘メッセージ
+  const listBattleMessageContents = (messageId, type) => {
+    const header = `[${Utils.getMessageTypeList()[type]}]`;
+    return (
+      <td>
+        {header}
+        <br />
+        {`${dispMessage(messageId)}`}
+      </td>
+    );
+  };
+
+  // 戦闘メッセージの設定
+  const listBattleMessageSettingsContents = (type) => {
+    const settingText = Utils.getMessageOptionTypeSelectList()[type];
+    return <td>{settingText}</td>;
+  };
+
+  // 戦闘エフェクト
+  const listBattleEffectContents = (effectId) => {
+    return <td>{`${dispEffectName(effectId)}`}</td>;
+  };
+
+  // コメント
   const listCommentContents = (text) => {
     const message = (
       <td style={{ color: 'lime', whiteSpace: 'pre-line' }}>
@@ -816,18 +852,18 @@ const CommandItem = (props) => {
         title = 'メニュー終了:';
         contents = listEndMenuContents(...parameters);
         break;
-      case COMMAND.MESSAGESETTINGS:
+      case COMMAND.MessageSettings:
         title = '文章設定';
         contents = listMessageSettingsContents(...parameters);
         break;
-      case COMMAND.MESSAGECLOSEWAIT:
+      case COMMAND.MessageCloseWait:
         title = '文章閉じ待機';
         break;
       case COMMAND.EMBEDDED:
         title = '組み込みメニュー';
         contents = listEmbeddedContents(...parameters);
         break;
-      case COMMAND.ENDEMBEDDED:
+      case COMMAND.EndEmbedded:
         title = '組み込みメニュー終了';
         break;
       case COMMAND.FLAG:
@@ -861,7 +897,7 @@ const CommandItem = (props) => {
       case COMMAND.ITEMSPACE:
         title = '道具追加可能判定';
         break;
-      case COMMAND.JUDGETRIGGER:
+      case COMMAND.JudgeTrigger:
         title = '起動起因判定';
         break;
       case COMMAND.COMPARESLOT:
@@ -982,7 +1018,7 @@ const CommandItem = (props) => {
         title = '待機:';
         contents = listWaitContents(...parameters);
         break;
-      case COMMAND.ERASEEVEMT:
+      case COMMAND.EraseEvent:
         title = 'イベントの消去';
         break;
       case COMMAND.FOLLOWERSETTINGS:
@@ -1028,8 +1064,26 @@ const CommandItem = (props) => {
         title = '隊列の集合:';
         contents = listGatherFollowersContents(...parameters);
         break;
-      case COMMAND.RESETOBJECTS:
+      case COMMAND.ResetObjects:
         title = 'オブジェクトの再設定';
+        break;
+      case COMMAND.PushActionResult:
+        title = '戦闘行動結果追加';
+        break;
+      case COMMAND.BattleMessage:
+        title = '戦闘文章指定：';
+        contents = listBattleMessageContents(...parameters);
+        break;
+      case COMMAND.BattleMessageSettings:
+        title = '戦闘文章の設定：';
+        contents = listBattleMessageSettingsContents(...parameters);
+        break;
+      case COMMAND.BattleEffect:
+        title = '戦闘エフェクト指定：';
+        contents = listBattleEffectContents(...parameters);
+        break;
+      case COMMAND.BattleTarget:
+        title = '戦闘行動対象指定';
         break;
       case COMMAND.COMMENT:
         title = '';
