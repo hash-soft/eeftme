@@ -1,7 +1,7 @@
 const COMMAND = {
   MESSAGE: 1,
   MENU: 2,
-  ENDMENU: 3,
+  EndMenu: 3,
   MessageSettings: 4,
   MessageCloseWait: 5,
   EMBEDDED: 6,
@@ -10,13 +10,14 @@ const COMMAND = {
   VARIABLE: 12,
   OPERATESLOT: 13,
   ASSIGNFIXDATA: 14,
-  ASSIGNGAMEDATA: 15,
-  ASSIGNSYSTEMSLOT: 16,
+  AssignGameData: 15,
+  AssignSystemSlot: 16,
   GOODS: 21,
   ItemSpace: 31,
   JudgeTrigger: 32,
-  COMPARESLOT: 33,
-  ASSIGNRESULT: 34,
+  CompareSlot: 33,
+  AssignResult: 34,
+  JudgeBattler: 35,
   CASE: 51,
   ELSE: 52,
   EndBranch: 53,
@@ -62,10 +63,11 @@ const COMMAND = {
   GATHERFOLLOWERS: 152,
   ResetObjects: 161,
   PushActionResult: 181,
-  BattleMessage: 182,
-  BattleMessageSettings: 183,
-  BattleEffect: 184,
-  BattleTarget: 185,
+  ActionMessage: 182,
+  ActionMessageSettings: 183,
+  ActionEffect: 184,
+  ActionTarget: 185,
+  ActionExitProcess: 186,
   COMMENT: 201,
 };
 
@@ -88,12 +90,12 @@ const NoParamKeys = [
   COMMAND.ResetObjects,
   COMMAND.SAVE,
   COMMAND.PushActionResult,
-  COMMAND.BattleTarget,
+  COMMAND.ActionExitProcess,
 ];
 
-const VARIABLERANGE = {
+const VariableRange = {
   MIN: -9999999,
   MAX: 9999999,
 };
 
-export { COMMAND, VARIABLERANGE, CommandKeys, NoParamKeys };
+export { COMMAND, VariableRange, CommandKeys, NoParamKeys };

@@ -146,6 +146,10 @@ Utils.getAOrDList = function () {
   return ['追加', '削除'];
 };
 
+Utils.getBattlerTypeList = function () {
+  return ['メンバー', '敵', '仲間（未実装）'];
+};
+
 Utils.getFixDataTypeSelectList = function () {
   return ['メッセージ', 'どうぐ', 'システムスロットId'];
 };
@@ -164,6 +168,7 @@ Utils.getGameDataTypeSelectList = function () {
     'オブジェクト',
     '状態',
     'テキスト',
+    '行動',
   ];
 };
 
@@ -193,6 +198,10 @@ Utils.getPartyInfoSelectList = function () {
 
 Utils.getPlayerInfoSelectList = function () {
   return ['登録id', 'マップX', 'マップY', '向き', '画像id', '画像インデックス'];
+};
+
+Utils.getActionIdList = function () {
+  return ['行動者', '対象者'];
 };
 
 Utils.getFollowerSettingsTypeList = function () {

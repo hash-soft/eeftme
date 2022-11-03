@@ -221,6 +221,14 @@ const MemberSelectBox = (props) => {
   return <SelectBoxBase items={members} digits={3} {...props}></SelectBoxBase>;
 };
 
+// 敵セレクトボックス
+const EnemySelectBox = (props) => {
+  const dataset = React.useContext(Dataset);
+  const enemies = dataset.enemies;
+
+  return <SelectBoxBase items={enemies} digits={3} {...props}></SelectBoxBase>;
+};
+
 // 状態セレクトボックス
 const StateSelectBox = (props) => {
   const dataset = React.useContext(Dataset);
@@ -334,6 +342,7 @@ export {
   SystemSlotIdSelectBox,
   ItemSelectBox,
   MemberSelectBox,
+  EnemySelectBox,
   StateSelectBox,
   MenuSelectBox,
   MapSelectBox,

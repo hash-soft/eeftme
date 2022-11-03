@@ -16,7 +16,7 @@ const CommandPopup = (props) => {
         <div className="command-menu">
           {commandButton(COMMAND.MESSAGE, '文章の表示')}
           {commandButton(COMMAND.MENU, 'メニュー表示')}
-          <button onClick={() => props.closePopup(COMMAND.ENDMENU)}>
+          <button onClick={() => props.closePopup(COMMAND.EndMenu)}>
             メニュー終了
           </button>
           <button onClick={() => props.closePopup(COMMAND.MessageSettings)}>
@@ -43,26 +43,21 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.ASSIGNFIXDATA)}>
             固定データ取得
           </button>
-          <button onClick={() => props.closePopup(COMMAND.ASSIGNGAMEDATA)}>
+          <button onClick={() => props.closePopup(COMMAND.AssignGameData)}>
             ゲームデータ取得
           </button>
-          {commandButton(COMMAND.ASSIGNSYSTEMSLOT, 'システムスロットに代入')}
-          <button onClick={() => props.closePopup(COMMAND.ITEMSPACE)}>
-            道具追加可能判定
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.JudgeTrigger)}>
-            起動起因判定
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.GOODS)}>
-            商品の設定
-          </button>
-          {commandButton(COMMAND.COMPARESLOT, 'スロット比較')}
-          {commandButton(COMMAND.ASSIGNRESULT, '結果代入')}
+          {commandButton(COMMAND.AssignSystemSlot, 'システムスロットに代入')}
+          {commandButton(COMMAND.GOODS, '商品の設定')}
+          {commandButton(COMMAND.ItemSpace, '道具追加可能判定')}
+          {commandButton(COMMAND.JudgeTrigger, '起動起因判定')}
+          {commandButton(COMMAND.CompareSlot, 'スロット比較')}
+          {commandButton(COMMAND.AssignResult, '結果代入')}
+          {commandButton(COMMAND.JudgeBattler, '戦闘者判定')}
           {commandButton(COMMAND.CASE, 'CASE')}
           {commandButton(COMMAND.ELSE, 'ELSE')}
-          {commandButton(COMMAND.ENDBRANCH, 'ENDBRANCH')}
-          {commandButton(COMMAND.BEGINLOOP, 'ループ')}
-          {commandButton(COMMAND.ENDLOOP, 'ループ終端')}
+          {commandButton(COMMAND.EndBranch, 'ENDBRANCH')}
+          {commandButton(COMMAND.BeginLoop, 'ループ')}
+          {commandButton(COMMAND.EndLoop, 'ループ終端')}
           <button onClick={() => props.closePopup(COMMAND.LABEL)}>
             ラベル
           </button>
@@ -70,7 +65,7 @@ const CommandPopup = (props) => {
             ラベルジャンプ
           </button>
           {commandButton(COMMAND.EXIT, '以降実行しない')}
-          {commandButton(COMMAND.EXITLOOP, 'ループ中断')}
+          {commandButton(COMMAND.ExitLoop, 'ループ中断')}
           <button onClick={() => props.closePopup(COMMAND.GAINITEM)}>
             道具を追加
           </button>
@@ -148,14 +143,13 @@ const CommandPopup = (props) => {
             隊列の集合
           </button>
           {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
-          {commandButton(COMMAND.PushActionResult, '戦闘行動結果追加')}
-          {commandButton(COMMAND.BattleMessage, '戦闘文章指定')}
-          {commandButton(COMMAND.BattleMessageSettings, '戦闘文章の設定')}
-          {commandButton(COMMAND.BattleEffect, '戦闘エフェクト指定')}
-          {commandButton(COMMAND.BattleTarget, '戦闘行動対象指定')}
-          <button onClick={() => props.closePopup(COMMAND.COMMENT)}>
-            コメント
-          </button>
+          {commandButton(COMMAND.PushActionResult, '行動結果追加')}
+          {commandButton(COMMAND.ActionMessage, '行動文章指定')}
+          {commandButton(COMMAND.ActionMessageSettings, '行動文章の設定')}
+          {commandButton(COMMAND.ActionEffect, '行動エフェクト指定')}
+          {commandButton(COMMAND.ActionTarget, '行動対象指定')}
+          {commandButton(COMMAND.ActionExitProcess, '行動処理を抜ける')}
+          {commandButton(COMMAND.COMMENT, 'コメント')}
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>
       </div>
@@ -234,11 +228,11 @@ const Commands = React.forwardRef((props, ref) => {
     if (editInfo.new) {
       // CASEかELSEの場合ENDBRANCHもセットで追加する
       if ([COMMAND.CASE, COMMAND.ELSE].includes(command.code)) {
-        const command2 = { code: COMMAND.ENDBRANCH, parameters: [] };
+        const command2 = { code: COMMAND.EndBranch, parameters: [] };
         newList.splice(editInfo.index, 0, command, command2);
-      } else if (command.code === COMMAND.BEGINLOOP) {
+      } else if (command.code === COMMAND.BeginLoop) {
         newList.splice(editInfo.index, 0, command, {
-          code: COMMAND.ENDLOOP,
+          code: COMMAND.EndLoop,
           parameters: [],
         });
       } else {

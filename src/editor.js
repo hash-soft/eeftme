@@ -330,6 +330,7 @@ const Editor = () => {
         variables: ['variable1', 'variable2'],
         slots: ['slot1', 'slot2'],
         members: [],
+        enemies: [],
         items: [],
         windowsets: [],
         mapList: [],
@@ -353,6 +354,7 @@ const Editor = () => {
     dataset.slots?.shift();
     dataset.messages?.shift();
     dataset.members?.shift();
+    dataset.enemies?.shift();
     dataset.items?.shift();
     dataset.windowsets?.shift();
     dataset.mapList?.shift();

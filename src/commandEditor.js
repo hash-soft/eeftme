@@ -18,10 +18,12 @@ import {
   BgmSelectBox,
   MapEventSelectBox,
   CommonEventSelectBox,
+  MemberSelectBox,
+  EnemySelectBox,
 } from './selectBoxSet';
 import { NumberEdit } from './editBoxSet';
 import Utils from './utils';
-import { COMMAND, VARIABLERANGE } from './define';
+import { COMMAND, VariableRange } from './define';
 import './index.css';
 
 const sliceParameters = (parameters) => {
@@ -804,8 +806,8 @@ const Variable = (props) => {
       </div>
       <font>定数：</font>
       <NumberEdit
-        min={VARIABLERANGE.MIN}
-        max={VARIABLERANGE.MAX}
+        min={VariableRange.MIN}
+        max={VariableRange.MAX}
         value={parameters[4]}
         onValueFocusOff={onValueFocusOff}
       />
@@ -1051,8 +1053,8 @@ const OperateSlot = (props) => {
         />
         <font>{assignList[0]}：</font>
         <NumberEdit
-          min={VARIABLERANGE.MIN}
-          max={VARIABLERANGE.MAX}
+          min={VariableRange.MIN}
+          max={VariableRange.MAX}
           value={num}
           onValueFocusOff={onValueFocusOffNum}
         />
@@ -1123,15 +1125,15 @@ const OperateSlot = (props) => {
         />
         <font>{assignList[5]}：</font>
         <NumberEdit
-          min={VARIABLERANGE.MIN}
-          max={VARIABLERANGE.MAX}
+          min={VariableRange.MIN}
+          max={VariableRange.MAX}
           value={rand1}
           onValueFocusOff={onValueFocusOffRand1}
         />
         <font>～</font>
         <NumberEdit
-          min={VARIABLERANGE.MIN}
-          max={VARIABLERANGE.MAX}
+          min={VariableRange.MIN}
+          max={VariableRange.MAX}
           value={rand2}
           onValueFocusOff={onValueFocusOffRand2}
         />
@@ -1336,6 +1338,7 @@ const AssignGameData = (props) => {
   let stateSubjectSlotId = type === 6 ? parameters[2] : 1;
   let stateId = type === 6 ? parameters[3] : 1;
   let textType = type === 7 ? parameters[2] : 0;
+  let actionProperty = type === 8 ? parameters[3] : 0;
   const typeList = Utils.getGameDataTypeSelectList();
 
   const onSlotChange = (e) => {
@@ -1398,6 +1401,10 @@ const AssignGameData = (props) => {
     textType = parseInt(e.target.value);
   };
 
+  const onActionPropertyChange = (e) => {
+    actionProperty = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     const values1 = [
       partySlotId,
@@ -1408,6 +1415,7 @@ const AssignGameData = (props) => {
       objectId,
       stateSubjectSlotId,
       textType,
+      0,
     ];
     const values2 = [
       0,
@@ -1418,6 +1426,7 @@ const AssignGameData = (props) => {
       objectProperty,
       stateId,
       0,
+      actionProperty,
     ];
     const newType = parameters[1];
     [parameters[2], parameters[3]] = [values1[newType], values2[newType]];
@@ -1554,8 +1563,8 @@ const AssignGameData = (props) => {
         <div>
           オブジェクトid
           <NumberEdit
-            min={VARIABLERANGE.MIN}
-            max={VARIABLERANGE.MAX}
+            min={VariableRange.MIN}
+            max={VariableRange.MAX}
             value={objectId}
             onValueFocusOff={onObjectIdFocusOff}
           />
@@ -1602,6 +1611,22 @@ const AssignGameData = (props) => {
         <font>{typeList[7]}：</font>
         <select defaultValue={textType} onChange={(e) => onTextTypeChange(e)}>
           {simpleSelectItems(Utils.getGameDataTextSelectList())}
+        </select>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="8"
+          defaultChecked={type === 8 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[8]}：</font>
+        <select
+          defaultValue={actionProperty}
+          onChange={(e) => onActionPropertyChange(e)}
+        >
+          {simpleSelectItems(Utils.getActionIdList())}
         </select>
       </div>
     </CommandBase>
@@ -1820,8 +1845,8 @@ const CompareSlot = (props) => {
         <font>定数：</font>
       </div>
       <NumberEdit
-        min={VARIABLERANGE.MIN}
-        max={VARIABLERANGE.MAX}
+        min={VariableRange.MIN}
+        max={VariableRange.MAX}
         value={num}
         onValueFocusOff={onValueFocusOffNum}
       />
@@ -1868,6 +1893,85 @@ const AssignResult = (props) => {
         selectValue={parameters[0]}
         onChange={(e) => onSlotChange(e)}
       />
+    </CommandBase>
+  );
+};
+
+// 戦闘者判定
+const JudgeBattler = (props) => {
+  // 0: スロットId
+  // 1: 0-味方 1-敵
+  // 2: メンバーId or 敵Id
+  const parameters = GetParameters(props.command.parameters, [1, 0, 1]);
+  let memberId = parameters[1] === 0 ? parameters[2] : 1;
+  let enemyId = parameters[1] === 1 ? parameters[2] : 1;
+  const typeList = Utils.getBattlerTypeList();
+
+  const onSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onRadioChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onMemberChange = (e) => {
+    memberId = e.target.value;
+  };
+
+  const onEnemyChange = (e) => {
+    enemyId = e.target.value;
+  };
+
+  const onUpdate = () => {
+    parameters[2] = parameters[1] === 0 ? memberId : enemyId;
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'戦闘者判定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>スロットId：</font>
+        <SlotSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onSlotChange(e)}
+        />
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={parameters[1] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        <font>{typeList[0]}：</font>
+        <div>
+          <MemberSelectBox
+            selectValue={memberId}
+            onChange={(e) => onMemberChange(e)}
+          />
+        </div>
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={parameters[1] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        <font>{typeList[1]}：</font>
+        <div>
+          <EnemySelectBox
+            selectValue={enemyId}
+            onChange={(e) => onEnemyChange(e)}
+          />
+        </div>
+      </div>
     </CommandBase>
   );
 };
@@ -4132,7 +4236,7 @@ const GatherFollowers = (props) => {
  * 戦闘メッセージ指定
  * @param {*} props
  */
-const BattleMessage = (props) => {
+const ActionMessage = (props) => {
   // 0: メッセージId
   // 1: タイプId
   const parameters = GetParameters(props.command.parameters, [1, 0]);
@@ -4197,7 +4301,7 @@ const BattleMessage = (props) => {
 };
 
 // 戦闘文章の設定
-const BattleMessageSettings = (props) => {
+const ActionMessageSettings = (props) => {
   // 0: 設定タイプ
   const parameters = GetParameters(props.command.parameters, [11]);
   const selectList = Utils.getMessageOptionTypeSelectList();
@@ -4256,7 +4360,7 @@ const BattleMessageSettings = (props) => {
  * @param {*} props
  * @returns
  */
-const BattleEffect = (props) => {
+const ActionEffect = (props) => {
   // 0: エフェクトId
   const parameters = GetParameters(props.command.parameters, [0]);
 
@@ -4284,6 +4388,40 @@ const BattleEffect = (props) => {
             onChange={(e) => onEffectIdChange(e)}
           />
         </div>
+      </div>
+    </CommandBase>
+  );
+};
+
+/**
+ * 行動対象指定
+ * @param {*} props
+ */
+const ActionTarget = (props) => {
+  // 0: スロットId
+  const parameters = GetParameters(props.command.parameters, [1]);
+
+  const onSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'行動対象指定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>スロットId：</font>
+        <SlotSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onSlotChange(e)}
+        />
       </div>
     </CommandBase>
   );
@@ -4330,7 +4468,7 @@ const CommandEditor = (props) => {
         return <Message text="mes" {...props} />;
       case COMMAND.MENU:
         return <Menu {...props} />;
-      case COMMAND.ENDMENU:
+      case COMMAND.EndMenu:
         return <EndMenu {...props} />;
       case COMMAND.MessageSettings:
         return <MessageSettings {...props} />;
@@ -4344,18 +4482,20 @@ const CommandEditor = (props) => {
         return <OperateSlot {...props} />;
       case COMMAND.ASSIGNFIXDATA:
         return <AssignFixData {...props} />;
-      case COMMAND.ASSIGNGAMEDATA:
+      case COMMAND.AssignGameData:
         return <AssignGameData {...props} />;
-      case COMMAND.ASSIGNSYSTEMSLOT:
+      case COMMAND.AssignSystemSlot:
         return <AssignSystemSlot {...props} />;
       case COMMAND.GOODS:
         return <Goods {...props} />;
+      case COMMAND.CompareSlot:
+        return <CompareSlot {...props} />;
+      case COMMAND.AssignResult:
+        return <AssignResult {...props} />;
+      case COMMAND.JudgeBattler:
+        return <JudgeBattler {...props} />;
       case COMMAND.CASE:
         return <Case {...props} />;
-      case COMMAND.COMPARESLOT:
-        return <CompareSlot {...props} />;
-      case COMMAND.ASSIGNRESULT:
-        return <AssignResult {...props} />;
       case COMMAND.LABEL:
         return <Label {...props} />;
       case COMMAND.JUMP:
@@ -4420,12 +4560,14 @@ const CommandEditor = (props) => {
         return <ChangeTransparent {...props} />;
       case COMMAND.GATHERFOLLOWERS:
         return <GatherFollowers {...props} />;
-      case COMMAND.BattleMessage:
-        return <BattleMessage {...props} />;
-      case COMMAND.BattleMessageSettings:
-        return <BattleMessageSettings {...props} />;
-      case COMMAND.BattleEffect:
-        return <BattleEffect {...props} />;
+      case COMMAND.ActionMessage:
+        return <ActionMessage {...props} />;
+      case COMMAND.ActionMessageSettings:
+        return <ActionMessageSettings {...props} />;
+      case COMMAND.ActionEffect:
+        return <ActionEffect {...props} />;
+      case COMMAND.ActionTarget:
+        return <ActionTarget {...props} />;
       case COMMAND.COMMENT:
         return <Comment {...props} />;
       default:

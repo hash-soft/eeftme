@@ -19,6 +19,8 @@ const CommandItem = (props) => {
   const positions = dataset.positions;
   const warpPlaces = dataset.warpPlaces;
   const animations = dataset.animations;
+  const members = dataset.members;
+  const enemies = dataset.enemies;
   const mapEventsRef = React.useContext(MapEventsRef);
   const commonEventsRef = React.useContext(CommonEventsRef);
 
@@ -76,6 +78,14 @@ const CommandItem = (props) => {
 
   const dispEffectName = (id) => {
     return Utils.getDispName(animations, id);
+  };
+
+  const dispMemberName = (id) => {
+    return Utils.getDispName(members, id);
+  };
+
+  const dispEnemyName = (id) => {
+    return Utils.getDispName(enemies, id);
   };
 
   // 文章表示
@@ -347,6 +357,8 @@ const CommandItem = (props) => {
         return `${dispSlotName(param1)} が${dispStateName(param2)} かどうか`;
       case 7:
         return Utils.getGameDataTextSelectList()[param1];
+      case 8:
+        return `${Utils.getActionIdList()[param2]}`;
       default:
         return '';
     }
@@ -391,6 +403,25 @@ const CommandItem = (props) => {
   const listAssignResultContents = (slotId) => {
     const slotText = dispSlotName(slotId);
     return <td>結果 = {slotText}</td>;
+  };
+
+  // 戦闘者判定
+  const listJudgeBattlerContents = (slotId, type, id) => {
+    const slotText = dispSlotName(slotId);
+    return (
+      <td>
+        {slotText}が{_getJudgeBattler(type, id)}
+      </td>
+    );
+  };
+
+  const _getJudgeBattler = (type, id) => {
+    switch (type) {
+      case 0:
+        return dispMemberName(id);
+      default:
+        return dispEnemyName(id);
+    }
   };
 
   const listCaseContents = (result) => {
@@ -801,8 +832,8 @@ const CommandItem = (props) => {
     return <td>{typeText}</td>;
   };
 
-  // 戦闘メッセージ
-  const listBattleMessageContents = (messageId, type) => {
+  // 行動メッセージ指定
+  const listActionMessageContents = (messageId, type) => {
     const header = `[${Utils.getMessageTypeList()[type]}]`;
     return (
       <td>
@@ -813,15 +844,20 @@ const CommandItem = (props) => {
     );
   };
 
-  // 戦闘メッセージの設定
-  const listBattleMessageSettingsContents = (type) => {
+  // 行動メッセージの設定指定
+  const listActionMessageSettingsContents = (type) => {
     const settingText = Utils.getMessageOptionTypeSelectList()[type];
     return <td>{settingText}</td>;
   };
 
-  // 戦闘エフェクト
-  const listBattleEffectContents = (effectId) => {
+  // 行動エフェクト指定
+  const listActionEffectContents = (effectId) => {
     return <td>{`${dispEffectName(effectId)}`}</td>;
+  };
+
+  // 行動対象指定
+  const listActionTargetContents = (slotId) => {
+    return <td>{`${dispSlotName(slotId)}`}</td>;
   };
 
   // コメント
@@ -848,7 +884,7 @@ const CommandItem = (props) => {
         title = 'メニュー表示:';
         contents = listMenuContents(...parameters);
         break;
-      case COMMAND.ENDMENU:
+      case COMMAND.EndMenu:
         title = 'メニュー終了:';
         contents = listEndMenuContents(...parameters);
         break;
@@ -882,11 +918,11 @@ const CommandItem = (props) => {
         title = '固定データ取得:';
         contents = listAssignFixDataContents(...parameters);
         break;
-      case COMMAND.ASSIGNGAMEDATA:
+      case COMMAND.AssignGameData:
         title = 'ゲームデータ取得:';
         contents = listAssignGameDataContents(...parameters);
         break;
-      case COMMAND.ASSIGNSYSTEMSLOT:
+      case COMMAND.AssignSystemSlot:
         title = 'システムスロットに代入:';
         contents = listAssignSystemSlotContents(...parameters);
         break;
@@ -894,34 +930,38 @@ const CommandItem = (props) => {
         title = '商品の設定:';
         contents = listGoodsContents(parameters);
         break;
-      case COMMAND.ITEMSPACE:
+      case COMMAND.ItemSpace:
         title = '道具追加可能判定';
         break;
       case COMMAND.JudgeTrigger:
         title = '起動起因判定';
         break;
-      case COMMAND.COMPARESLOT:
+      case COMMAND.CompareSlot:
         title = 'スロット比較';
         contents = listCompareSlotContents(...parameters);
         break;
-      case COMMAND.ASSIGNRESULT:
+      case COMMAND.AssignResult:
         title = '結果代入';
         contents = listAssignResultContents(...parameters);
         break;
+      case COMMAND.JudgeBattler:
+        title = '戦闘者判定';
+        contents = listJudgeBattlerContents(...parameters);
+        break;
       case COMMAND.CASE:
-        title = 'CASE:';
+        title = 'Case';
         contents = listCaseContents(...parameters);
         break;
       case COMMAND.ELSE:
-        title = 'ELSE';
+        title = 'Else';
         break;
-      case COMMAND.ENDBRANCH:
-        title = 'ENDBRANCH';
+      case COMMAND.EndBranch:
+        title = 'EndBranch';
         break;
-      case COMMAND.BEGINLOOP:
+      case COMMAND.BeginLoop:
         title = 'ループ開始';
         break;
-      case COMMAND.ENDLOOP:
+      case COMMAND.EndLoop:
         title = 'ループ終端';
         break;
       case COMMAND.LABEL:
@@ -935,7 +975,7 @@ const CommandItem = (props) => {
       case COMMAND.EXIT:
         title = '以降実行しない';
         break;
-      case COMMAND.EXITLOOP:
+      case COMMAND.ExitLoop:
         title = 'ループ中断';
         break;
       case COMMAND.GAINITEM:
@@ -1068,22 +1108,26 @@ const CommandItem = (props) => {
         title = 'オブジェクトの再設定';
         break;
       case COMMAND.PushActionResult:
-        title = '戦闘行動結果追加';
+        title = '行動結果追加';
         break;
-      case COMMAND.BattleMessage:
-        title = '戦闘文章指定：';
-        contents = listBattleMessageContents(...parameters);
+      case COMMAND.ActionMessage:
+        title = '行動文章指定：';
+        contents = listActionMessageContents(...parameters);
         break;
-      case COMMAND.BattleMessageSettings:
-        title = '戦闘文章の設定：';
-        contents = listBattleMessageSettingsContents(...parameters);
+      case COMMAND.ActionMessageSettings:
+        title = '行動文章の設定：';
+        contents = listActionMessageSettingsContents(...parameters);
         break;
-      case COMMAND.BattleEffect:
-        title = '戦闘エフェクト指定：';
-        contents = listBattleEffectContents(...parameters);
+      case COMMAND.ActionEffect:
+        title = '行動エフェクト指定：';
+        contents = listActionEffectContents(...parameters);
         break;
-      case COMMAND.BattleTarget:
-        title = '戦闘行動対象指定';
+      case COMMAND.ActionTarget:
+        title = '行動対象指定：';
+        contents = listActionTargetContents(...parameters);
+        break;
+      case COMMAND.ActionExitProcess:
+        title = '行動処理を抜ける';
         break;
       case COMMAND.COMMENT:
         title = '';
@@ -1094,7 +1138,7 @@ const CommandItem = (props) => {
     }
 
     if (props.command.code !== COMMAND.COMMENT) {
-      const mark = [COMMAND.ELSE, COMMAND.ENDBRANCH, COMMAND.ENDLOOP].includes(
+      const mark = [COMMAND.ELSE, COMMAND.EndBranch, COMMAND.EndLoop].includes(
         props.command.code
       )
         ? '：'
@@ -1158,7 +1202,7 @@ const CommandList = (props) => {
   let nest = 0;
 
   const listItems = props.list.map((command, index) => {
-    if ([COMMAND.ENDBRANCH, COMMAND.ENDLOOP].includes(command.code)) {
+    if ([COMMAND.EndBranch, COMMAND.EndLoop].includes(command.code)) {
       nest -= 1;
     }
     const result = (
@@ -1175,7 +1219,7 @@ const CommandList = (props) => {
       />
     );
     if (
-      [COMMAND.CASE, COMMAND.ELSE, COMMAND.BEGINLOOP].includes(command.code)
+      [COMMAND.CASE, COMMAND.ELSE, COMMAND.BeginLoop].includes(command.code)
     ) {
       nest += 1;
     }
