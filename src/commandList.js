@@ -44,6 +44,10 @@ const CommandItem = (props) => {
     return Utils.getDispName(items, id);
   };
 
+  const dispSkillName = (id) => {
+    return Utils.getDispName(dataset.skills, id);
+  };
+
   const dispStateName = (id) => {
     return Utils.getDispName(states, id);
   };
@@ -169,11 +173,11 @@ const CommandItem = (props) => {
   };
 
   // 組み込みメニュー
-  const listEmbeddedContents = (menuId, startPos) => {
+  const listEmbeddedContents = (menuId, startPos, delayTime) => {
     const menuName = `[${menuId}]`;
     return (
       <td>
-        {menuName}, 開始位置({startPos})
+        {menuName}, 開始位置({startPos}), 遅延時間({delayTime})
       </td>
     );
   };
@@ -410,17 +414,20 @@ const CommandItem = (props) => {
     const slotText = dispSlotName(slotId);
     return (
       <td>
-        {slotText}が{_getJudgeBattler(type, id)}
+        {slotText}：{Utils.getBattlerTypeList()[type]}
+        {_getJudgeBattler(type, id)}
       </td>
     );
   };
 
   const _getJudgeBattler = (type, id) => {
     switch (type) {
-      case 0:
+      case 1:
         return dispMemberName(id);
-      default:
+      case 2:
         return dispEnemyName(id);
+      default:
+        return '';
     }
   };
 
@@ -654,12 +661,20 @@ const CommandItem = (props) => {
   };
 
   // 位置設定
-  const listLocationContents = (target, type, value1, value2, direction) => {
-    const typeList = ['直接', 'スロット', '交換', '仲間の位置にする'];
+  const listLocationContents = (
+    type,
+    target,
+    dest,
+    value1,
+    value2,
+    direction
+  ) => {
+    const dispTarget = type === 1 ? dispSlotName(type) : `Id：${target}`;
+    const list = Utils.getLocationDestList();
     return (
       <td>
-        対象{target} ({typeList[type]}:
-        {_getLocationTypeText(type, value1, value2)}, 方向:{direction})
+        {dispTarget} ({list[dest]}:{_getLocationTypeText(dest, value1, value2)},
+        方向:{direction})
       </td>
     );
   };
@@ -671,9 +686,9 @@ const CommandItem = (props) => {
       case 1:
         return `${dispSlotName(value1)},${dispSlotName(value2)}`;
       case 2:
-        return `${value1}`;
+        return `${value1}${value2 === 1 ? '交換' : ''}`;
       case 3:
-        return dispSlotName(value1);
+        return dispSlotName(value1) + `${value2 === 1 ? '交換' : ''}`;
       default:
         return '???';
     }
@@ -696,9 +711,9 @@ const CommandItem = (props) => {
       case 3:
         return '[効果音]' + dispSeName(value);
       case 4:
-        return '[ずらす横座標スロット]' + dispSlotName(value);
+        return '[横画面座標スロット]' + dispSlotName(value);
       case 5:
-        return '[ずらす縦座標スロット]' + dispSlotName(value);
+        return '[縦画面座標スロット]' + dispSlotName(value);
       default:
         return '???';
     }
@@ -734,13 +749,14 @@ const CommandItem = (props) => {
   };
 
   // 移動ルート
-  const listMoveRouteContents = (target, type, routeId) => {
+  const listMoveRouteContents = (type, target, storage, routeId) => {
+    const dispTarget = type === 1 ? dispSlotName(type) : `Id：${target}`;
     if (typeof routeId === 'object') {
       routeId = 1;
     }
     return (
       <td>
-        対象{target} ({type === 0 ? '共通' : 'マップ'},ルートId={routeId})
+        {dispTarget} ({storage === 0 ? '共通' : 'マップ'},ルートId={routeId})
       </td>
     );
   };
@@ -860,6 +876,16 @@ const CommandItem = (props) => {
     return <td>{`${dispSlotName(slotId)}`}</td>;
   };
 
+  // 追加行動指定
+  const listActionExtraContents = (type) => {
+    return <td>{`${Utils.getActionExtraList()[type]}`}</td>;
+  };
+
+  // 強制行動指定
+  const listActionForceContents = (slotId, skillId) => {
+    return <td>{`${dispSlotName(slotId)}が${dispSkillName(skillId)}`}</td>;
+  };
+
   // コメント
   const listCommentContents = (text) => {
     const message = (
@@ -895,7 +921,7 @@ const CommandItem = (props) => {
       case COMMAND.MessageCloseWait:
         title = '文章閉じ待機';
         break;
-      case COMMAND.EMBEDDED:
+      case COMMAND.Embedded:
         title = '組み込みメニュー';
         contents = listEmbeddedContents(...parameters);
         break;
@@ -978,7 +1004,7 @@ const CommandItem = (props) => {
       case COMMAND.ExitLoop:
         title = 'ループ中断';
         break;
-      case COMMAND.GAINITEM:
+      case COMMAND.GainItem:
         title = '道具を追加:';
         contents = listGainItemContents(...parameters);
         break;
@@ -990,7 +1016,7 @@ const CommandItem = (props) => {
         title = 'パーティの変更:';
         contents = listChangePartyContents(...parameters);
         break;
-      case COMMAND.CHANGENPC:
+      case COMMAND.ChangeNpc:
         title = 'NPCの変更:';
         contents = listChangeNpcContents(...parameters);
         break;
@@ -998,7 +1024,7 @@ const CommandItem = (props) => {
         title = '回復:';
         contents = listRecoverContents(...parameters);
         break;
-      case COMMAND.CHANGESTATE:
+      case COMMAND.ChangeState:
         title = '状態変更:';
         contents = listChangeStateContents(...parameters);
         break;
@@ -1022,7 +1048,7 @@ const CommandItem = (props) => {
         title = '場所移動:';
         contents = listMoveContents(...parameters);
         break;
-      case COMMAND.MOVEFROMPOSITION:
+      case COMMAND.MoveFromPosition:
         title = '位置リスト移動:';
         contents = listMoveFromPositionContents(...parameters);
         break;
@@ -1030,11 +1056,11 @@ const CommandItem = (props) => {
         title = 'ワープ:';
         contents = listWarpContents(...parameters);
         break;
-      case COMMAND.LOCATION:
+      case COMMAND.Location:
         title = '位置設定:';
         contents = listLocationContents(...parameters);
         break;
-      case COMMAND.MOVESETTINGS:
+      case COMMAND.MoveSettings:
         title = '移動の設定:';
         contents = listMoveSettingsContents(...parameters);
         break;
@@ -1042,7 +1068,7 @@ const CommandItem = (props) => {
         title = 'スクロールの操作:';
         contents = listScrollContents(...parameters);
         break;
-      case COMMAND.MOVEROUTE:
+      case COMMAND.MoveRoute:
         title = '移動ルート:';
         contents = listMoveRouteContents(...parameters);
         break;
@@ -1084,7 +1110,7 @@ const CommandItem = (props) => {
         title = 'BGM割込:';
         contents = listBgmInterrupt(...parameters);
         break;
-      case COMMAND.EVENTTRIGGER:
+      case COMMAND.EventTrigger:
         title = 'イベント起動:';
         contents = listEventTriggerContents(...parameters);
         break;
@@ -1100,7 +1126,7 @@ const CommandItem = (props) => {
         title = '透明状態変更:';
         contents = listChangeTransparentContents(...parameters);
         break;
-      case COMMAND.GATHERFOLLOWERS:
+      case COMMAND.GatherFollowers:
         title = '隊列の集合:';
         contents = listGatherFollowersContents(...parameters);
         break;
@@ -1126,8 +1152,13 @@ const CommandItem = (props) => {
         title = '行動対象指定：';
         contents = listActionTargetContents(...parameters);
         break;
-      case COMMAND.ActionExitProcess:
-        title = '行動処理を抜ける';
+      case COMMAND.ActionExtra:
+        title = '追加行動指定：';
+        contents = listActionExtraContents(...parameters);
+        break;
+      case COMMAND.ActionForce:
+        title = '強制行動指定：';
+        contents = listActionForceContents(...parameters);
         break;
       case COMMAND.COMMENT:
         title = '';

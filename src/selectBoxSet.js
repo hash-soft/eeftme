@@ -213,6 +213,15 @@ const ItemSelectBox = (props) => {
   return <SelectBoxBase items={items} digits={3} {...props}></SelectBoxBase>;
 };
 
+// スキルセレクトボックス
+const SkillSelectBox = (props) => {
+  const dataset = React.useContext(Dataset);
+
+  return (
+    <SelectBoxBase items={dataset.skills} digits={3} {...props}></SelectBoxBase>
+  );
+};
+
 // メンバーセレクトボックス
 const MemberSelectBox = (props) => {
   const dataset = React.useContext(Dataset);
@@ -341,6 +350,7 @@ export {
   EffectSelectBox,
   SystemSlotIdSelectBox,
   ItemSelectBox,
+  SkillSelectBox,
   MemberSelectBox,
   EnemySelectBox,
   StateSelectBox,

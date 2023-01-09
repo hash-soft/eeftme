@@ -147,7 +147,11 @@ Utils.getAOrDList = function () {
 };
 
 Utils.getBattlerTypeList = function () {
-  return ['メンバー', '敵', '仲間（未実装）'];
+  return ['指定なし', 'メンバー', '敵', '仲間（未実装）'];
+};
+
+Utils.getActionExtraList = function () {
+  return ['即時行動', '表示更新', '処理を抜ける', '強制行動'];
 };
 
 Utils.getFixDataTypeSelectList = function () {
@@ -170,6 +174,10 @@ Utils.getGameDataTypeSelectList = function () {
     'テキスト',
     '行動',
   ];
+};
+
+Utils.getLocationDestList = function () {
+  return ['直接指定', 'スロット指定', '指定キャラ', 'スロットの指定キャラ'];
 };
 
 Utils.getGameDataTextSelectList = function () {
@@ -217,7 +225,7 @@ Utils.getChangeTransparentTypeList = function () {
 };
 
 Utils.getGatherFollowersTypeList = function () {
-  return ['通常', '集合位置で消える'];
+  return ['通常', '集合位置で消える', '集合完了後消える'];
 };
 
 Utils.getCallScriptTimingList = function () {

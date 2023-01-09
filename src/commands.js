@@ -9,6 +9,7 @@ const CommandPopup = (props) => {
   const commandButton = (code, title) => {
     return <button onClick={() => props.closePopup(code)}>{title}</button>;
   };
+  // COMMAND定数を変えるときはここで変えないと使用箇所が変わらない
   return (
     <div className="modal">
       <div className="popup-inner">
@@ -25,9 +26,7 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.MessageCloseWait)}>
             文章閉じ待機
           </button>
-          <button onClick={() => props.closePopup(COMMAND.EMBEDDED)}>
-            組み込みメニュー
-          </button>
+          {commandButton(COMMAND.Embedded, '組み込みメニュー')}
           <button onClick={() => props.closePopup(COMMAND.EndEmbedded)}>
             組み込みメニュー終了
           </button>
@@ -53,9 +52,9 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.CompareSlot, 'スロット比較')}
           {commandButton(COMMAND.AssignResult, '結果代入')}
           {commandButton(COMMAND.JudgeBattler, '戦闘者判定')}
-          {commandButton(COMMAND.CASE, 'CASE')}
-          {commandButton(COMMAND.ELSE, 'ELSE')}
-          {commandButton(COMMAND.EndBranch, 'ENDBRANCH')}
+          {commandButton(COMMAND.CASE, 'Case')}
+          {commandButton(COMMAND.ELSE, 'Else')}
+          {commandButton(COMMAND.EndBranch, 'EndBranch')}
           {commandButton(COMMAND.BeginLoop, 'ループ')}
           {commandButton(COMMAND.EndLoop, 'ループ終端')}
           <button onClick={() => props.closePopup(COMMAND.LABEL)}>
@@ -66,18 +65,16 @@ const CommandPopup = (props) => {
           </button>
           {commandButton(COMMAND.EXIT, '以降実行しない')}
           {commandButton(COMMAND.ExitLoop, 'ループ中断')}
-          <button onClick={() => props.closePopup(COMMAND.GAINITEM)}>
-            道具を追加
-          </button>
+          {commandButton(COMMAND.GainItem, '道具を追加')}
           <button onClick={() => props.closePopup(COMMAND.CHANGEGOLD)}>
             所持金変更
           </button>
           <button onClick={() => props.closePopup(COMMAND.CHANGEPARTY)}>
             パーティの変更
           </button>
-          {commandButton(COMMAND.CHANGENPC, 'NPCの変更')}
+          {commandButton(COMMAND.ChangeNpc, 'NPCの変更')}
           {commandButton(COMMAND.RECOVER, '回復')}
-          {commandButton(COMMAND.CHANGESTATE, '状態変更')}
+          {commandButton(COMMAND.ChangeState, '状態変更')}
           <button onClick={() => props.closePopup(COMMAND.CHANGETILE)}>
             タイル変更
           </button>
@@ -87,22 +84,16 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.MOVE)}>
             場所移動
           </button>
-          <button onClick={() => props.closePopup(COMMAND.MOVEFROMPOSITION)}>
-            位置リスト移動
-          </button>
+          {commandButton(COMMAND.MoveFromPosition, '位置リスト移動')}
           <button onClick={() => props.closePopup(COMMAND.WARP)}>ワープ</button>
-          <button onClick={() => props.closePopup(COMMAND.LOCATION)}>
-            キャラクター位置設定
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.MOVESETTINGS)}>
+          {commandButton(COMMAND.Location, 'キャラクター位置設定')}
+          <button onClick={() => props.closePopup(COMMAND.MoveSettings)}>
             移動の設定
           </button>
           <button onClick={() => props.closePopup(COMMAND.SCROLL)}>
             マップスクロール
           </button>
-          <button onClick={() => props.closePopup(COMMAND.MOVEROUTE)}>
-            移動ルート
-          </button>
+          {commandButton(COMMAND.MoveRoute, '移動ルート')}
           <button onClick={() => props.closePopup(COMMAND.MOVEROUTEWAIT)}>
             移動ルート待機
           </button>
@@ -131,7 +122,7 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.BGMINTERRUPT)}>
             BGM割込
           </button>
-          <button onClick={() => props.closePopup(COMMAND.EVENTTRIGGER)}>
+          <button onClick={() => props.closePopup(COMMAND.EventTrigger)}>
             イベント起動
           </button>
           {commandButton(COMMAND.SCREENFADEOUT, '画面のフェードアウト')}
@@ -139,16 +130,15 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.CHANGETRANSPARENT)}>
             透明状態変更
           </button>
-          <button onClick={() => props.closePopup(COMMAND.GATHERFOLLOWERS)}>
-            隊列の集合
-          </button>
+          {commandButton(COMMAND.GatherFollowers, '隊列の集合')}
           {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
           {commandButton(COMMAND.PushActionResult, '行動結果追加')}
           {commandButton(COMMAND.ActionMessage, '行動文章指定')}
           {commandButton(COMMAND.ActionMessageSettings, '行動文章の設定')}
           {commandButton(COMMAND.ActionEffect, '行動エフェクト指定')}
           {commandButton(COMMAND.ActionTarget, '行動対象指定')}
-          {commandButton(COMMAND.ActionExitProcess, '行動処理を抜ける')}
+          {commandButton(COMMAND.ActionExtra, '追加行動指定')}
+          {commandButton(COMMAND.ActionForce, '強制行動指定')}
           {commandButton(COMMAND.COMMENT, 'コメント')}
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>

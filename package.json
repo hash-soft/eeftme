@@ -36,8 +36,8 @@
   },
   "homepage": ".",
   "devDependencies": {
-    "eslint-config-prettier": "^8.5.0",
-    "prettier": "^2.7.1"
+    "eslint-config-prettier": "^8.6.0",
+    "prettier": "^2.8.2"
   },
   "packageManager": "yarn@3.2.4"
 }

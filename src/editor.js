@@ -332,6 +332,7 @@ const Editor = () => {
         members: [],
         enemies: [],
         items: [],
+        skills: [],
         windowsets: [],
         mapList: [],
         positions: [],
@@ -356,6 +357,7 @@ const Editor = () => {
     dataset.members?.shift();
     dataset.enemies?.shift();
     dataset.items?.shift();
+    dataset.skills?.shift();
     dataset.windowsets?.shift();
     dataset.mapList?.shift();
     dataset.positions?.shift();
