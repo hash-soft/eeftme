@@ -340,13 +340,17 @@ const CommandItem = (props) => {
   const _getAssignGameDataParamText = (type, param1, param2) => {
     switch (type) {
       case 0:
-        return `${dispSlotName(param1)} の登録id`;
+        return `${dispSlotName(param1)} 番目の${
+          Utils.getGameDataPartyMemberList()[param2]
+        }の登録id`;
       case 1:
         return `${dispSlotName(param1)} ${
           Utils.getRegisterMemberInfoSelectList()[param2]
         }`;
       case 2:
-        return `${Utils.getPartyInfoSelectList()[param2]}`;
+        return `${dispSlotName(param1)} ${
+          Utils.getPlayerInfoSelectList()[param2]
+        }`;
       case 3:
         return `${dispSlotName(param1)} ${
           Utils.getPlayerInfoSelectList()[param2]
@@ -354,11 +358,9 @@ const CommandItem = (props) => {
       case 4:
         return `${dispSlotName(param1)} の${dispItemName(param2)} の個数`;
       case 5:
-        return `[オブジェクトId:${param1}] ${
-          Utils.getPlayerInfoSelectList()[param2]
-        }`;
-      case 6:
         return `${dispSlotName(param1)} が${dispStateName(param2)} かどうか`;
+      case 6:
+        return `${Utils.getPartyInfoSelectList()[param2]}`;
       case 7:
         return Utils.getGameDataTextSelectList()[param1];
       case 8:
@@ -376,6 +378,34 @@ const CommandItem = (props) => {
         {systemSlotName} = {slotText}
       </td>
     );
+  };
+
+  /**
+   * マップ情報取得
+   * @param {*} slotId 格納するスロットId
+   * @param {*} type 種類
+   * @param {*} param1
+   */
+  const listAssignMapInfoContents = (slotId, type, param1) => {
+    const slotText = dispSlotName(slotId);
+    const typeText = Utils.getMapInfoList()[type];
+    const paramText = _getAssignMapInfoParamText(type, param1);
+    return (
+      <td>
+        {slotText} = {typeText}:{paramText}
+      </td>
+    );
+  };
+
+  const _getAssignMapInfoParamText = (type, param1) => {
+    switch (type) {
+      case 0:
+        return `${Utils.getMapInfoStandardList()[param1]}`;
+      case 1:
+        return `${Utils.getMapInfoEventList()[param1]}`;
+      default:
+        return '';
+    }
   };
 
   // 商品の設定
@@ -722,18 +752,9 @@ const CommandItem = (props) => {
   const listScrollContents = (type, distanceX, distanceY, speed, wait) => {
     const typeText = ['固定', '固定解除', 'ずらす', '戻す'][type];
     const distanceText = type === 2 ? `[X:${distanceX} Y:${distanceY}]` : '';
-    const speedList = [
-      '1/8倍',
-      '1/4倍',
-      '1/2倍',
-      '1倍',
-      '2倍',
-      '4倍',
-      '8倍',
-      '瞬時',
-    ];
+    const speedList = Utils.getScrollSpeedList();
     const speedText = [2, 3].includes(type)
-      ? ` ${speedList[speed > 6 ? 7 : speed]}`
+      ? ` ${speedList.find((item) => item.value === speed)?.text ?? ''}`
       : '';
     const waitText = [2, 3].includes(type)
       ? ` ${wait > 0 ? '待機する' : '待機しない'}`
@@ -834,11 +855,36 @@ const CommandItem = (props) => {
     return <td>待機:{Utils.getOrNotSelectList()[wait]}</td>;
   };
 
+  // 画面のシェイク
+  const listScreenShakeContents = (type, x, y, speed, frame, wait) => {
+    const typeText = Utils.getShakeTypeList()[type];
+    const distanceText = `[X:${x} Y:${y}]`;
+    const speedList = Utils.getShakeSpeedList();
+    const speedText = ` ${
+      speedList.find((item) => item.value === speed)?.text ?? ''
+    }`;
+    const frameText = ` ${frame}フレーム`;
+    const waitText = ` ${wait > 0 ? '待機する' : '待機しない'}`;
+    return (
+      <td>
+        {typeText}
+        {distanceText}
+        {speedText}
+        {frameText}
+        {waitText}
+      </td>
+    );
+  };
+
   // 透明状態変更
-  const listChangeTransparentContents = (type) => {
+  const listChangeTransparentContents = (target, type) => {
     const texts = Utils.getChangeTransparentTypeList();
     const typeText = texts[type];
-    return <td>{typeText}</td>;
+    return (
+      <td>
+        Id：{target} {typeText}
+      </td>
+    );
   };
 
   // 隊列の集合
@@ -936,11 +982,11 @@ const CommandItem = (props) => {
         title = '変数:';
         contents = listVariableContents(...parameters);
         break;
-      case COMMAND.OPERATESLOT:
+      case COMMAND.OperateSlot:
         title = 'スロット演算:';
         contents = listOperateSlotContents(...parameters);
         break;
-      case COMMAND.ASSIGNFIXDATA:
+      case COMMAND.AssignFixData:
         title = '固定データ取得:';
         contents = listAssignFixDataContents(...parameters);
         break;
@@ -952,15 +998,16 @@ const CommandItem = (props) => {
         title = 'システムスロットに代入:';
         contents = listAssignSystemSlotContents(...parameters);
         break;
+      case COMMAND.AssignMapInfo:
+        title = 'マップ情報取得:';
+        contents = listAssignMapInfoContents(...parameters);
+        break;
       case COMMAND.GOODS:
         title = '商品の設定:';
         contents = listGoodsContents(parameters);
         break;
       case COMMAND.ItemSpace:
         title = '道具追加可能判定';
-        break;
-      case COMMAND.JudgeTrigger:
-        title = '起動起因判定';
         break;
       case COMMAND.CompareSlot:
         title = 'スロット比較';
@@ -1072,7 +1119,7 @@ const CommandItem = (props) => {
         title = '移動ルート:';
         contents = listMoveRouteContents(...parameters);
         break;
-      case COMMAND.MOVEROUTEWAIT:
+      case COMMAND.MoveRouteWait:
         title = '移動ルート待機:';
         contents = listMoveRouteWaitContents(...parameters);
         break;
@@ -1114,15 +1161,19 @@ const CommandItem = (props) => {
         title = 'イベント起動:';
         contents = listEventTriggerContents(...parameters);
         break;
-      case COMMAND.SCREENFADEOUT:
+      case COMMAND.ScreenFadeOut:
         title = '画面のフェードアウト:';
         contents = listScreenFadeOutContents(...parameters);
         break;
-      case COMMAND.SCREENFADEIN:
+      case COMMAND.ScreenFadeIn:
         title = '画面のフェードイン:';
         contents = listScreenFadeInContents(...parameters);
         break;
-      case COMMAND.CHANGETRANSPARENT:
+      case COMMAND.ScreenShake:
+        title = '画面のシェイク:';
+        contents = listScreenShakeContents(...parameters);
+        break;
+      case COMMAND.ChangeTransparent:
         title = '透明状態変更:';
         contents = listChangeTransparentContents(...parameters);
         break;

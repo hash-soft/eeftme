@@ -36,19 +36,13 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.VARIABLE)}>
             変数の処理
           </button>
-          <button onClick={() => props.closePopup(COMMAND.OPERATESLOT)}>
-            スロット演算
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.ASSIGNFIXDATA)}>
-            固定データ取得
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.AssignGameData)}>
-            ゲームデータ取得
-          </button>
+          {commandButton(COMMAND.OperateSlot, 'スロット演算')}
+          {commandButton(COMMAND.AssignFixData, '固定データ取得')}
+          {commandButton(COMMAND.AssignGameData, 'ゲームデータ取得')}
           {commandButton(COMMAND.AssignSystemSlot, 'システムスロットに代入')}
+          {commandButton(COMMAND.AssignMapInfo, 'マップ情報取得')}
           {commandButton(COMMAND.GOODS, '商品の設定')}
           {commandButton(COMMAND.ItemSpace, '道具追加可能判定')}
-          {commandButton(COMMAND.JudgeTrigger, '起動起因判定')}
           {commandButton(COMMAND.CompareSlot, 'スロット比較')}
           {commandButton(COMMAND.AssignResult, '結果代入')}
           {commandButton(COMMAND.JudgeBattler, '戦闘者判定')}
@@ -94,9 +88,7 @@ const CommandPopup = (props) => {
             マップスクロール
           </button>
           {commandButton(COMMAND.MoveRoute, '移動ルート')}
-          <button onClick={() => props.closePopup(COMMAND.MOVEROUTEWAIT)}>
-            移動ルート待機
-          </button>
+          {commandButton(COMMAND.MoveRouteWait, '移動ルート待機')}
           <button onClick={() => props.closePopup(COMMAND.FOLLOWERCONTROL)}>
             隊列の操作
           </button>
@@ -125,11 +117,10 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.EventTrigger)}>
             イベント起動
           </button>
-          {commandButton(COMMAND.SCREENFADEOUT, '画面のフェードアウト')}
-          {commandButton(COMMAND.SCREENFADEIN, '画面のフェードイン')}
-          <button onClick={() => props.closePopup(COMMAND.CHANGETRANSPARENT)}>
-            透明状態変更
-          </button>
+          {commandButton(COMMAND.ScreenFadeOut, '画面のフェードアウト')}
+          {commandButton(COMMAND.ScreenFadeIn, '画面のフェードイン')}
+          {commandButton(COMMAND.ScreenShake, '画面のシェイク')}
+          {commandButton(COMMAND.ChangeTransparent, '透明状態変更')}
           {commandButton(COMMAND.GatherFollowers, '隊列の集合')}
           {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
           {commandButton(COMMAND.PushActionResult, '行動結果追加')}

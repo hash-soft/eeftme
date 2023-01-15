@@ -1334,26 +1334,25 @@ const AssignFixData = (props) => {
  * @param {*} props
  */
 const AssignGameData = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: スロットId
   // 1: データの種類
   // 2: パラメータ1
   // 3: パラメータ2
-  const parametersRef = React.useRef(data || [1, 0, 0, 0]);
-  const parameters = parametersRef.current;
+  const parameters = GetParameters(props.command.parameters, [1, 0, 0, 0]);
   const type = parameters[1];
+  let partyRef = type === 0 ? parameters[1] : 0;
   let partySlotId = type === 0 ? parameters[2] : 1;
   let memberSlotId = type === 1 ? parameters[2] : 1;
   let registerMemberProperty = type === 1 ? parameters[3] : 0;
-  let partyProperty = type === 2 ? parameters[3] : 0;
-  let playerSlotId = type === 3 ? parameters[2] : 1;
-  let playerProperty = type === 3 ? parameters[3] : 0;
+  let characterSlotId = type === 2 ? parameters[2] : 1;
+  let characterProperty = type === 2 ? parameters[3] : 0;
+  let tileSlotId = type === 3 ? parameters[2] : 1;
+  let tileProperty = type === 3 ? parameters[3] : 0;
   let itemSubjectSlotId = type === 4 ? parameters[2] : 1;
   let itemId = type === 4 ? parameters[3] : 1;
-  let objectId = type === 5 ? parameters[2] : 0;
-  let objectProperty = type === 5 ? parameters[3] : 0;
-  let stateSubjectSlotId = type === 6 ? parameters[2] : 1;
-  let stateId = type === 6 ? parameters[3] : 1;
+  let stateSubjectSlotId = type === 5 ? parameters[2] : 1;
+  let stateId = type === 5 ? parameters[3] : 1;
+  let partyProperty = type === 6 ? parameters[3] : 0;
   let textType = type === 7 ? parameters[2] : 0;
   let actionProperty = type === 8 ? parameters[3] : 0;
   const typeList = Utils.getGameDataTypeSelectList();
@@ -1364,6 +1363,10 @@ const AssignGameData = (props) => {
 
   const onTypeChange = (e) => {
     parameters[1] = parseInt(e.target.value);
+  };
+
+  const onPartyRefChange = (e) => {
+    partyRef = parseInt(e.target.value);
   };
 
   const onPartySlotIdChange = (e) => {
@@ -1378,16 +1381,20 @@ const AssignGameData = (props) => {
     registerMemberProperty = parseInt(e.target.value);
   };
 
-  const onPartyPropertyChange = (e) => {
-    partyProperty = parseInt(e.target.value);
-  };
-
   const onPlayerSlotIdChange = (e) => {
-    playerSlotId = parseInt(e.target.value);
+    characterSlotId = parseInt(e.target.value);
   };
 
   const onPlayerPropertyChange = (e) => {
-    playerProperty = parseInt(e.target.value);
+    characterProperty = parseInt(e.target.value);
+  };
+
+  const onTileSlotIdChange = (e) => {
+    tileSlotId = parseInt(e.target.value);
+  };
+
+  const onTilePropertyChange = (e) => {
+    tileProperty = parseInt(e.target.value);
   };
 
   const onItemSubjectSlotIdChange = (e) => {
@@ -1398,20 +1405,16 @@ const AssignGameData = (props) => {
     itemId = parseInt(e.target.value);
   };
 
-  const onObjectIdFocusOff = (value) => {
-    objectId = value;
-  };
-
-  const onObjectPropertyChange = (e) => {
-    objectProperty = parseInt(e.target.value);
-  };
-
   const onStateSubjectSlotIdChange = (e) => {
     stateSubjectSlotId = parseInt(e.target.value);
   };
 
   const onStateIdChange = (e) => {
     stateId = parseInt(e.target.value);
+  };
+
+  const onPartyPropertyChange = (e) => {
+    partyProperty = parseInt(e.target.value);
   };
 
   const onTextTypeChange = (e) => {
@@ -1426,22 +1429,22 @@ const AssignGameData = (props) => {
     const values1 = [
       partySlotId,
       memberSlotId,
-      0,
-      playerSlotId,
+      characterSlotId,
+      tileSlotId,
       itemSubjectSlotId,
-      objectId,
       stateSubjectSlotId,
+      0,
       textType,
       0,
     ];
     const values2 = [
-      0,
+      partyRef,
       registerMemberProperty,
-      partyProperty,
-      playerProperty,
+      characterProperty,
+      tileProperty,
       itemId,
-      objectProperty,
       stateId,
+      partyProperty,
       0,
       actionProperty,
     ];
@@ -1473,12 +1476,15 @@ const AssignGameData = (props) => {
         />
         <font>{typeList[0]}：</font>
         <div>
-          並び
           <SlotSelectBox
             selectValue={partySlotId}
             onChange={(e) => onPartySlotIdChange(e)}
           />
-          番目の登録id
+          番目の
+          <select defaultValue={partyRef} onChange={(e) => onPartyRefChange(e)}>
+            {simpleSelectItems(Utils.getGameDataPartyMemberList())}
+          </select>
+          の登録id
         </div>
       </div>
       <div>
@@ -1514,12 +1520,20 @@ const AssignGameData = (props) => {
           onChange={(e) => onTypeChange(e)}
         />
         <font>{typeList[2]}：</font>
-        <select
-          defaultValue={partyProperty}
-          onChange={(e) => onPartyPropertyChange(e)}
-        >
-          {simpleSelectItems(Utils.getPartyInfoSelectList())}
-        </select>
+        <div>
+          対象Id
+          <SlotSelectBox
+            selectValue={characterSlotId}
+            onChange={(e) => onPlayerSlotIdChange(e)}
+          />
+          の
+          <select
+            defaultValue={characterProperty}
+            onChange={(e) => onPlayerPropertyChange(e)}
+          >
+            {simpleSelectItems(Utils.getPlayerInfoSelectList())}
+          </select>
+        </div>
       </div>
       <div>
         <input
@@ -1531,15 +1545,15 @@ const AssignGameData = (props) => {
         />
         <font>{typeList[3]}：</font>
         <div>
-          表示位置
+          対象Id
           <SlotSelectBox
-            selectValue={playerSlotId}
-            onChange={(e) => onPlayerSlotIdChange(e)}
+            selectValue={tileSlotId}
+            onChange={(e) => onTileSlotIdChange(e)}
           />
           の
           <select
-            defaultValue={playerProperty}
-            onChange={(e) => onPlayerPropertyChange(e)}
+            defaultValue={tileProperty}
+            onChange={(e) => onTilePropertyChange(e)}
           >
             {simpleSelectItems(Utils.getPlayerInfoSelectList())}
           </select>
@@ -1578,32 +1592,6 @@ const AssignGameData = (props) => {
         />
         <font>{typeList[5]}：</font>
         <div>
-          オブジェクトid
-          <NumberEdit
-            min={VariableRange.MIN}
-            max={VariableRange.MAX}
-            value={objectId}
-            onValueFocusOff={onObjectIdFocusOff}
-          />
-          の
-          <select
-            defaultValue={objectProperty}
-            onChange={(e) => onObjectPropertyChange(e)}
-          >
-            {simpleSelectItems(Utils.getPlayerInfoSelectList())}
-          </select>
-        </div>
-      </div>
-      <div>
-        <input
-          type="radio"
-          name="type"
-          value="6"
-          defaultChecked={type === 6 ? 'checked' : ''}
-          onChange={(e) => onTypeChange(e)}
-        />
-        <font>{typeList[6]}：</font>
-        <div>
           登録id
           <SlotSelectBox
             selectValue={stateSubjectSlotId}
@@ -1616,6 +1604,22 @@ const AssignGameData = (props) => {
           />
           になっている
         </div>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="6"
+          defaultChecked={type === 6 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[6]}：</font>
+        <select
+          defaultValue={partyProperty}
+          onChange={(e) => onPartyPropertyChange(e)}
+        >
+          {simpleSelectItems(Utils.getPartyInfoSelectList())}
+        </select>
       </div>
       <div>
         <input
@@ -1691,6 +1695,86 @@ const AssignSystemSlot = (props) => {
           selectValue={parameters[1]}
           onChange={(e) => onSlotChange(e)}
         />
+      </div>
+    </CommandBase>
+  );
+};
+
+/**
+ * マップ情報取得
+ * @param {*} props
+ */
+const AssignMapInfo = (props) => {
+  // 0: スロットId
+  // 1: データの種類
+  // 2: パラメータ1
+  const parameters = GetParameters(props.command.parameters, [1, 0, 0]);
+  const type = parameters[1];
+  let standard = type === 0 ? parameters[2] : 0;
+  let event = type === 1 ? parameters[2] : 0;
+  const typeList = Utils.getMapInfoList();
+
+  const onSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onTypeChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onStandardChange = (e) => {
+    standard = parseInt(e.target.value);
+  };
+
+  const onEventChange = (e) => {
+    event = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const values1 = [standard, event];
+    const newType = parameters[1];
+    parameters[2] = values1[newType];
+
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'マップ情報取得'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>格納スロット：</font>
+      <SlotSelectBox
+        selectValue={parameters[0]}
+        onChange={(e) => onSlotChange(e)}
+      />
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={type === 0 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[0]}：</font>
+        <select defaultValue={standard} onChange={(e) => onStandardChange(e)}>
+          {simpleSelectItems(Utils.getMapInfoStandardList())}
+        </select>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={type === 1 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[1]}：</font>
+        <select defaultValue={standard} onChange={(e) => onEventChange(e)}>
+          {simpleSelectItems(Utils.getMapInfoEventList())}
+        </select>
       </div>
     </CommandBase>
   );
@@ -3389,16 +3473,7 @@ const Scroll = (props) => {
     parameters[2] = value;
   };
 
-  const speedList = [
-    { value: 0, text: '1/8倍' },
-    { value: 1, text: '1/4倍' },
-    { value: 2, text: '1/2倍' },
-    { value: 3, text: '1倍' },
-    { value: 4, text: '2倍' },
-    { value: 5, text: '4倍' },
-    { value: 6, text: '8倍' },
-    { value: 99, text: '瞬時' },
-  ];
+  const speedList = Utils.getScrollSpeedList();
 
   const onSpeedChange = (e) => {
     parameters[3] = parseInt(e.target.value);
@@ -4269,16 +4344,140 @@ const ScreenFadeIn = (props) => {
   );
 };
 
-// 透明状態変更
-const ChangeTransparent = (props) => {
+// シェイク
+const ScreenShake = (props) => {
   const data = sliceParameters(props.command.parameters);
-  // 0: 透明状態 > 0 透明にする 1 解除する
-  const parametersRef = React.useRef(data || [0]);
+  // 0: 0 既定 1 マップだけ 2:キャラクター強制
+  // 1: シェイク横幅
+  // 2: シェイク縦幅
+  // 3: シェイク速度
+  // 4: 期間
+  // 5: 待機するか
+  const parametersRef = React.useRef(data || [0, 8, 8, 3, 60, 0]);
   const parameters = parametersRef.current;
-  const list = Utils.getChangeTransparentTypeList();
+  const typeList = Utils.getShakeTypeList();
+  const speedList = Utils.getShakeSpeedList();
 
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
+  };
+
+  const onXValueFocusOff = (value) => {
+    parameters[1] = value;
+  };
+
+  const onYValueFocusOff = (value) => {
+    parameters[2] = value;
+  };
+
+  const onSpeedChange = (e) => {
+    parameters[3] = parseInt(e.target.value);
+  };
+
+  const onFrameValueFocusOff = (value) => {
+    parameters[4] = value;
+  };
+
+  const onWaitCheckChange = (e) => {
+    parameters[5] = e.target.checked ? 1 : 0;
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'シェイク'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {typeList[0]}
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {typeList[1]}
+        <input
+          type="radio"
+          name="type"
+          value="2"
+          defaultChecked={parameters[0] === 2 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {typeList[2]}
+      </div>
+      <div>
+        <font>X：</font>
+        <NumberEdit
+          min={-128}
+          max={128}
+          value={parameters[1]}
+          onValueFocusOff={onXValueFocusOff}
+        />
+        <font>Y：</font>
+        <NumberEdit
+          min={-128}
+          max={128}
+          value={parameters[2]}
+          onValueFocusOff={onYValueFocusOff}
+        />
+      </div>
+      <div>
+        <font>速度：</font>
+        <select defaultValue={parameters[3]} onChange={(e) => onSpeedChange(e)}>
+          {pairSelectItems(speedList)}
+        </select>
+      </div>
+      <div>
+        <font>フレーム：</font>
+        <NumberEdit
+          min={1}
+          max={999}
+          value={parameters[4]}
+          onValueFocusOff={onFrameValueFocusOff}
+        />
+      </div>
+      <div>
+        <input
+          type="checkbox"
+          name="wait"
+          defaultChecked={parameters[5] === 1 ? 'checked' : ''}
+          onChange={(e) => onWaitCheckChange(e)}
+        />
+        待機
+      </div>
+    </CommandBase>
+  );
+};
+
+// 透明状態変更
+const ChangeTransparent = (props) => {
+  const data = sliceParameters(props.command.parameters);
+  // 0: 対象
+  // 1: 透明状態 > 0 透明にする 1 解除する
+  const parametersRef = React.useRef(data || [0, 0]);
+  const parameters = parametersRef.current;
+  const list = Utils.getChangeTransparentTypeList();
+
+  const onValueFocusOff = (value) => {
+    parameters[0] = value;
+  };
+
+  const onRadioChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
   };
 
   const onUpdate = () => {
@@ -4292,12 +4491,19 @@ const ChangeTransparent = (props) => {
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
+      <font>対象：</font>
+      <NumberEdit
+        min={-1}
+        max={9999}
+        value={parameters[0]}
+        onValueFocusOff={(value) => onValueFocusOff(value)}
+      />
       <div>
         <input
           type="radio"
           name="type"
           value="0"
-          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          defaultChecked={parameters[1] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
         {list[0]}
@@ -4305,7 +4511,7 @@ const ChangeTransparent = (props) => {
           type="radio"
           name="type"
           value="1"
-          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          defaultChecked={parameters[1] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
         {list[1]}
@@ -4705,14 +4911,16 @@ const CommandEditor = (props) => {
         return <Flag {...props} />;
       case COMMAND.VARIABLE:
         return <Variable {...props} />;
-      case COMMAND.OPERATESLOT:
+      case COMMAND.OperateSlot:
         return <OperateSlot {...props} />;
-      case COMMAND.ASSIGNFIXDATA:
+      case COMMAND.AssignFixData:
         return <AssignFixData {...props} />;
       case COMMAND.AssignGameData:
         return <AssignGameData {...props} />;
       case COMMAND.AssignSystemSlot:
         return <AssignSystemSlot {...props} />;
+      case COMMAND.AssignMapInfo:
+        return <AssignMapInfo {...props} />;
       case COMMAND.GOODS:
         return <Goods {...props} />;
       case COMMAND.CompareSlot:
@@ -4757,7 +4965,7 @@ const CommandEditor = (props) => {
         return <Scroll {...props} />;
       case COMMAND.MoveRoute:
         return <MoveRoute {...props} />;
-      case COMMAND.MOVEROUTEWAIT:
+      case COMMAND.MoveRouteWait:
         return <MoveRouteWait {...props} />;
       case COMMAND.FOLLOWERCONTROL:
         return <FollowerControl {...props} />;
@@ -4779,11 +4987,13 @@ const CommandEditor = (props) => {
         return <BgmInterrupt {...props} />;
       case COMMAND.EventTrigger:
         return <EventTrigger {...props} />;
-      case COMMAND.SCREENFADEOUT:
+      case COMMAND.ScreenFadeOut:
         return <ScreenFadeOut {...props} />;
-      case COMMAND.SCREENFADEIN:
+      case COMMAND.ScreenFadeIn:
         return <ScreenFadeIn {...props} />;
-      case COMMAND.CHANGETRANSPARENT:
+      case COMMAND.ScreenShake:
+        return <ScreenShake {...props} />;
+      case COMMAND.ChangeTransparent:
         return <ChangeTransparent {...props} />;
       case COMMAND.GatherFollowers:
         return <GatherFollowers {...props} />;

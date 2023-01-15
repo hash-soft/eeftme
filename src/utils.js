@@ -166,14 +166,30 @@ Utils.getGameDataTypeSelectList = function () {
   return [
     'パーティメンバー',
     '登録メンバー',
-    'パーティ',
-    'プレイヤー',
+    'キャラクター',
+    'タイル',
     'どうぐ',
-    'オブジェクト',
     '状態',
+    'パーティ',
     'テキスト',
     '行動',
   ];
+};
+
+Utils.getGameDataPartyMemberList = function () {
+  return ['並び位置', '表示位置'];
+};
+
+Utils.getMapInfoList = function () {
+  return ['基本情報', '実行イベント'];
+};
+
+Utils.getMapInfoStandardList = function () {
+  return ['マップId', '横サイズ', '縦サイズ'];
+};
+
+Utils.getMapInfoEventList = function () {
+  return ['オブジェクトId', '起因'];
 };
 
 Utils.getLocationDestList = function () {
@@ -205,7 +221,14 @@ Utils.getPartyInfoSelectList = function () {
 };
 
 Utils.getPlayerInfoSelectList = function () {
-  return ['登録id', 'マップX', 'マップY', '向き', '画像id', '画像インデックス'];
+  return [
+    'オブジェクトId',
+    'マップX',
+    'マップY',
+    '向き',
+    '画像id',
+    '画像インデックス',
+  ];
 };
 
 Utils.getActionIdList = function () {
@@ -244,6 +267,35 @@ Utils.getPreRegisterIdSelectList = function () {
   return [
     { value: -1, text: '仲間全体' },
     { value: 0, text: 'パーティ' },
+  ];
+};
+
+Utils.getShakeTypeList = function () {
+  return ['既定', 'マップだけ', 'キャラクター強制'];
+};
+
+Utils.getScrollSpeedList = function () {
+  return [
+    { value: 0, text: '1/8倍' },
+    { value: 1, text: '1/4倍' },
+    { value: 2, text: '1/2倍' },
+    { value: 3, text: '1倍' },
+    { value: 4, text: '2倍' },
+    { value: 5, text: '4倍' },
+    { value: 6, text: '8倍' },
+    { value: 99, text: '瞬時' },
+  ];
+};
+
+Utils.getShakeSpeedList = function () {
+  return [
+    { value: 0, text: '1/8倍' },
+    { value: 1, text: '1/4倍' },
+    { value: 2, text: '1/2倍' },
+    { value: 3, text: '1倍' },
+    { value: 4, text: '2倍' },
+    { value: 5, text: '4倍' },
+    { value: 6, text: '8倍' },
   ];
 };
 
