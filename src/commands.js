@@ -120,6 +120,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.ScreenFadeOut, '画面のフェードアウト')}
           {commandButton(COMMAND.ScreenFadeIn, '画面のフェードイン')}
           {commandButton(COMMAND.ScreenShake, '画面のシェイク')}
+          {commandButton(COMMAND.MapAnimation, 'マップアニメーション')}
           {commandButton(COMMAND.ChangeTransparent, '透明状態変更')}
           {commandButton(COMMAND.GatherFollowers, '隊列の集合')}
           {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
@@ -130,7 +131,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.ActionTarget, '行動対象指定')}
           {commandButton(COMMAND.ActionExtra, '追加行動指定')}
           {commandButton(COMMAND.ActionForce, '強制行動指定')}
-          {commandButton(COMMAND.COMMENT, 'コメント')}
+          {commandButton(COMMAND.Comment, 'コメント')}
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>
       </div>

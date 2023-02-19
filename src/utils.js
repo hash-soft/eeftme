@@ -299,4 +299,12 @@ Utils.getShakeSpeedList = function () {
   ];
 };
 
+Utils.getMapAnimationTargetTypeList = function () {
+  return ['マップ', 'キャラクター', 'タイル'];
+};
+
+Utils.getMapAnimationWaitTypeList = function () {
+  return ['しない', '指定の長さ', '終了まで'];
+};
+
 export default Utils;

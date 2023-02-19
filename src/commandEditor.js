@@ -4346,15 +4346,16 @@ const ScreenFadeIn = (props) => {
 
 // シェイク
 const ScreenShake = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: 0 既定 1 マップだけ 2:キャラクター強制
   // 1: シェイク横幅
   // 2: シェイク縦幅
   // 3: シェイク速度
   // 4: 期間
   // 5: 待機するか
-  const parametersRef = React.useRef(data || [0, 8, 8, 3, 60, 0]);
-  const parameters = parametersRef.current;
+  const parameters = GetParameters(
+    props.command.parameters,
+    [0, 8, 8, 3, 60, 0]
+  );
   const typeList = Utils.getShakeTypeList();
   const speedList = Utils.getShakeSpeedList();
 
@@ -4458,6 +4459,115 @@ const ScreenShake = (props) => {
           onChange={(e) => onWaitCheckChange(e)}
         />
         待機
+      </div>
+    </CommandBase>
+  );
+};
+
+// マップアニメーション
+const MapAnimation = (props) => {
+  // 0: 0:マップ 1:キャラクター 2:タイル
+  // 1: 対象Id格納スロット
+  // 2: アニメーションId
+  // 3: ウェイトタイプ 0:しない 1:指定の長さ 2:終了まで
+  const parameters = GetParameters(props.command.parameters, [0, 1, 1, 0]);
+  const targetTypeList = Utils.getMapAnimationTargetTypeList();
+  const waitTypeList = Utils.getMapAnimationWaitTypeList();
+
+  const onTargetTypeRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onSlotChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onAnimationChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  };
+
+  const onWaitRadioChange = (e) => {
+    parameters[3] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'マップアニメーション'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>対象タイプ：</font>
+      <div>
+        <input
+          type="radio"
+          name="target"
+          value="0"
+          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onTargetTypeRadioChange(e)}
+        />
+        {targetTypeList[0]}
+        <input
+          type="radio"
+          name="target"
+          value="1"
+          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onTargetTypeRadioChange(e)}
+        />
+        {targetTypeList[1]}
+        <input
+          type="radio"
+          name="target"
+          value="2"
+          defaultChecked={parameters[0] === 2 ? 'checked' : ''}
+          onChange={(e) => onTargetTypeRadioChange(e)}
+        />
+        {targetTypeList[2]}
+      </div>
+      <div>
+        対象：
+        <SlotSelectBox
+          selectValue={parameters[1]}
+          onChange={(e) => onSlotChange(e)}
+        />
+      </div>
+      <div>
+        エフェクト：
+        <EffectSelectBox
+          selectValue={parameters[2]}
+          onChange={(e) => onAnimationChange(e)}
+        />
+      </div>
+      ウェイトタイプ：
+      <div>
+        <input
+          type="radio"
+          name="wait"
+          value="0"
+          defaultChecked={parameters[3] === 0 ? 'checked' : ''}
+          onChange={(e) => onWaitRadioChange(e)}
+        />
+        {waitTypeList[0]}
+        <input
+          type="radio"
+          name="wait"
+          value="1"
+          defaultChecked={parameters[3] === 1 ? 'checked' : ''}
+          onChange={(e) => onWaitRadioChange(e)}
+        />
+        {waitTypeList[1]}
+        <input
+          type="radio"
+          name="wait"
+          value="2"
+          defaultChecked={parameters[3] === 2 ? 'checked' : ''}
+          onChange={(e) => onWaitRadioChange(e)}
+        />
+        {waitTypeList[2]}
       </div>
     </CommandBase>
   );
@@ -4993,6 +5103,8 @@ const CommandEditor = (props) => {
         return <ScreenFadeIn {...props} />;
       case COMMAND.ScreenShake:
         return <ScreenShake {...props} />;
+      case COMMAND.MapAnimation:
+        return <MapAnimation {...props} />;
       case COMMAND.ChangeTransparent:
         return <ChangeTransparent {...props} />;
       case COMMAND.GatherFollowers:
@@ -5009,7 +5121,7 @@ const CommandEditor = (props) => {
         return <ActionExtra {...props} />;
       case COMMAND.ActionForce:
         return <ActionForce {...props} />;
-      case COMMAND.COMMENT:
+      case COMMAND.Comment:
         return <Comment {...props} />;
       default:
         return null;

@@ -60,6 +60,7 @@ const COMMAND = {
   ScreenFadeOut: 141,
   ScreenFadeIn: 142,
   ScreenShake: 145,
+  MapAnimation: 146,
   ChangeTransparent: 151,
   GatherFollowers: 152,
   ResetObjects: 161,
@@ -70,7 +71,7 @@ const COMMAND = {
   ActionTarget: 185,
   ActionExtra: 186,
   ActionForce: 187,
-  COMMENT: 201,
+  Comment: 201,
 };
 
 // キー変換

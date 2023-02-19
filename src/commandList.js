@@ -876,6 +876,25 @@ const CommandItem = (props) => {
     );
   };
 
+  // マップアニメーション
+  const listMapAnimationContents = (targetType, target, effectId, waitType) => {
+    const targetTypeText = Utils.getMapAnimationTargetTypeList()[targetType];
+    const targetText = targetType !== 0 ? ` ${dispSlotName(target)}` : '';
+    const effectText = ` ${dispEffectName(effectId)}`;
+    const waitText =
+      waitType === 0
+        ? ''
+        : ` ${Utils.getMapAnimationWaitTypeList()[waitType]}ウェイト`;
+    return (
+      <td>
+        {targetTypeText}
+        {targetText}
+        {effectText}
+        {waitText}
+      </td>
+    );
+  };
+
   // 透明状態変更
   const listChangeTransparentContents = (target, type) => {
     const texts = Utils.getChangeTransparentTypeList();
@@ -1173,6 +1192,10 @@ const CommandItem = (props) => {
         title = '画面のシェイク:';
         contents = listScreenShakeContents(...parameters);
         break;
+      case COMMAND.MapAnimation:
+        title = 'マップアニメーション:';
+        contents = listMapAnimationContents(...parameters);
+        break;
       case COMMAND.ChangeTransparent:
         title = '透明状態変更:';
         contents = listChangeTransparentContents(...parameters);
@@ -1211,7 +1234,7 @@ const CommandItem = (props) => {
         title = '強制行動指定：';
         contents = listActionForceContents(...parameters);
         break;
-      case COMMAND.COMMENT:
+      case COMMAND.Comment:
         title = '';
         contents = listCommentContents(...parameters);
         break;
@@ -1219,7 +1242,7 @@ const CommandItem = (props) => {
         title = '不明なコマンド';
     }
 
-    if (props.command.code !== COMMAND.COMMENT) {
+    if (props.command.code !== COMMAND.Comment) {
       const mark = [COMMAND.ELSE, COMMAND.EndBranch, COMMAND.EndLoop].includes(
         props.command.code
       )
