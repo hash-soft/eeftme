@@ -60,13 +60,11 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.EXIT, '以降実行しない')}
           {commandButton(COMMAND.ExitLoop, 'ループ中断')}
           {commandButton(COMMAND.GainItem, '道具を追加')}
-          <button onClick={() => props.closePopup(COMMAND.CHANGEGOLD)}>
-            所持金変更
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.CHANGEPARTY)}>
-            パーティの変更
-          </button>
+          {commandButton(COMMAND.ChangeGold, '所持金変更')}
+          {commandButton(COMMAND.RegisterMate, '仲間の登録')}
+          {commandButton(COMMAND.ChangeParty, 'パーティの変更')}
           {commandButton(COMMAND.ChangeNpc, 'NPCの変更')}
+          {commandButton(COMMAND.RefreshMarch, '隊列のリフレッシュ')}
           {commandButton(COMMAND.RECOVER, '回復')}
           {commandButton(COMMAND.ChangeState, '状態変更')}
           <button onClick={() => props.closePopup(COMMAND.CHANGETILE)}>
@@ -114,9 +112,8 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.BGMINTERRUPT)}>
             BGM割込
           </button>
-          <button onClick={() => props.closePopup(COMMAND.EventTrigger)}>
-            イベント起動
-          </button>
+          {commandButton(COMMAND.EventTrigger, 'イベント起動')}
+          {commandButton(COMMAND.BattleStart, '戦闘開始')}
           {commandButton(COMMAND.ScreenFadeOut, '画面のフェードアウト')}
           {commandButton(COMMAND.ScreenFadeIn, '画面のフェードイン')}
           {commandButton(COMMAND.ScreenShake, '画面のシェイク')}

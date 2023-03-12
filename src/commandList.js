@@ -92,6 +92,18 @@ const CommandItem = (props) => {
     return Utils.getDispName(enemies, id);
   };
 
+  const dispTroopName = (id) => {
+    return Utils.getDispName(dataset.troops, id);
+  };
+
+  const dispEncounterName = (id) => {
+    return Utils.getDispName(dataset.encounters, id);
+  };
+
+  const dispTerrainName = (id) => {
+    return Utils.getDispName(dataset.terrains, id);
+  };
+
   // 文章表示
   const listMessageContents = (text, type) => {
     const header = `[${Utils.getMessageTypeList()[type]}]`;
@@ -514,6 +526,16 @@ const CommandItem = (props) => {
     }
   };
 
+  // 仲間登録
+  const listRegisterMateContents = (memberId, variableId) => {
+    return (
+      <td>
+        {dispMemberName(memberId)}
+        {dispVariableName(variableId)}
+      </td>
+    );
+  };
+
   // パーティの変更
   const listChangePartyContents = (type, variableId) => {
     const typeText = type === 0 ? '加える' : '外す';
@@ -841,8 +863,53 @@ const CommandItem = (props) => {
     );
   };
 
+  // イベントトリガー
   const listEventTriggerContents = (id) => {
     return <td>id:{id}</td>;
+  };
+
+  // 戦闘開始
+  const listBattleStartContents = (
+    groupType,
+    groupId,
+    terrainId,
+    escape,
+    escapeScript,
+    winScript,
+    loseScript,
+    preemptive,
+    preemptiveType
+  ) => {
+    const groupText = Utils.getEnemyGroupTypeList()[groupType];
+    const troopText = dispTroopName(groupId);
+    const encounterText = dispEncounterName(groupId);
+    const terrainText = dispTerrainName(terrainId);
+    const escapeText = escape ? '逃走可能' : '逃走不可';
+    const escapeScriptText = escapeScript
+      ? ` 逃走時${dispCommonEventName(escapeScript)}`
+      : '';
+    const winScriptText = winScript
+      ? ` 勝利時${dispCommonEventName(winScript)}`
+      : '';
+    const loseScriptText = loseScript
+      ? ` 敗北時${dispCommonEventName(loseScript)}`
+      : '';
+    const preemptiveText = preemptive ? '先制タイプ' : '先制なし';
+    const preemptiveTypeText = Utils.getPreemptiveTypeList()[preemptiveType];
+    return (
+      <td>
+        {groupText}
+        {groupType === 0 ? troopText : ''}
+        {groupType === 1 ? encounterText : ''}
+        {terrainId ? terrainText : ''}
+        {' ' + escapeText}
+        {escapeScriptText}
+        {winScriptText}
+        {loseScriptText}
+        {' ' + preemptiveText}
+        {preemptive ? `[${preemptiveTypeText}]` : ''}
+      </td>
+    );
   };
 
   // 画面のフェードアウト
@@ -1074,17 +1141,24 @@ const CommandItem = (props) => {
         title = '道具を追加:';
         contents = listGainItemContents(...parameters);
         break;
-      case COMMAND.CHANGEGOLD:
+      case COMMAND.ChangeGold:
         title = '所持金の変更:';
         contents = listChangeGoldContents(...parameters);
         break;
-      case COMMAND.CHANGEPARTY:
+      case COMMAND.RegisterMate:
+        title = '仲間登録:';
+        contents = listRegisterMateContents(...parameters);
+        break;
+      case COMMAND.ChangeParty:
         title = 'パーティの変更:';
         contents = listChangePartyContents(...parameters);
         break;
       case COMMAND.ChangeNpc:
         title = 'NPCの変更:';
         contents = listChangeNpcContents(...parameters);
+        break;
+      case COMMAND.RefreshMarch:
+        title = '隊列のリフレッシュ';
         break;
       case COMMAND.RECOVER:
         title = '回復:';
@@ -1179,6 +1253,10 @@ const CommandItem = (props) => {
       case COMMAND.EventTrigger:
         title = 'イベント起動:';
         contents = listEventTriggerContents(...parameters);
+        break;
+      case COMMAND.BattleStart:
+        title = '戦闘開始:';
+        contents = listBattleStartContents(...parameters);
         break;
       case COMMAND.ScreenFadeOut:
         title = '画面のフェードアウト:';

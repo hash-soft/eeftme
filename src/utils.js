@@ -307,4 +307,12 @@ Utils.getMapAnimationWaitTypeList = function () {
   return ['しない', '指定の長さ', '終了まで'];
 };
 
+Utils.getEnemyGroupTypeList = function () {
+  return ['トループ', 'エンカウンター', 'プレイヤー位置'];
+};
+
+Utils.getPreemptiveTypeList = function () {
+  return ['通常どおり', '味方強襲', '味方不意打ち', '敵強襲', '敵不意打ち'];
+};
+
 export default Utils;

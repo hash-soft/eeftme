@@ -21,6 +21,9 @@ import {
   CommonEventSelectBox,
   MemberSelectBox,
   EnemySelectBox,
+  TerrainSelectBox,
+  TroopSelectBox,
+  EncounterSelectBox,
 } from './selectBoxSet';
 import { NumberEdit } from './editBoxSet';
 import Utils from './utils';
@@ -2345,6 +2348,49 @@ const ChangeGold = (props) => {
   );
 };
 
+// 仲間登録
+const RegisterMate = (props) => {
+  // 0: 登録するメンバー
+  // 1: 登録idを保存する変数Id
+  const parameters = GetParameters(props.command.parameters, [1, 1]);
+
+  const onMemberChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onVariableChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'仲間登録'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>仲間：</font>
+        <MemberSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onMemberChange(e)}
+        />
+      </div>
+      <div>
+        <font>変数：</font>
+        <VariableSelectBox
+          selectValue={parameters[1]}
+          onChange={(e) => onVariableChange(e)}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
 // パーティ変更
 const ChangeParty = (props) => {
   const data = sliceParameters(props.command.parameters);
@@ -4252,6 +4298,181 @@ const EventTrigger = (props) => {
   );
 };
 
+// 戦闘開始
+const BattleStart = (props) => {
+  // 0: 敵の群れ 0>トループ 1>エンカウンター 2>プレイヤーの位置
+  // 1: 群れ指定id>トループid or エンカウンターidを指定
+  // 2: 地形id 0>現在位置 1以降>地形id
+  // 3: 逃走可能か 0>不可 1>可能
+  // 4: 逃走時スクリプトid
+  // 5: 勝利時スクリプトid
+  // 6: 敗北時スクリプトid
+  // 7: 先制攻撃 0>なし 1>あり
+  // 8: 先制タイプ 0>通常どおり 1>味方強襲 2>味方不意打ち 3>敵強襲 4>敵不意打ち
+  const parameters = GetParameters(
+    props.command.parameters,
+    [0, 1, 0, 0, 0, 0, 0, 0, 0]
+  );
+  let troopId = parameters[1];
+  let encounterId = parameters[1];
+  const groupList = Utils.getEnemyGroupTypeList();
+  const preemptiveType = Utils.getPreemptiveTypeList();
+
+  const onEnemyGroupChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onTroopChange = (e) => {
+    troopId = parseInt(e.target.value);
+  };
+
+  const onEncounterChange = (e) => {
+    encounterId = parseInt(e.target.value);
+  };
+
+  const onTerrainChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  };
+
+  const onEscapeCheck = (e) => {
+    parameters[3] = e.target.checked ? 1 : 0;
+  };
+
+  const onEscapeChange = (e) => {
+    parameters[4] = parseInt(e.target.value);
+  };
+
+  const onWinChange = (e) => {
+    parameters[5] = parseInt(e.target.value);
+  };
+
+  const onLoseChange = (e) => {
+    parameters[6] = parseInt(e.target.value);
+  };
+
+  const onPreemptiveCheck = (e) => {
+    parameters[7] = e.target.checked ? 1 : 0;
+  };
+
+  const onPreemptiveTypeChange = (e) => {
+    parameters[8] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    parameters[1] = parameters[0] === 0 ? troopId : encounterId;
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'戦闘開始'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onEnemyGroupChange(e)}
+        />
+        {groupList[0]}
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onEnemyGroupChange(e)}
+        />
+        {groupList[1]}
+        <input
+          type="radio"
+          name="type"
+          value="2"
+          defaultChecked={parameters[0] === 2 ? 'checked' : ''}
+          onChange={(e) => onEnemyGroupChange(e)}
+        />
+        {groupList[2]}
+      </div>
+      <div>
+        <font>トループ：</font>
+        <TroopSelectBox
+          selectValue={troopId}
+          onChange={(e) => onTroopChange(e)}
+        />
+      </div>
+      <div>
+        <font>エンカウンター：</font>
+        <EncounterSelectBox
+          selectValue={encounterId}
+          onChange={(e) => onEncounterChange(e)}
+        />
+      </div>
+      <div>
+        <font>地形：</font>
+        <TerrainSelectBox
+          unuseText={'プレイヤー位置の地形'}
+          unuse={true}
+          selectValue={parameters[2]}
+          onChange={(e) => onTerrainChange(e)}
+        />
+      </div>
+      <div>
+        <input
+          type="checkbox"
+          name="escape"
+          defaultChecked={parameters[3] === 1 ? 'checked' : ''}
+          onChange={(e) => onEscapeCheck(e)}
+        />
+        逃走可能
+      </div>
+      <div>
+        <font>逃走時スクリプト：</font>
+        <CommonEventSelectBox
+          unuse={true}
+          selectValue={parameters[4]}
+          onChange={(e) => onEscapeChange(e)}
+        />
+      </div>
+      <div>
+        <font>勝利時スクリプト：</font>
+        <CommonEventSelectBox
+          unuse={true}
+          selectValue={parameters[5]}
+          onChange={(e) => onWinChange(e)}
+        />
+      </div>
+      <div>
+        <font>敗北時スクリプト：</font>
+        <CommonEventSelectBox
+          unuse={true}
+          selectValue={parameters[6]}
+          onChange={(e) => onLoseChange(e)}
+        />
+      </div>
+      <div>
+        <input
+          type="checkbox"
+          name="preemptive"
+          defaultChecked={parameters[7] === 1 ? 'checked' : ''}
+          onChange={(e) => onPreemptiveCheck(e)}
+        />
+        先制あり
+      </div>
+      <div>
+        <select
+          defaultValue={parameters[8]}
+          onChange={(e) => onPreemptiveTypeChange(e)}
+        >
+          {simpleSelectItems(preemptiveType)}
+        </select>
+      </div>
+    </CommandBase>
+  );
+};
+
 // 画面のフェードアウト
 const ScreenFadeOut = (props) => {
   const data = sliceParameters(props.command.parameters);
@@ -5047,9 +5268,11 @@ const CommandEditor = (props) => {
         return <Jump {...props} />;
       case COMMAND.GainItem:
         return <GainItem {...props} />;
-      case COMMAND.CHANGEGOLD:
+      case COMMAND.ChangeGold:
         return <ChangeGold {...props} />;
-      case COMMAND.CHANGEPARTY:
+      case COMMAND.RegisterMate:
+        return <RegisterMate {...props} />;
+      case COMMAND.ChangeParty:
         return <ChangeParty {...props} />;
       case COMMAND.ChangeNpc:
         return <ChangeNpc {...props} />;
@@ -5097,6 +5320,8 @@ const CommandEditor = (props) => {
         return <BgmInterrupt {...props} />;
       case COMMAND.EventTrigger:
         return <EventTrigger {...props} />;
+      case COMMAND.BattleStart:
+        return <BattleStart {...props} />;
       case COMMAND.ScreenFadeOut:
         return <ScreenFadeOut {...props} />;
       case COMMAND.ScreenFadeIn:

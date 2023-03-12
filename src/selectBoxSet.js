@@ -282,6 +282,39 @@ const WarpSelectBox = (props) => {
   );
 };
 
+// 地形セレクトボックス
+const TerrainSelectBox = (props) => {
+  return (
+    <SelectBoxBase
+      items={React.useContext(Dataset).terrains}
+      digits={3}
+      {...props}
+    ></SelectBoxBase>
+  );
+};
+
+// トループセレクトボックス
+const TroopSelectBox = (props) => {
+  return (
+    <SelectBoxBase
+      items={React.useContext(Dataset).troops}
+      digits={3}
+      {...props}
+    ></SelectBoxBase>
+  );
+};
+
+// エンカウンターセレクトボックス
+const EncounterSelectBox = (props) => {
+  return (
+    <SelectBoxBase
+      items={React.useContext(Dataset).encounters}
+      digits={3}
+      {...props}
+    ></SelectBoxBase>
+  );
+};
+
 // 効果音セレクトボックス
 const SeSelectBox = (props) => {
   const dataset = React.useContext(Dataset);
@@ -358,6 +391,9 @@ export {
   MapSelectBox,
   PositionSelectBox,
   WarpSelectBox,
+  TerrainSelectBox,
+  TroopSelectBox,
+  EncounterSelectBox,
   SeSelectBox,
   BgmSelectBox,
   MapEventSelectBox,

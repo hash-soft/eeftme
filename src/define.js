@@ -28,11 +28,12 @@ const COMMAND = {
   EXIT: 58,
   ExitLoop: 59,
   GainItem: 61,
-  CHANGEGOLD: 70,
-  ADDFRIEND: 71, // 不要そうなので作らない
-  DELETEMATE: 72, // 不要そうなので作らない
-  CHANGEPARTY: 73,
+  ChangeGold: 70,
+  RegisterMate: 71,
+  DeleteMate: 72, // 不要そうなので作らない
+  ChangeParty: 73,
   ChangeNpc: 74,
+  RefreshMarch: 75,
   RECOVER: 81,
   ChangeState: 83,
   CHANGETILE: 99,
@@ -57,6 +58,7 @@ const COMMAND = {
   BGMPLAY: 123,
   BGMINTERRUPT: 124,
   EventTrigger: 131,
+  BattleStart: 132,
   ScreenFadeOut: 141,
   ScreenFadeIn: 142,
   ScreenShake: 145,
@@ -88,6 +90,7 @@ const NoParamKeys = [
   COMMAND.EndLoop,
   COMMAND.EXIT,
   COMMAND.ExitLoop,
+  COMMAND.RefreshMarch,
   COMMAND.EraseEvent,
   COMMAND.ResetObjects,
   COMMAND.SAVE,
