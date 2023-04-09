@@ -415,6 +415,8 @@ const CommandItem = (props) => {
         return `${Utils.getMapInfoStandardList()[param1]}`;
       case 1:
         return `${Utils.getMapInfoEventList()[param1]}`;
+      case 2:
+        return `${param1}番目`;
       default:
         return '';
     }
@@ -1029,6 +1031,24 @@ const CommandItem = (props) => {
     return message;
   };
 
+  // 床ダメージ切替
+  const listChangeFloorDamageContents = (type) => {
+    const texts = Utils.getChangeEnableList();
+    return <td>{texts[type]}</td>;
+  };
+
+  // 歩行ダメージ切替
+  const listChangeSlipDamageContents = (type) => {
+    const texts = Utils.getChangeEnableList();
+    return <td>{texts[type]}</td>;
+  };
+
+  // エンカウント切替
+  const listChangeEncounterContents = (type) => {
+    const texts = Utils.getChangeEnableList();
+    return <td>{texts[type]}</td>;
+  };
+
   const viewCommand = () => {
     const parameters = props.command.parameters;
     let title = null;
@@ -1123,11 +1143,11 @@ const CommandItem = (props) => {
       case COMMAND.EndLoop:
         title = 'ループ終端';
         break;
-      case COMMAND.LABEL:
+      case COMMAND.Label:
         title = 'ラベル:';
         contents = listLabelContents(...parameters);
         break;
-      case COMMAND.JUMP:
+      case COMMAND.Jump:
         title = 'ラベルジャンプ:';
         contents = listJumpContents(...parameters);
         break;
@@ -1238,15 +1258,15 @@ const CommandItem = (props) => {
       case COMMAND.SAVE:
         title = 'セーブ';
         break;
-      case COMMAND.SE:
+      case COMMAND.Se:
         title = '効果音:';
         contents = listSeContents(...parameters);
         break;
-      case COMMAND.BGMPLAY:
+      case COMMAND.BgmPlay:
         title = 'BGM演奏:';
         contents = listBgmPlay(...parameters);
         break;
-      case COMMAND.BGMINTERRUPT:
+      case COMMAND.BgmInterrupt:
         title = 'BGM割込:';
         contents = listBgmInterrupt(...parameters);
         break;
@@ -1315,6 +1335,18 @@ const CommandItem = (props) => {
       case COMMAND.Comment:
         title = '';
         contents = listCommentContents(...parameters);
+        break;
+      case COMMAND.ChangeFloorDamage:
+        title = '床ダメージ切替';
+        contents = listChangeFloorDamageContents(...parameters);
+        break;
+      case COMMAND.ChangeSlipDamage:
+        title = '歩行ダメージ切替';
+        contents = listChangeSlipDamageContents(...parameters);
+        break;
+      case COMMAND.ChangeEncounter:
+        title = 'エンカウント切替';
+        contents = listChangeEncounterContents(...parameters);
         break;
       default:
         title = '不明なコマンド';

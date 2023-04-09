@@ -23,8 +23,8 @@ const COMMAND = {
   EndBranch: 53,
   BeginLoop: 54,
   EndLoop: 55,
-  LABEL: 56,
-  JUMP: 57,
+  Label: 56,
+  Jump: 57,
   EXIT: 58,
   ExitLoop: 59,
   GainItem: 61,
@@ -54,9 +54,9 @@ const COMMAND = {
   EraseEvent: 115,
   ADDRESSSETTINGS: 118,
   SAVE: 119,
-  SE: 121,
-  BGMPLAY: 123,
-  BGMINTERRUPT: 124,
+  Se: 121,
+  BgmPlay: 123,
+  BgmInterrupt: 124,
   EventTrigger: 131,
   BattleStart: 132,
   ScreenFadeOut: 141,
@@ -74,6 +74,9 @@ const COMMAND = {
   ActionExtra: 186,
   ActionForce: 187,
   Comment: 201,
+  ChangeFloorDamage: 211,
+  ChangeSlipDamage: 212,
+  ChangeEncounter: 213,
 };
 
 // キー変換

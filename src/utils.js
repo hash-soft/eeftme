@@ -181,7 +181,7 @@ Utils.getGameDataPartyMemberList = function () {
 };
 
 Utils.getMapInfoList = function () {
-  return ['基本情報', '実行イベント'];
+  return ['基本情報', '実行イベント', '値'];
 };
 
 Utils.getMapInfoStandardList = function () {
@@ -261,6 +261,10 @@ Utils.getReferenceTypeList = function () {
 
 Utils.getChangeStateTypeList = function () {
   return ['付加', '除去'];
+};
+
+Utils.getChangeEnableList = function () {
+  return ['無効', '有効'];
 };
 
 Utils.getPreRegisterIdSelectList = function () {

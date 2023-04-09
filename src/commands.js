@@ -17,9 +17,7 @@ const CommandPopup = (props) => {
         <div className="command-menu">
           {commandButton(COMMAND.MESSAGE, '文章の表示')}
           {commandButton(COMMAND.MENU, 'メニュー表示')}
-          <button onClick={() => props.closePopup(COMMAND.EndMenu)}>
-            メニュー終了
-          </button>
+          {commandButton(COMMAND.EndMenu, 'メニュー終了')}
           <button onClick={() => props.closePopup(COMMAND.MessageSettings)}>
             文章の設定
           </button>
@@ -27,9 +25,7 @@ const CommandPopup = (props) => {
             文章閉じ待機
           </button>
           {commandButton(COMMAND.Embedded, '組み込みメニュー')}
-          <button onClick={() => props.closePopup(COMMAND.EndEmbedded)}>
-            組み込みメニュー終了
-          </button>
+          {commandButton(COMMAND.EndEmbedded, '組み込みメニュー終了')}
           <button onClick={() => props.closePopup(COMMAND.FLAG)}>
             フラグの処理
           </button>
@@ -51,12 +47,8 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.EndBranch, 'EndBranch')}
           {commandButton(COMMAND.BeginLoop, 'ループ')}
           {commandButton(COMMAND.EndLoop, 'ループ終端')}
-          <button onClick={() => props.closePopup(COMMAND.LABEL)}>
-            ラベル
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.JUMP)}>
-            ラベルジャンプ
-          </button>
+          {commandButton(COMMAND.Label, 'ラベル')}
+          {commandButton(COMMAND.Jump, 'ラベルジャンプ')}
           {commandButton(COMMAND.EXIT, '以降実行しない')}
           {commandButton(COMMAND.ExitLoop, 'ループ中断')}
           {commandButton(COMMAND.GainItem, '道具を追加')}
@@ -105,13 +97,9 @@ const CommandPopup = (props) => {
           </button>
           {commandButton(COMMAND.SAVE, 'セーブ')}
           {commandButton(COMMAND.ADDRESSSETTINGS, '行先の設定')}
-          <button onClick={() => props.closePopup(COMMAND.SE)}>効果音</button>
-          <button onClick={() => props.closePopup(COMMAND.BGMPLAY)}>
-            BGM演奏
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.BGMINTERRUPT)}>
-            BGM割込
-          </button>
+          {commandButton(COMMAND.Se, '効果音')}
+          {commandButton(COMMAND.BgmPlay, 'BGM演奏')}
+          {commandButton(COMMAND.BgmInterrupt, 'BGM割込')}
           {commandButton(COMMAND.EventTrigger, 'イベント起動')}
           {commandButton(COMMAND.BattleStart, '戦闘開始')}
           {commandButton(COMMAND.ScreenFadeOut, '画面のフェードアウト')}
@@ -129,6 +117,9 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.ActionExtra, '追加行動指定')}
           {commandButton(COMMAND.ActionForce, '強制行動指定')}
           {commandButton(COMMAND.Comment, 'コメント')}
+          {commandButton(COMMAND.ChangeFloorDamage, '床ダメージ切替')}
+          {commandButton(COMMAND.ChangeSlipDamage, '歩行ダメージ切替')}
+          {commandButton(COMMAND.ChangeEncounter, 'エンカウント切替')}
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>
       </div>

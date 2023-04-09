@@ -1709,12 +1709,13 @@ const AssignSystemSlot = (props) => {
  */
 const AssignMapInfo = (props) => {
   // 0: スロットId
-  // 1: データの種類
+  // 1: データの種類 0: 基本情報 1: 実行イベント 2: 値
   // 2: パラメータ1
   const parameters = GetParameters(props.command.parameters, [1, 0, 0]);
   const type = parameters[1];
   let standard = type === 0 ? parameters[2] : 0;
   let event = type === 1 ? parameters[2] : 0;
+  let index = type === 2 ? parameters[2] : 0;
   const typeList = Utils.getMapInfoList();
 
   const onSlotChange = (e) => {
@@ -1733,8 +1734,12 @@ const AssignMapInfo = (props) => {
     event = parseInt(e.target.value);
   };
 
+  const onValueFocusOff = (value) => {
+    index = value;
+  };
+
   const onUpdate = () => {
-    const values1 = [standard, event];
+    const values1 = [standard, event, index];
     const newType = parameters[1];
     parameters[2] = values1[newType];
 
@@ -1775,9 +1780,26 @@ const AssignMapInfo = (props) => {
           onChange={(e) => onTypeChange(e)}
         />
         <font>{typeList[1]}：</font>
-        <select defaultValue={standard} onChange={(e) => onEventChange(e)}>
+        <select defaultValue={event} onChange={(e) => onEventChange(e)}>
           {simpleSelectItems(Utils.getMapInfoEventList())}
         </select>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="2"
+          defaultChecked={type === 2 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[2]}：</font>
+        <NumberEdit
+          min={0}
+          max={9}
+          value={index}
+          onValueFocusOff={onValueFocusOff}
+        />
+        <font>番目</font>
       </div>
     </CommandBase>
   );
@@ -5219,6 +5241,135 @@ const Comment = (props) => {
   );
 };
 
+// 床ダメージ切替
+const ChangeFloorDamage = (props) => {
+  // 0: 床ダメージ > 0 無効 1 有効
+  const parameters = GetParameters(props.command.parameters, [0]);
+  const list = Utils.getChangeEnableList();
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'床ダメージ切替'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {list[0]}
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {list[1]}
+      </div>
+    </CommandBase>
+  );
+};
+
+// 歩行ダメージ切替
+const ChangeSlipDamage = (props) => {
+  // 0: 歩行ダメージ > 0 無効 1 有効
+  const parameters = GetParameters(props.command.parameters, [0]);
+  const list = Utils.getChangeEnableList();
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'歩行ダメージ切替'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {list[0]}
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {list[1]}
+      </div>
+    </CommandBase>
+  );
+};
+
+// エンカウント切替
+const ChangeEncounter = (props) => {
+  // 0: 歩行ダメージ > 0 無効 1 有効
+  const parameters = GetParameters(props.command.parameters, [0]);
+  const list = Utils.getChangeEnableList();
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'エンカウント切替'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {list[0]}
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {list[1]}
+      </div>
+    </CommandBase>
+  );
+};
+
 const GetParameters = (settingData, initData) => {
   const data = sliceParameters(settingData);
   const parametersRef = React.useRef(data || initData);
@@ -5262,9 +5413,9 @@ const CommandEditor = (props) => {
         return <JudgeBattler {...props} />;
       case COMMAND.CASE:
         return <Case {...props} />;
-      case COMMAND.LABEL:
+      case COMMAND.Label:
         return <Label {...props} />;
-      case COMMAND.JUMP:
+      case COMMAND.Jump:
         return <Jump {...props} />;
       case COMMAND.GainItem:
         return <GainItem {...props} />;
@@ -5312,11 +5463,11 @@ const CommandEditor = (props) => {
         return <FollowerSettings {...props} />;
       case COMMAND.ADDRESSSETTINGS:
         return <AddressSettings {...props} />;
-      case COMMAND.SE:
+      case COMMAND.Se:
         return <Se {...props} />;
-      case COMMAND.BGMPLAY:
+      case COMMAND.BgmPlay:
         return <BgmPlay {...props} />;
-      case COMMAND.BGMINTERRUPT:
+      case COMMAND.BgmInterrupt:
         return <BgmInterrupt {...props} />;
       case COMMAND.EventTrigger:
         return <EventTrigger {...props} />;
@@ -5348,6 +5499,12 @@ const CommandEditor = (props) => {
         return <ActionForce {...props} />;
       case COMMAND.Comment:
         return <Comment {...props} />;
+      case COMMAND.ChangeFloorDamage:
+        return <ChangeFloorDamage {...props} />;
+      case COMMAND.ChangeSlipDamage:
+        return <ChangeSlipDamage {...props} />;
+      case COMMAND.ChangeEncounter:
+        return <ChangeEncounter {...props} />;
       default:
         return null;
     }
