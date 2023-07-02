@@ -1049,6 +1049,12 @@ const CommandItem = (props) => {
     return <td>{texts[type]}</td>;
   };
 
+  // 部屋移動設定
+  const listRoomMoveSettingsContents = (type) => {
+    const texts = Utils.getChangeEnableList();
+    return <td>{texts[type]}</td>;
+  };
+
   const viewCommand = () => {
     const parameters = props.command.parameters;
     let title = null;
@@ -1251,7 +1257,7 @@ const CommandItem = (props) => {
         title = '隊列の設定:';
         contents = listFollowerSettingsContents(...parameters);
         break;
-      case COMMAND.ADDRESSSETTINGS:
+      case COMMAND.AddressSettings:
         title = '行先の設定:';
         contents = listAddressSettingsContents(...parameters);
         break;
@@ -1347,6 +1353,10 @@ const CommandItem = (props) => {
       case COMMAND.ChangeEncounter:
         title = 'エンカウント切替';
         contents = listChangeEncounterContents(...parameters);
+        break;
+      case COMMAND.RoomMoveSettings:
+        title = '部屋移動設定';
+        contents = listRoomMoveSettingsContents(...parameters);
         break;
       default:
         title = '不明なコマンド';

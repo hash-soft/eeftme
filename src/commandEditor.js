@@ -5244,7 +5244,7 @@ const Comment = (props) => {
 // 床ダメージ切替
 const ChangeFloorDamage = (props) => {
   // 0: 床ダメージ > 0 無効 1 有効
-  const parameters = GetParameters(props.command.parameters, [0]);
+  const parameters = GetParameters(props.command.parameters, [1]);
   const list = Utils.getChangeEnableList();
 
   const onRadioChange = (e) => {
@@ -5287,7 +5287,7 @@ const ChangeFloorDamage = (props) => {
 // 歩行ダメージ切替
 const ChangeSlipDamage = (props) => {
   // 0: 歩行ダメージ > 0 無効 1 有効
-  const parameters = GetParameters(props.command.parameters, [0]);
+  const parameters = GetParameters(props.command.parameters, [1]);
   const list = Utils.getChangeEnableList();
 
   const onRadioChange = (e) => {
@@ -5330,7 +5330,7 @@ const ChangeSlipDamage = (props) => {
 // エンカウント切替
 const ChangeEncounter = (props) => {
   // 0: 歩行ダメージ > 0 無効 1 有効
-  const parameters = GetParameters(props.command.parameters, [0]);
+  const parameters = GetParameters(props.command.parameters, [1]);
   const list = Utils.getChangeEnableList();
 
   const onRadioChange = (e) => {
@@ -5345,6 +5345,49 @@ const ChangeEncounter = (props) => {
   return (
     <CommandBase
       title={'エンカウント切替'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="0"
+          defaultChecked={parameters[0] === 0 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {list[0]}
+        <input
+          type="radio"
+          name="type"
+          value="1"
+          defaultChecked={parameters[0] === 1 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {list[1]}
+      </div>
+    </CommandBase>
+  );
+};
+
+// 部屋移動設定
+const RoomMoveSettings = (props) => {
+  // 0: 切替 > 0 しない 1 する
+  const parameters = GetParameters(props.command.parameters, [1]);
+  const list = Utils.getChangeEnableList();
+
+  const onRadioChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'部屋移動設定'}
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
@@ -5461,7 +5504,7 @@ const CommandEditor = (props) => {
         return <Wait {...props} />;
       case COMMAND.FOLLOWERSETTINGS:
         return <FollowerSettings {...props} />;
-      case COMMAND.ADDRESSSETTINGS:
+      case COMMAND.AddressSettings:
         return <AddressSettings {...props} />;
       case COMMAND.Se:
         return <Se {...props} />;
@@ -5505,6 +5548,8 @@ const CommandEditor = (props) => {
         return <ChangeSlipDamage {...props} />;
       case COMMAND.ChangeEncounter:
         return <ChangeEncounter {...props} />;
+      case COMMAND.RoomMoveSettings:
+        return <RoomMoveSettings {...props} />;
       default:
         return null;
     }

@@ -96,7 +96,7 @@ const CommandPopup = (props) => {
             イベントの消去
           </button>
           {commandButton(COMMAND.SAVE, 'セーブ')}
-          {commandButton(COMMAND.ADDRESSSETTINGS, '行先の設定')}
+          {commandButton(COMMAND.AddressSettings, '行先の設定')}
           {commandButton(COMMAND.Se, '効果音')}
           {commandButton(COMMAND.BgmPlay, 'BGM演奏')}
           {commandButton(COMMAND.BgmInterrupt, 'BGM割込')}
@@ -120,6 +120,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.ChangeFloorDamage, '床ダメージ切替')}
           {commandButton(COMMAND.ChangeSlipDamage, '歩行ダメージ切替')}
           {commandButton(COMMAND.ChangeEncounter, 'エンカウント切替')}
+          {commandButton(COMMAND.RoomMoveSettings, '部屋移動設定')}
         </div>
         <button onClick={() => props.closePopup(0)}>close me</button>
       </div>

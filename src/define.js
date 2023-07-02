@@ -52,7 +52,7 @@ const COMMAND = {
   WAIT: 113,
   FOLLOWERSETTINGS: 114,
   EraseEvent: 115,
-  ADDRESSSETTINGS: 118,
+  AddressSettings: 116,
   SAVE: 119,
   Se: 121,
   BgmPlay: 123,
@@ -77,6 +77,7 @@ const COMMAND = {
   ChangeFloorDamage: 211,
   ChangeSlipDamage: 212,
   ChangeEncounter: 213,
+  RoomMoveSettings: 214,
 };
 
 // キー変換
