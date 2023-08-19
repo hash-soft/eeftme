@@ -146,8 +146,9 @@ const CommandItem = (props) => {
     );
   };
 
+  // メニュー終了
   const listEndMenuContents = (menuId) => {
-    const menuName = Utils.getDispName(windowsets, menuId);
+    const menuName = menuId ? Utils.getDispName(windowsets, menuId) : '全て';
     return <td>{menuName}</td>;
   };
 
@@ -161,6 +162,7 @@ const CommandItem = (props) => {
         case 7:
         case 8:
         case 10:
+        case 14:
           return [`[${Utils.getMessageOptionTypeSelectList()[type]}]`, value];
         case 5:
           return [
@@ -182,6 +184,12 @@ const CommandItem = (props) => {
         {valueText}
       </td>
     );
+  };
+
+  // 文章終了待ち
+  const listMessageCloseWaitContents = (keep) => {
+    const close = keep ? 'ウィンドウ閉じない' : 'ウィンドウ閉じる';
+    return <td>{close}</td>;
   };
 
   // 組み込みメニュー
@@ -1078,6 +1086,7 @@ const CommandItem = (props) => {
         break;
       case COMMAND.MessageCloseWait:
         title = '文章閉じ待機';
+        contents = listMessageCloseWaitContents(...parameters);
         break;
       case COMMAND.Embedded:
         title = '組み込みメニュー';

@@ -245,6 +245,8 @@ const EndMenu = (props) => {
       <MenuSelectBox
         selectValue={parameters[0]}
         onChange={(e) => onMenuChange(e)}
+        unuse={true}
+        unuseText={'全て'}
       />
     </CommandBase>
   );
@@ -263,6 +265,7 @@ const MessageSettings = (props) => {
   let autoPause = parameters[1];
   let mode = parameters[1];
   let hoist = parameters[1];
+  let inputWait = parameters[1];
 
   const selectList = Utils.getMessageOptionTypeSelectList();
   const orNotList = Utils.getOrNotSelectList();
@@ -304,6 +307,10 @@ const MessageSettings = (props) => {
     hoist = parseInt(e.target.value);
   };
 
+  const onInputWaitFocusOff = (value) => {
+    inputWait = value;
+  };
+
   const onUpdate = () => {
     parameters[1] = [
       waitCount,
@@ -320,6 +327,7 @@ const MessageSettings = (props) => {
       0,
       0,
       0,
+      inputWait,
     ][parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
@@ -558,6 +566,49 @@ const MessageSettings = (props) => {
         />
         {selectList[13]}
       </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="14"
+          defaultChecked={parameters[0] === 14 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[14]}
+        <NumberEdit
+          min={-1}
+          max={6000}
+          value={inputWait}
+          onValueFocusOff={onInputWaitFocusOff}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
+// 文章閉じ待機
+const MessageCloseWait = (props) => {
+  // 0: ウィンドウを継続するか
+  const parameters = GetParameters(props.command.parameters, [0]);
+
+  const onKeepCheck = (e) => {
+    parameters[0] = e.target.checked;
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase onUpdate={onUpdate} onCancel={props.onCancel}>
+      <input
+        type="checkbox"
+        name="keep"
+        defaultChecked={parameters[0] ? 'checked' : ''}
+        onChange={(e) => onKeepCheck(e)}
+      />
+      <font>ウィンドウを閉じない：</font>
     </CommandBase>
   );
 };
@@ -5430,6 +5481,8 @@ const CommandEditor = (props) => {
         return <EndMenu {...props} />;
       case COMMAND.MessageSettings:
         return <MessageSettings {...props} />;
+      case COMMAND.MessageCloseWait:
+        return <MessageCloseWait {...props} />;
       case COMMAND.Embedded:
         return <Embedded {...props} />;
       case COMMAND.FLAG:

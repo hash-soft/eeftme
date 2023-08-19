@@ -85,7 +85,6 @@ const CommandKeys = Object.keys(COMMAND).map((key) => COMMAND[key]);
 // パラメータがないキー
 // それほどないので手書きする
 const NoParamKeys = [
-  COMMAND.MessageCloseWait,
   COMMAND.EndEmbedded,
   COMMAND.ItemSpace,
   COMMAND.ELSE,

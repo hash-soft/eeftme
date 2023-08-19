@@ -106,6 +106,7 @@ Utils.getMessageOptionTypeSelectList = function () {
     '基点行を追加',
     '基点行を削除',
     '行をリセット',
+    '入力待ち時間',
   ];
 };
 

@@ -18,12 +18,8 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.MESSAGE, '文章の表示')}
           {commandButton(COMMAND.MENU, 'メニュー表示')}
           {commandButton(COMMAND.EndMenu, 'メニュー終了')}
-          <button onClick={() => props.closePopup(COMMAND.MessageSettings)}>
-            文章の設定
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.MessageCloseWait)}>
-            文章閉じ待機
-          </button>
+          {commandButton(COMMAND.MessageSettings, '文章の設定')}
+          {commandButton(COMMAND.MessageCloseWait, '文章閉じ待機')}
           {commandButton(COMMAND.Embedded, '組み込みメニュー')}
           {commandButton(COMMAND.EndEmbedded, '組み込みメニュー終了')}
           <button onClick={() => props.closePopup(COMMAND.FLAG)}>
