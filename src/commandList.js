@@ -495,19 +495,19 @@ const CommandItem = (props) => {
     return <td>{name}</td>;
   };
 
-  const listGainItemContents = (type, id, memberSlotId) => {
+  const listGainItemContents = (type, id, memberSlotId, qty) => {
     // 直接指定
     if (type === 0) {
       const itemName = `[${id}:道具名]`;
       return (
         <td>
-          {itemName}を追加, 入手者格納スロット({dispSlotName(memberSlotId)})
+          {itemName} {qty}, 入手者格納スロット({dispSlotName(memberSlotId)})
         </td>
       );
     } else {
       return (
         <td>
-          スロット({id})の道具(id指定)を追加, 入手者格納スロット(
+          スロット({id})の道具(id指定) {qty}, 入手者格納スロット(
           {dispSlotName(memberSlotId)})
         </td>
       );
@@ -776,6 +776,8 @@ const CommandItem = (props) => {
         return '[横画面座標スロット]' + dispSlotName(value);
       case 5:
         return '[縦画面座標スロット]' + dispSlotName(value);
+      case 6:
+        return '[表示]' + Utils.getMoveSettingsVisibleList()[value];
       default:
         return '???';
     }
@@ -1002,6 +1004,19 @@ const CommandItem = (props) => {
     );
   };
 
+  // キャラオプション
+  const listCharacterOptionsContents = (type, target, storage, routeId) => {
+    const dispTarget = type === 1 ? dispSlotName(type) : `Id：${target}`;
+    if (typeof routeId === 'object') {
+      routeId = 1;
+    }
+    return (
+      <td>
+        {dispTarget} ({storage === 0 ? '共通' : 'マップ'},ルートId={routeId})
+      </td>
+    );
+  };
+
   // 行動メッセージの設定指定
   const listActionMessageSettingsContents = (type) => {
     const settingText = Utils.getMessageOptionTypeSelectList()[type];
@@ -1123,7 +1138,7 @@ const CommandItem = (props) => {
         title = 'マップ情報取得:';
         contents = listAssignMapInfoContents(...parameters);
         break;
-      case COMMAND.GOODS:
+      case COMMAND.Goods:
         title = '商品の設定:';
         contents = listGoodsContents(parameters);
         break;
@@ -1172,8 +1187,8 @@ const CommandItem = (props) => {
       case COMMAND.ExitLoop:
         title = 'ループ中断';
         break;
-      case COMMAND.GainItem:
-        title = '道具を追加:';
+      case COMMAND.ChangeItem:
+        title = '道具変更:';
         contents = listGainItemContents(...parameters);
         break;
       case COMMAND.ChangeGold:
@@ -1203,11 +1218,11 @@ const CommandItem = (props) => {
         title = '状態変更:';
         contents = listChangeStateContents(...parameters);
         break;
-      case COMMAND.MAPSCRIPT:
+      case COMMAND.MapScript:
         title = 'マップスクリプト:';
         contents = listMapScriptContents(...parameters);
         break;
-      case COMMAND.COMMONSCRIPT:
+      case COMMAND.CommonScript:
         title = 'コモンスクリプト:';
         contents = listCommonScriptContents(...parameters);
         break;
@@ -1316,6 +1331,10 @@ const CommandItem = (props) => {
       case COMMAND.GatherFollowers:
         title = '隊列の集合:';
         contents = listGatherFollowersContents(...parameters);
+        break;
+      case COMMAND.CharacterOptions:
+        title = 'キャラオプション:';
+        contents = listCharacterOptionsContents(...parameters);
         break;
       case COMMAND.ResetObjects:
         title = 'オブジェクトの再設定';

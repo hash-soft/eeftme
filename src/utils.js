@@ -72,6 +72,10 @@ Utils.getMoveSettingsFollowerList = function () {
   return ['そのまま', '集合', '一列'];
 };
 
+Utils.getMoveSettingsVisibleList = function () {
+  return ['そのまま', '表示', '非表示'];
+};
+
 Utils.getDirectionSelectList = function () {
   return [
     { value: -1, text: 'そのまま' },

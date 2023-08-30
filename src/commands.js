@@ -33,7 +33,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.AssignGameData, 'ゲームデータ取得')}
           {commandButton(COMMAND.AssignSystemSlot, 'システムスロットに代入')}
           {commandButton(COMMAND.AssignMapInfo, 'マップ情報取得')}
-          {commandButton(COMMAND.GOODS, '商品の設定')}
+          {commandButton(COMMAND.Goods, '商品の設定')}
           {commandButton(COMMAND.ItemSpace, '道具追加可能判定')}
           {commandButton(COMMAND.CompareSlot, 'スロット比較')}
           {commandButton(COMMAND.AssignResult, '結果代入')}
@@ -47,7 +47,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.Jump, 'ラベルジャンプ')}
           {commandButton(COMMAND.EXIT, '以降実行しない')}
           {commandButton(COMMAND.ExitLoop, 'ループ中断')}
-          {commandButton(COMMAND.GainItem, '道具を追加')}
+          {commandButton(COMMAND.ChangeItem, '道具変更')}
           {commandButton(COMMAND.ChangeGold, '所持金変更')}
           {commandButton(COMMAND.RegisterMate, '仲間の登録')}
           {commandButton(COMMAND.ChangeParty, 'パーティの変更')}
@@ -78,12 +78,8 @@ const CommandPopup = (props) => {
           <button onClick={() => props.closePopup(COMMAND.FOLLOWERCONTROL)}>
             隊列の操作
           </button>
-          <button onClick={() => props.closePopup(COMMAND.MAPSCRIPT)}>
-            マップスクリプト
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.COMMONSCRIPT)}>
-            コモンスクリプト
-          </button>
+          {commandButton(COMMAND.MapScript, 'マップスクリプト')}
+          {commandButton(COMMAND.CommonScript, 'コモンスクリプト')}
           <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
           <button onClick={() => props.closePopup(COMMAND.FOLLOWERSETTINGS)}>
             隊員の設定変更
@@ -104,6 +100,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.MapAnimation, 'マップアニメーション')}
           {commandButton(COMMAND.ChangeTransparent, '透明状態変更')}
           {commandButton(COMMAND.GatherFollowers, '隊列の集合')}
+          {commandButton(COMMAND.CharacterOptions, 'キャラオプション')}
           {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
           {commandButton(COMMAND.PushActionResult, '行動結果追加')}
           {commandButton(COMMAND.ActionMessage, '行動文章指定')}
