@@ -160,10 +160,14 @@ Utils.getActionExtraList = function () {
 };
 
 Utils.getFixDataTypeSelectList = function () {
-  return ['メッセージ', 'どうぐ', 'システムスロットId'];
+  return ['メッセージ', 'どうぐ', 'システムスロットId', 'ぎのう'];
 };
 
 Utils.getItemInfoSelectList = function () {
+  return ['名前'];
+};
+
+Utils.getSkillInfoSelectList = function () {
   return ['名前'];
 };
 
@@ -322,6 +326,10 @@ Utils.getEnemyGroupTypeList = function () {
 
 Utils.getPreemptiveTypeList = function () {
   return ['通常どおり', '味方強襲', '味方不意打ち', '敵強襲', '敵不意打ち'];
+};
+
+Utils.getLocationKindList = function () {
+  return ['地形Id', 'タイルId'];
 };
 
 export default Utils;

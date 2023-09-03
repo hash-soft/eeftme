@@ -48,22 +48,18 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.EXIT, '以降実行しない')}
           {commandButton(COMMAND.ExitLoop, 'ループ中断')}
           {commandButton(COMMAND.ChangeItem, '道具変更')}
+          {commandButton(COMMAND.ChangeSkill, '技能変更')}
           {commandButton(COMMAND.ChangeGold, '所持金変更')}
           {commandButton(COMMAND.RegisterMate, '仲間の登録')}
           {commandButton(COMMAND.ChangeParty, 'パーティの変更')}
           {commandButton(COMMAND.ChangeNpc, 'NPCの変更')}
           {commandButton(COMMAND.RefreshMarch, '隊列のリフレッシュ')}
-          {commandButton(COMMAND.RECOVER, '回復')}
+          {commandButton(COMMAND.ChangeFollower, '隊列の変更')}
+          {commandButton(COMMAND.Recover, '回復')}
           {commandButton(COMMAND.ChangeState, '状態変更')}
-          <button onClick={() => props.closePopup(COMMAND.CHANGETILE)}>
-            タイル変更
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.SWAPTILE)}>
-            タイル切替
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.MOVE)}>
-            場所移動
-          </button>
+          {commandButton(COMMAND.ChangeTile, 'タイル変更')}
+          {commandButton(COMMAND.SwapTile, 'タイル切替')}
+          {commandButton(COMMAND.Move, '場所移動')}
           {commandButton(COMMAND.MoveFromPosition, '位置リスト移動')}
           <button onClick={() => props.closePopup(COMMAND.WARP)}>ワープ</button>
           {commandButton(COMMAND.Location, 'キャラクター位置設定')}
@@ -75,13 +71,13 @@ const CommandPopup = (props) => {
           </button>
           {commandButton(COMMAND.MoveRoute, '移動ルート')}
           {commandButton(COMMAND.MoveRouteWait, '移動ルート待機')}
-          <button onClick={() => props.closePopup(COMMAND.FOLLOWERCONTROL)}>
+          <button onClick={() => props.closePopup(COMMAND.FollowerControl)}>
             隊列の操作
           </button>
           {commandButton(COMMAND.MapScript, 'マップスクリプト')}
           {commandButton(COMMAND.CommonScript, 'コモンスクリプト')}
           <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
-          <button onClick={() => props.closePopup(COMMAND.FOLLOWERSETTINGS)}>
+          <button onClick={() => props.closePopup(COMMAND.FollowerSettings)}>
             隊員の設定変更
           </button>
           <button onClick={() => props.closePopup(COMMAND.EraseEvent)}>
@@ -102,6 +98,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.GatherFollowers, '隊列の集合')}
           {commandButton(COMMAND.CharacterOptions, 'キャラオプション')}
           {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
+          {commandButton(COMMAND.AssignLocationInformation, '指定位置情報取得')}
           {commandButton(COMMAND.PushActionResult, '行動結果追加')}
           {commandButton(COMMAND.ActionMessage, '行動文章指定')}
           {commandButton(COMMAND.ActionMessageSettings, '行動文章の設定')}

@@ -334,6 +334,10 @@ const CommandItem = (props) => {
         }]`;
       case 2:
         return param1;
+      case 3:
+        return `${dispSkillName(param1)}の[${
+          Utils.getSkillInfoSelectList()[param2]
+        }]`;
       default:
         return '';
     }
@@ -495,19 +499,39 @@ const CommandItem = (props) => {
     return <td>{name}</td>;
   };
 
-  const listGainItemContents = (type, id, memberSlotId, qty) => {
+  const listChangeItemContents = (type, id, memberSlotId, qty) => {
     // 直接指定
     if (type === 0) {
-      const itemName = `[${id}:道具名]`;
       return (
         <td>
-          {itemName} {qty}, 入手者格納スロット({dispSlotName(memberSlotId)})
+          {dispItemName(id)} {qty}, 入手者格納スロット(
+          {dispSlotName(memberSlotId)})
         </td>
       );
     } else {
       return (
         <td>
           スロット({id})の道具(id指定) {qty}, 入手者格納スロット(
+          {dispSlotName(memberSlotId)})
+        </td>
+      );
+    }
+  };
+
+  const listChangeSkillContents = (type, id, memberSlotId, operate) => {
+    const operateText = operate === 0 ? '+' : '-';
+    // 直接指定
+    if (type === 0) {
+      return (
+        <td>
+          {dispSkillName(id)} {operateText}, 対象者格納スロット(
+          {dispSlotName(memberSlotId)})
+        </td>
+      );
+    } else {
+      return (
+        <td>
+          スロット({id})の技能(id指定) {operateText}, 入手者格納スロット(
           {dispSlotName(memberSlotId)})
         </td>
       );
@@ -560,6 +584,17 @@ const CommandItem = (props) => {
   // NPCの変更
   const listChangeNpcContents = (type, variableId) => {
     const typeText = type === 0 ? '加える' : '外す';
+    return (
+      <td>
+        {typeText}
+        {dispVariableName(variableId)}
+      </td>
+    );
+  };
+
+  // 隊列の変更
+  const listChangeFollowerContents = (type, variableId) => {
+    const typeText = type === 0 ? '含める' : '含めない';
     return (
       <td>
         {typeText}
@@ -876,8 +911,12 @@ const CommandItem = (props) => {
   };
 
   // イベントトリガー
-  const listEventTriggerContents = (id) => {
-    return <td>id:{id}</td>;
+  const listEventTriggerContents = (triggerHex, eventId) => {
+    return (
+      <td>
+        起因値:{triggerHex} イベントId:{eventId}
+      </td>
+    );
   };
 
   // 戦闘開始
@@ -890,7 +929,8 @@ const CommandItem = (props) => {
     winScript,
     loseScript,
     preemptive,
-    preemptiveType
+    preemptiveType,
+    bgmId
   ) => {
     const groupText = Utils.getEnemyGroupTypeList()[groupType];
     const troopText = dispTroopName(groupId);
@@ -908,6 +948,7 @@ const CommandItem = (props) => {
       : '';
     const preemptiveText = preemptive ? '先制タイプ' : '先制なし';
     const preemptiveTypeText = Utils.getPreemptiveTypeList()[preemptiveType];
+    const bgmText = dispBgmName(bgmId);
     return (
       <td>
         {groupText}
@@ -920,6 +961,7 @@ const CommandItem = (props) => {
         {loseScriptText}
         {' ' + preemptiveText}
         {preemptive ? `[${preemptiveTypeText}]` : ''}
+        {bgmId ? bgmText : ''}
       </td>
     );
   };
@@ -990,6 +1032,40 @@ const CommandItem = (props) => {
     const texts = Utils.getGatherFollowersTypeList();
     const typeText = texts[type];
     return <td>{typeText}</td>;
+  };
+
+  // 位置設定
+  const listAssignLocationInformationContents = (
+    slotId,
+    kind,
+    layer,
+    locationType,
+    value1,
+    value2
+  ) => {
+    const dispSlotText = dispSlotName(slotId);
+    const list = Utils.getLocationKindList();
+    return (
+      <td>
+        {dispSlotText} = {list[kind]},レイヤー{layer}:
+        {_getAssignLocationInformationText(locationType, value1, value2)}
+      </td>
+    );
+  };
+
+  const _getAssignLocationInformationText = (type, value1, value2) => {
+    switch (type) {
+      case 0:
+        return `${value1},${value2}`;
+      case 1:
+        return `${dispSlotName(value1)},${dispSlotName(value2)}`;
+      case 2:
+        return `キャラクターId ${value1}`;
+      case 3:
+        return `キャラクターId ${dispSlotName(value1)}`;
+      default:
+        return '???';
+    }
   };
 
   // 行動メッセージ指定
@@ -1189,7 +1265,11 @@ const CommandItem = (props) => {
         break;
       case COMMAND.ChangeItem:
         title = '道具変更:';
-        contents = listGainItemContents(...parameters);
+        contents = listChangeItemContents(...parameters);
+        break;
+      case COMMAND.ChangeSkill:
+        title = '技能変更:';
+        contents = listChangeSkillContents(...parameters);
         break;
       case COMMAND.ChangeGold:
         title = '所持金の変更:';
@@ -1210,7 +1290,11 @@ const CommandItem = (props) => {
       case COMMAND.RefreshMarch:
         title = '隊列のリフレッシュ';
         break;
-      case COMMAND.RECOVER:
+      case COMMAND.ChangeFollower:
+        title = '隊列の変更:';
+        contents = listChangeFollowerContents(...parameters);
+        break;
+      case COMMAND.Recover:
         title = '回復:';
         contents = listRecoverContents(...parameters);
         break;
@@ -1226,15 +1310,15 @@ const CommandItem = (props) => {
         title = 'コモンスクリプト:';
         contents = listCommonScriptContents(...parameters);
         break;
-      case COMMAND.CHANGETILE:
+      case COMMAND.ChangeTile:
         title = 'タイル変更:';
         contents = listChangeTileContents(...parameters);
         break;
-      case COMMAND.SWAPTILE:
+      case COMMAND.SwapTile:
         title = 'タイル切替:';
         contents = listSwapTileContents(...parameters);
         break;
-      case COMMAND.MOVE:
+      case COMMAND.Move:
         title = '場所移動:';
         contents = listMoveContents(...parameters);
         break;
@@ -1266,7 +1350,7 @@ const CommandItem = (props) => {
         title = '移動ルート待機:';
         contents = listMoveRouteWaitContents(...parameters);
         break;
-      case COMMAND.FOLLOWERCONTROL:
+      case COMMAND.FollowerControl:
         title = '隊列の操作:';
         contents = listFollowerControlContents(...parameters);
         break;
@@ -1277,7 +1361,7 @@ const CommandItem = (props) => {
       case COMMAND.EraseEvent:
         title = 'イベントの消去';
         break;
-      case COMMAND.FOLLOWERSETTINGS:
+      case COMMAND.FollowerSettings:
         title = '隊列の設定:';
         contents = listFollowerSettingsContents(...parameters);
         break;
@@ -1338,6 +1422,10 @@ const CommandItem = (props) => {
         break;
       case COMMAND.ResetObjects:
         title = 'オブジェクトの再設定';
+        break;
+      case COMMAND.AssignLocationInformation:
+        title = '指定位置情報取得:';
+        contents = listAssignLocationInformationContents(...parameters);
         break;
       case COMMAND.PushActionResult:
         title = '行動結果追加';
