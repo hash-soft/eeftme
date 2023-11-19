@@ -343,6 +343,8 @@ const Editor = () => {
         terrains: [],
         troops: [],
         encounters: [],
+        fonts: [],
+        pictures: [],
       };
     }
     const dataset = JSON.parse(datasetText);
@@ -370,6 +372,8 @@ const Editor = () => {
     dataset.terrains?.shift();
     dataset.troops?.shift();
     dataset.encounters?.shift();
+    dataset.fonts?.shift();
+    dataset.pictures?.shift();
   };
 
   const eventsRef = React.useRef(initEvents());

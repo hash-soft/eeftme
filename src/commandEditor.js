@@ -24,6 +24,7 @@ import {
   TerrainSelectBox,
   TroopSelectBox,
   EncounterSelectBox,
+  PictureSelectBox,
 } from './selectBoxSet';
 import { NumberEdit } from './editBoxSet';
 import Utils from './utils';
@@ -3927,7 +3928,8 @@ const MoveRoute = (props) => {
   // 1: キャラクターId or 格納スロット
   // 2: 0 共通 1 マップ
   // 3: ルートId
-  const parametersRef = React.useRef(data || [0, 0, 0, 1]);
+  // 4: 待機
+  const parametersRef = React.useRef(data || [0, 0, 0, 1, 0]);
   const parameters = parametersRef.current;
   let target = parameters[1];
 
@@ -3945,6 +3947,10 @@ const MoveRoute = (props) => {
 
   const onStorageRadioChange = (e) => {
     parameters[2] = parseInt(e.target.value);
+  };
+
+  const onWaitCheck = (e) => {
+    parameters[4] = e.target.checked;
   };
 
   const onUpdate = () => {
@@ -4016,6 +4022,15 @@ const MoveRoute = (props) => {
         value={parameters[3]}
         onValueFocusOff={(value) => onValueFocusOff(value, 3)}
       />
+      <div>
+        <input
+          type="checkbox"
+          name="multi"
+          defaultChecked={parameters[4] ? 'checked' : ''}
+          onChange={(e) => onWaitCheck(e)}
+        />
+        待機する
+      </div>
     </CommandBase>
   );
 };
@@ -5542,6 +5557,107 @@ const AssignLocationInformation = (props) => {
   );
 };
 
+// ピクチャの表示
+const ShowPicture = (props) => {
+  // 0: ピクチャ番号
+  // 1: ピクチャId
+  // 2: 素材名
+  // 3: 端点タイプ
+  // 4: x座標
+  // 5: y座標
+  const parameters = GetParameters(props.command.parameters, [
+    1,
+    1,
+    '',
+    0,
+    0,
+    0,
+  ]);
+
+  const onValueFocusOff = (value, i) => {
+    parameters[i] = value;
+  };
+
+  const onPictureChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onMaterialChange = (e) => {
+    parameters[2] = e.target.value;
+  };
+
+  const onAnchorTypeChange = (e) => {
+    parameters[3] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'ピクチャの表示'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>ピクチャ番号：</font>
+        <NumberEdit
+          min={1}
+          max={20}
+          value={parameters[0]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 0)}
+        />
+      </div>
+      <div>
+        <font>ピクチャId：</font>
+        <PictureSelectBox
+          selectValue={parameters[1]}
+          onChange={(e) => onPictureChange(e)}
+        />
+      </div>
+      <div>
+        <font>素材名:</font>
+        {
+          <input
+            name="material"
+            defaultValue={parameters[2]}
+            onChange={(e) => onMaterialChange(e)}
+          />
+        }
+      </div>
+      <div>
+        <font>端点タイプ:</font>
+        <select
+          defaultValue={parameters[3]}
+          onChange={(e) => onAnchorTypeChange(e)}
+        >
+          {simpleSelectItems(Utils.getAnchorTypeList())}
+        </select>
+      </div>
+      <div>
+        <font>X：</font>
+        <NumberEdit
+          min={-9999}
+          max={9999}
+          value={parameters[4]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 4)}
+        />
+      </div>
+      <div>
+        <font>Y：</font>
+        <NumberEdit
+          min={-9999}
+          max={9999}
+          value={parameters[5]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 5)}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
 /**
  * 戦闘メッセージ指定
  * @param {*} props
@@ -6139,6 +6255,8 @@ const CommandEditor = (props) => {
         return <GatherFollowers {...props} />;
       case COMMAND.AssignLocationInformation:
         return <AssignLocationInformation {...props} />;
+      case COMMAND.ShowPicture:
+        return <ShowPicture {...props} />;
       case COMMAND.ActionMessage:
         return <ActionMessage {...props} />;
       case COMMAND.CharacterOptions:

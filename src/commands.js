@@ -99,6 +99,11 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.CharacterOptions, 'キャラオプション')}
           {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
           {commandButton(COMMAND.AssignLocationInformation, '指定位置情報取得')}
+          {commandButton(COMMAND.CancelConsume, '遅延消費キャンセル')}
+          {commandButton(COMMAND.DelayedConsume, '遅延消費実行')}
+          {commandButton(COMMAND.ShowPicture, 'ピクチャの表示')}
+          {commandButton(COMMAND.MovePicture, 'ピクチャの移動')}
+          {commandButton(COMMAND.RemovePicture, 'ピクチャの消去')}
           {commandButton(COMMAND.PushActionResult, '行動結果追加')}
           {commandButton(COMMAND.ActionMessage, '行動文章指定')}
           {commandButton(COMMAND.ActionMessageSettings, '行動文章の設定')}

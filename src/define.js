@@ -70,6 +70,11 @@ const COMMAND = {
   CharacterOptions: 160,
   ResetObjects: 161,
   AssignLocationInformation: 162,
+  CancelConsume: 169,
+  DelayedConsume: 170,
+  ShowPicture: 171,
+  MovePicture: 172,
+  ErasePicture: 175,
   PushActionResult: 181,
   ActionMessage: 182,
   ActionMessageSettings: 183,
@@ -101,6 +106,8 @@ const NoParamKeys = [
   COMMAND.EraseEvent,
   COMMAND.ResetObjects,
   COMMAND.SAVE,
+  COMMAND.CancelConsume,
+  COMMAND.DelayedConsume,
   COMMAND.PushActionResult,
 ];
 

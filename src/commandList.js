@@ -100,6 +100,10 @@ const CommandItem = (props) => {
     return Utils.getDispName(dataset.encounters, id);
   };
 
+  const dispPictureName = (id) => {
+    return Utils.getDispName(dataset.pictures, id);
+  };
+
   const dispTerrainName = (id) => {
     return Utils.getDispName(dataset.terrains, id);
   };
@@ -839,14 +843,15 @@ const CommandItem = (props) => {
   };
 
   // 移動ルート
-  const listMoveRouteContents = (type, target, storage, routeId) => {
+  const listMoveRouteContents = (type, target, storage, routeId, wait) => {
     const dispTarget = type === 1 ? dispSlotName(type) : `Id：${target}`;
     if (typeof routeId === 'object') {
       routeId = 1;
     }
     return (
       <td>
-        {dispTarget} ({storage === 0 ? '共通' : 'マップ'},ルートId={routeId})
+        {dispTarget} ({storage === 0 ? '共通' : 'マップ'},ルートId={routeId}
+        ,待機={wait ? 'する' : 'しない'})
       </td>
     );
   };
@@ -1066,6 +1071,24 @@ const CommandItem = (props) => {
       default:
         return '???';
     }
+  };
+
+  const listShowPictureContents = (
+    pictureNo,
+    pictureId,
+    materialName,
+    anchorType,
+    x,
+    y
+  ) => {
+    const dispPictureText = dispPictureName(pictureId);
+    const list = Utils.getAnchorTypeList();
+    return (
+      <td>
+        番号:{pictureNo},{dispPictureText},{materialName},{list[anchorType]},{x}
+        ,{y}
+      </td>
+    );
   };
 
   // 行動メッセージ指定
@@ -1426,6 +1449,16 @@ const CommandItem = (props) => {
       case COMMAND.AssignLocationInformation:
         title = '指定位置情報取得:';
         contents = listAssignLocationInformationContents(...parameters);
+        break;
+      case COMMAND.CancelConsume:
+        title = '遅延消費キャンセル';
+        break;
+      case COMMAND.DelayedConsume:
+        title = '遅延消費実行';
+        break;
+      case COMMAND.ShowPicture:
+        title = 'ピクチャの表示:';
+        contents = listShowPictureContents(...parameters);
         break;
       case COMMAND.PushActionResult:
         title = '行動結果追加';

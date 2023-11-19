@@ -226,7 +226,14 @@ Utils.getRegisterMemberInfoSelectList = function () {
 };
 
 Utils.getPartyInfoSelectList = function () {
-  return ['所持金', 'メンバー数', '生存人数', '表示人数', '生存＋NPC人数'];
+  return [
+    '所持金',
+    'メンバー数',
+    '生存人数',
+    '表示人数',
+    '生存＋NPC人数',
+    '行先の数',
+  ];
 };
 
 Utils.getPlayerInfoSelectList = function () {
@@ -330,6 +337,10 @@ Utils.getPreemptiveTypeList = function () {
 
 Utils.getLocationKindList = function () {
   return ['地形Id', 'タイルId'];
+};
+
+Utils.getAnchorTypeList = function () {
+  return ['左上', '中央', '左下'];
 };
 
 export default Utils;

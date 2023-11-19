@@ -315,6 +315,28 @@ const EncounterSelectBox = (props) => {
   );
 };
 
+// フォントセレクトボックス
+const FontSelectBox = (props) => {
+  return (
+    <SelectBoxBase
+      items={React.useContext(Dataset).fonts}
+      digits={3}
+      {...props}
+    ></SelectBoxBase>
+  );
+};
+
+// ピクチャセレクトボックス
+const PictureSelectBox = (props) => {
+  return (
+    <SelectBoxBase
+      items={React.useContext(Dataset).pictures}
+      digits={3}
+      {...props}
+    ></SelectBoxBase>
+  );
+};
+
 // 効果音セレクトボックス
 const SeSelectBox = (props) => {
   const dataset = React.useContext(Dataset);
@@ -394,6 +416,8 @@ export {
   TerrainSelectBox,
   TroopSelectBox,
   EncounterSelectBox,
+  FontSelectBox,
+  PictureSelectBox,
   SeSelectBox,
   BgmSelectBox,
   MapEventSelectBox,
