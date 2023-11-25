@@ -103,7 +103,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.DelayedConsume, '遅延消費実行')}
           {commandButton(COMMAND.ShowPicture, 'ピクチャの表示')}
           {commandButton(COMMAND.MovePicture, 'ピクチャの移動')}
-          {commandButton(COMMAND.RemovePicture, 'ピクチャの消去')}
+          {commandButton(COMMAND.ErasePicture, 'ピクチャの消去')}
           {commandButton(COMMAND.PushActionResult, '行動結果追加')}
           {commandButton(COMMAND.ActionMessage, '行動文章指定')}
           {commandButton(COMMAND.ActionMessageSettings, '行動文章の設定')}

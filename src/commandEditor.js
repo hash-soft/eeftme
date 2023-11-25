@@ -5597,7 +5597,7 @@ const ShowPicture = (props) => {
 
   return (
     <CommandBase
-      title={'ピクチャの表示'}
+      title={'ピクチャの移動'}
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
@@ -5652,6 +5652,116 @@ const ShowPicture = (props) => {
           max={9999}
           value={parameters[5]}
           onValueFocusOff={(value) => onValueFocusOff(value, 5)}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
+// ピクチャの移動
+const MovePicture = (props) => {
+  // 0: ピクチャ番号
+  // 1: x座標
+  // 2: y座標
+  // 3: 移動タイプ
+  // 4: 移動時間
+  const parameters = GetParameters(props.command.parameters, [1, 0, 0, 0, 60]);
+
+  const onValueFocusOff = (value, i) => {
+    parameters[i] = value;
+  };
+
+  const onMoveTypeChange = (e) => {
+    parameters[3] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'ピクチャの消去'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>ピクチャ番号：</font>
+        <NumberEdit
+          min={1}
+          max={20}
+          value={parameters[0]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 0)}
+        />
+      </div>
+      <div>
+        <font>X：</font>
+        <NumberEdit
+          min={-9999}
+          max={9999}
+          value={parameters[1]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 1)}
+        />
+      </div>
+      <div>
+        <font>Y：</font>
+        <NumberEdit
+          min={-9999}
+          max={9999}
+          value={parameters[2]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 2)}
+        />
+      </div>
+      <div>
+        <font>移動タイプ:</font>
+        <select
+          defaultValue={parameters[3]}
+          onChange={(e) => onMoveTypeChange(e)}
+        >
+          {simpleSelectItems(Utils.getMoveTypeList())}
+        </select>
+      </div>
+      <div>
+        <font>移動時間：</font>
+        <NumberEdit
+          min={1}
+          max={999}
+          value={parameters[4]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 4)}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
+// ピクチャの消去
+const ErasePicture = (props) => {
+  // 0: ピクチャ番号
+  const parameters = GetParameters(props.command.parameters, [1]);
+
+  const onValueFocusOff = (value, i) => {
+    parameters[i] = value;
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'ピクチャの表示'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>ピクチャ番号：</font>
+        <NumberEdit
+          min={1}
+          max={20}
+          value={parameters[0]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 0)}
         />
       </div>
     </CommandBase>
@@ -6257,6 +6367,10 @@ const CommandEditor = (props) => {
         return <AssignLocationInformation {...props} />;
       case COMMAND.ShowPicture:
         return <ShowPicture {...props} />;
+      case COMMAND.MovePicture:
+        return <MovePicture {...props} />;
+      case COMMAND.ErasePicture:
+        return <ErasePicture {...props} />;
       case COMMAND.ActionMessage:
         return <ActionMessage {...props} />;
       case COMMAND.CharacterOptions:

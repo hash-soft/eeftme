@@ -233,6 +233,8 @@ Utils.getPartyInfoSelectList = function () {
     '表示人数',
     '生存＋NPC人数',
     '行先の数',
+    '預けている道具の個数',
+    '預けている武器の総数',
   ];
 };
 
@@ -341,6 +343,10 @@ Utils.getLocationKindList = function () {
 
 Utils.getAnchorTypeList = function () {
   return ['左上', '中央', '左下'];
+};
+
+Utils.getMoveTypeList = function () {
+  return ['直線', '放物線X', '放物線Y'];
 };
 
 export default Utils;

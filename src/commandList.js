@@ -1073,6 +1073,7 @@ const CommandItem = (props) => {
     }
   };
 
+  // ピクチャの表示
   const listShowPictureContents = (
     pictureNo,
     pictureId,
@@ -1089,6 +1090,21 @@ const CommandItem = (props) => {
         ,{y}
       </td>
     );
+  };
+
+  // ピクチャの移動
+  const listMovePictureContents = (pictureNo, x, y, moveType, duration) => {
+    const list = Utils.getMoveTypeList();
+    return (
+      <td>
+        番号:{pictureNo},{x},{y},{list[moveType]},{duration}フレーム
+      </td>
+    );
+  };
+
+  // ピクチャの消去
+  const listErasePictureContents = (pictureNo) => {
+    return <td>番号:{pictureNo}</td>;
   };
 
   // 行動メッセージ指定
@@ -1459,6 +1475,14 @@ const CommandItem = (props) => {
       case COMMAND.ShowPicture:
         title = 'ピクチャの表示:';
         contents = listShowPictureContents(...parameters);
+        break;
+      case COMMAND.MovePicture:
+        title = 'ピクチャの移動:';
+        contents = listMovePictureContents(...parameters);
+        break;
+      case COMMAND.ErasePicture:
+        title = 'ピクチャの消去:';
+        contents = listErasePictureContents(...parameters);
         break;
       case COMMAND.PushActionResult:
         title = '行動結果追加';
