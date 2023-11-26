@@ -88,6 +88,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.Se, '効果音')}
           {commandButton(COMMAND.BgmPlay, 'BGM演奏')}
           {commandButton(COMMAND.BgmInterrupt, 'BGM割込')}
+          {commandButton(COMMAND.ChangePlayerBgm, 'プレイヤーBGM変更')}
           {commandButton(COMMAND.EventTrigger, 'イベント起動')}
           {commandButton(COMMAND.BattleStart, '戦闘開始')}
           {commandButton(COMMAND.ScreenFadeOut, '画面のフェードアウト')}

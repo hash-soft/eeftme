@@ -4505,10 +4505,8 @@ const Se = (props) => {
 
 // BGM演奏
 const BgmPlay = (props) => {
-  const data = sliceParameters(props.command.parameters);
-  // 0: 効果音Id
-  const parametersRef = React.useRef(data || [0]);
-  const parameters = parametersRef.current;
+  // 0: BGMId
+  const parameters = GetParameters(props.command.parameters, [0]);
 
   const onChange = (e) => {
     parameters[0] = parseInt(e.target.value);
@@ -4520,7 +4518,11 @@ const BgmPlay = (props) => {
   };
 
   return (
-    <CommandBase onUpdate={onUpdate} onCancel={props.onCancel}>
+    <CommandBase
+      title={'BGM演奏'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
       <font>BGMId：</font>
       <BgmSelectBox
         selectValue={parameters[0]}
@@ -4587,6 +4589,36 @@ const BgmInterrupt = (props) => {
         />
         終了後再開しない
       </div>
+    </CommandBase>
+  );
+};
+
+// BGM演奏
+const ChangePlayerBgm = (props) => {
+  // 0: BGMId
+  const parameters = GetParameters(props.command.parameters, [0]);
+
+  const onChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'プレイヤーBGM変更'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>BGMId：</font>
+      <BgmSelectBox
+        selectValue={parameters[0]}
+        onChange={(e) => onChange(e)}
+        unuse={true}
+      />
     </CommandBase>
   );
 };
@@ -6347,6 +6379,8 @@ const CommandEditor = (props) => {
         return <BgmPlay {...props} />;
       case COMMAND.BgmInterrupt:
         return <BgmInterrupt {...props} />;
+      case COMMAND.ChangePlayerBgm:
+        return <ChangePlayerBgm {...props} />;
       case COMMAND.EventTrigger:
         return <EventTrigger {...props} />;
       case COMMAND.BattleStart:

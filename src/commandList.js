@@ -915,6 +915,10 @@ const CommandItem = (props) => {
     );
   };
 
+  const listChangePlayerBgm = (id) => {
+    return <td>{dispBgmName(id)}</td>;
+  };
+
   // イベントトリガー
   const listEventTriggerContents = (triggerHex, eventId) => {
     return (
@@ -1422,6 +1426,10 @@ const CommandItem = (props) => {
       case COMMAND.BgmInterrupt:
         title = 'BGM割込:';
         contents = listBgmInterrupt(...parameters);
+        break;
+      case COMMAND.ChangePlayerBgm:
+        title = 'プレイヤーBGM変更:';
+        contents = listChangePlayerBgm(...parameters);
         break;
       case COMMAND.EventTrigger:
         title = 'イベント起動:';

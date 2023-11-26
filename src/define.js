@@ -59,6 +59,7 @@ const COMMAND = {
   Se: 121,
   BgmPlay: 123,
   BgmInterrupt: 124,
+  ChangePlayerBgm: 125,
   EventTrigger: 131,
   BattleStart: 132,
   ScreenFadeOut: 141,
