@@ -61,14 +61,11 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.SwapTile, 'タイル切替')}
           {commandButton(COMMAND.Move, '場所移動')}
           {commandButton(COMMAND.MoveFromPosition, '位置リスト移動')}
-          <button onClick={() => props.closePopup(COMMAND.WARP)}>ワープ</button>
+          {commandButton(COMMAND.Warp, 'ワープ')}
           {commandButton(COMMAND.Location, 'キャラクター位置設定')}
-          <button onClick={() => props.closePopup(COMMAND.MoveSettings)}>
-            移動の設定
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.SCROLL)}>
-            マップスクロール
-          </button>
+          {commandButton(COMMAND.MoveVehicle, '乗り物の移動')}
+          {commandButton(COMMAND.MoveSettings, '移動の設定')}
+          {commandButton(COMMAND.Scroll, 'マップスクロール')}
           {commandButton(COMMAND.MoveRoute, '移動ルート')}
           {commandButton(COMMAND.MoveRouteWait, '移動ルート待機')}
           <button onClick={() => props.closePopup(COMMAND.FollowerControl)}>
@@ -97,6 +94,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.MapAnimation, 'マップアニメーション')}
           {commandButton(COMMAND.ChangeTransparent, '透明状態変更')}
           {commandButton(COMMAND.GatherFollowers, '隊列の集合')}
+          {commandButton(COMMAND.GetOutVehicle, '乗り物から出る')}
           {commandButton(COMMAND.CharacterOptions, 'キャラオプション')}
           {commandButton(COMMAND.ResetObjects, 'オブジェクトの再設定')}
           {commandButton(COMMAND.AssignLocationInformation, '指定位置情報取得')}

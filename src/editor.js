@@ -345,6 +345,7 @@ const Editor = () => {
         encounters: [],
         fonts: [],
         pictures: [],
+        vehicles: [],
       };
     }
     const dataset = JSON.parse(datasetText);
@@ -374,6 +375,7 @@ const Editor = () => {
     dataset.encounters?.shift();
     dataset.fonts?.shift();
     dataset.pictures?.shift();
+    dataset.vehicles?.shift();
   };
 
   const eventsRef = React.useRef(initEvents());

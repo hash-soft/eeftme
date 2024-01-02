@@ -182,6 +182,8 @@ Utils.getGameDataTypeSelectList = function () {
     'パーティ',
     'テキスト',
     '行動',
+    'メンバー',
+    '乗り物',
   ];
 };
 
@@ -234,8 +236,14 @@ Utils.getPartyInfoSelectList = function () {
     '生存＋NPC人数',
     '行先の数',
     '預けている道具の個数',
-    '預けている武器の総数',
+    '預けている道具の総数',
+    '単独行動可能生存人数',
+    '乗っている乗り物',
   ];
+};
+
+Utils.getMemberTypeSelectList = function () {
+  return ['パーティ参加数', '登録数'];
 };
 
 Utils.getPlayerInfoSelectList = function () {
@@ -247,6 +255,10 @@ Utils.getPlayerInfoSelectList = function () {
     '画像id',
     '画像インデックス',
   ];
+};
+
+Utils.getVehicleInfoSelectList = function () {
+  return ['マップId', 'マップX', 'マップY', '向き'];
 };
 
 Utils.getActionIdList = function () {

@@ -80,6 +80,10 @@ const CommandItem = (props) => {
     return Utils.getDispName(warpPlaces, id);
   };
 
+  const dispVehicleName = (id) => {
+    return Utils.getDispName(dataset.vehicles, id);
+  };
+
   const dispEffectName = (id) => {
     return Utils.getDispName(animations, id);
   };
@@ -393,6 +397,14 @@ const CommandItem = (props) => {
         return Utils.getGameDataTextSelectList()[param1];
       case 8:
         return `${Utils.getActionIdList()[param2]}`;
+      case 9:
+        return `${dispMemberName(param1)} の${
+          Utils.getMemberTypeSelectList()[param2]
+        }`;
+      case 10:
+        return `${dispSlotName(param1)} ${
+          Utils.getVehicleInfoSelectList()[param2]
+        }`;
       default:
         return '';
     }
@@ -729,6 +741,7 @@ const CommandItem = (props) => {
     }
   };
 
+  // 位置リスト移動
   const listMoveFromPositionContents = (type, positionId, direction) => {
     const [typeText, positionIdText] =
       type === 0
@@ -770,7 +783,7 @@ const CommandItem = (props) => {
     value2,
     direction
   ) => {
-    const dispTarget = type === 1 ? dispSlotName(type) : `Id：${target}`;
+    const dispTarget = type === 1 ? dispSlotName(target) : `Id：${target}`;
     const list = Utils.getLocationDestList();
     return (
       <td>
@@ -793,6 +806,19 @@ const CommandItem = (props) => {
       default:
         return '???';
     }
+  };
+
+  const listMoveVehicleContents = (vehicleId, type, positionId, direction) => {
+    const [typeText, positionIdText] =
+      type === 0
+        ? ['直接', dispPositionName(positionId)]
+        : ['スロット', dispSlotName(positionId)];
+    return (
+      <td>
+        {dispVehicleName(vehicleId)} {typeText}(位置:{positionIdText}),方向:
+        {direction}
+      </td>
+    );
   };
 
   // 移動の設定
@@ -844,7 +870,7 @@ const CommandItem = (props) => {
 
   // 移動ルート
   const listMoveRouteContents = (type, target, storage, routeId, wait) => {
-    const dispTarget = type === 1 ? dispSlotName(type) : `Id：${target}`;
+    const dispTarget = type === 1 ? dispSlotName(target) : `Id：${target}`;
     if (typeof routeId === 'object') {
       routeId = 1;
     }
@@ -1369,7 +1395,7 @@ const CommandItem = (props) => {
         title = '位置リスト移動:';
         contents = listMoveFromPositionContents(...parameters);
         break;
-      case COMMAND.WARP:
+      case COMMAND.Warp:
         title = 'ワープ:';
         contents = listWarpContents(...parameters);
         break;
@@ -1377,11 +1403,15 @@ const CommandItem = (props) => {
         title = '位置設定:';
         contents = listLocationContents(...parameters);
         break;
+      case COMMAND.MoveVehicle:
+        title = '乗り物の移動:';
+        contents = listMoveVehicleContents(...parameters);
+        break;
       case COMMAND.MoveSettings:
         title = '移動の設定:';
         contents = listMoveSettingsContents(...parameters);
         break;
-      case COMMAND.SCROLL:
+      case COMMAND.Scroll:
         title = 'スクロールの操作:';
         contents = listScrollContents(...parameters);
         break;
@@ -1462,6 +1492,9 @@ const CommandItem = (props) => {
       case COMMAND.GatherFollowers:
         title = '隊列の集合:';
         contents = listGatherFollowersContents(...parameters);
+        break;
+      case COMMAND.GetOutVehicle:
+        title = '乗り物から出る:';
         break;
       case COMMAND.CharacterOptions:
         title = 'キャラオプション:';
