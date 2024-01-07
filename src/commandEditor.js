@@ -3052,19 +3052,43 @@ const ChangeState = (props) => {
 
 // タイル変更
 const ChangeTile = (props) => {
-  const data = sliceParameters(props.command.parameters);
   // 0: 変更するレイヤー(-1は全部)
   // 1: パーツid
   // 2: x座標
   // 3: y座標
-  const parametersRef = React.useRef(data || [-1, 1, 0, 0]);
-  const parameters = parametersRef.current;
+  // 4: 位置指定タイプ
+  const parameters = GetParameters(props.command.parameters, [-1, 1, 0, 0, 0]);
+  const posType = parameters[4];
+  let [x, slotX] = posType ? [0, parameters[2]] : [parameters[2], 1];
+  let [y, slotY] = posType ? [0, parameters[3]] : [parameters[3], 1];
 
   const onValueFocusOff = (value, i) => {
     parameters[i] = value;
   };
 
+  const onXFocusOff = (value) => {
+    x = value;
+  };
+
+  const onYFocusOff = (value) => {
+    y = value;
+  };
+
+  const onXSlotChange = (e) => {
+    slotX = parseInt(e.target.value);
+  };
+
+  const onYSlotChange = (e) => {
+    slotY = parseInt(e.target.value);
+  };
+
+  const onPosTypeRadioChange = (e) => {
+    parameters[4] = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
+    parameters[2] = parameters[4] ? slotX : x;
+    parameters[3] = parameters[4] ? slotY : y;
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
   };
@@ -3085,7 +3109,7 @@ const ChangeTile = (props) => {
         />
       </div>
       <div>
-        <font>タイルid：</font>
+        <font>パーツid：</font>
         <NumberEdit
           min={1}
           max={999}
@@ -3094,20 +3118,47 @@ const ChangeTile = (props) => {
         />
       </div>
       <div>
+        <font>位置：</font>
+        <input
+          type="radio"
+          name="posType"
+          value="0"
+          defaultChecked={parameters[4] === 0 ? 'checked' : ''}
+          onChange={(e) => onPosTypeRadioChange(e)}
+        />
+        {Utils.getDirectOrRefList()[0]}
+        <input
+          type="radio"
+          name="posType"
+          value="1"
+          defaultChecked={parameters[4] === 1 ? 'checked' : ''}
+          onChange={(e) => onPosTypeRadioChange(e)}
+        />
+        {Utils.getDirectOrRefList()[1]}
+      </div>
+      <div>
         <font>X：</font>
         <NumberEdit
           min={0}
           max={999}
-          value={parameters[2]}
-          onValueFocusOff={(value) => onValueFocusOff(value, 2)}
+          value={x}
+          onValueFocusOff={(value) => onXFocusOff(value)}
         />
         <font>Y：</font>
         <NumberEdit
           min={0}
           max={999}
-          value={parameters[3]}
-          onValueFocusOff={(value) => onValueFocusOff(value, 3)}
+          value={y}
+          onValueFocusOff={(value) => onYFocusOff(value)}
         />
+      </div>
+      <div>
+        <font>スロットX：</font>
+        <SlotSelectBox selectValue={slotX} onChange={(e) => onXSlotChange(e)} />
+      </div>
+      <div>
+        <font>スロットY：</font>
+        <SlotSelectBox selectValue={slotY} onChange={(e) => onYSlotChange(e)} />
       </div>
     </CommandBase>
   );

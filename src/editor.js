@@ -31,13 +31,15 @@ const LoadButton = (props) => {
     });
   };
 
-  const loadFile = async () => {
+  const selectFile = async () => {
     const file = await showOpenFileDialog();
-    const contents = await readAsText(file);
-    console.log(contents);
-    console.log(props.type);
-    const json = JSON.parse(contents);
+    await loadFile(file);
+  };
 
+  const loadFile = async (file) => {
+    const contents = await readAsText(file);
+    console.log(contents, props.type);
+    const json = JSON.parse(contents);
     // ファイルの中身チェックをやっておきたいが。。。
 
     if (props.type === 'events') {
@@ -47,6 +49,22 @@ const LoadButton = (props) => {
     } else if (props.type === 'dataset') {
       refreshDataset(json, contents);
     }
+  };
+
+  const dragOver = (e) => {
+    console.log('over');
+    e.preventDefault();
+  };
+
+  const drop = async (e) => {
+    console.log('drop');
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length === 0) {
+      return;
+    }
+    // ここでドラッグしたファイルの読み込み処理を実装する
+    await loadFile(files[0]);
   };
 
   const refreshEvents = (json, contents, filename) => {
@@ -93,7 +111,16 @@ const LoadButton = (props) => {
     console.log('Button effect');
   });
 
-  return <button onClick={() => loadFile()}>{props.label}</button>;
+  return (
+    <button
+      onClick={() => selectFile()}
+      onDragOver={(e) => dragOver(e)}
+      onDrop={(e) => drop(e)}
+      draggable={true}
+    >
+      {props.label}
+    </button>
+  );
 };
 
 // ファイル保存ボタン

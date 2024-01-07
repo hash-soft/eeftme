@@ -350,7 +350,7 @@ Utils.getPreemptiveTypeList = function () {
 };
 
 Utils.getLocationKindList = function () {
-  return ['地形Id', 'タイルId'];
+  return ['地形Id', 'タイルId', 'タイルGId'];
 };
 
 Utils.getAnchorTypeList = function () {

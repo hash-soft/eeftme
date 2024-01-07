@@ -695,10 +695,13 @@ const CommandItem = (props) => {
     );
   };
 
-  const listChangeTileContents = (layerIndex, id, x, y) => {
+  const listChangeTileContents = (layerIndex, id, x, y, posType) => {
+    const typeText = Utils.getDirectOrRefList()[posType ? 1 : 0];
+    const xText = posType ? dispSlotName(x) : x;
+    const yText = posType ? dispSlotName(y) : y;
     return (
       <td>
-        レイヤー={layerIndex}, パーツ={id}({x},{y})
+        レイヤー={layerIndex}, パーツ={id} {typeText}({xText},{yText})
       </td>
     );
   };
