@@ -445,6 +445,10 @@ const CommandItem = (props) => {
         return `${Utils.getMapInfoEventList()[param1]}`;
       case 2:
         return `${param1}番目`;
+      case 3:
+        return `${Utils.getMapInfoResultList()[param1]}`;
+      case 4:
+        return `${Utils.getMapInfoActionList()[param1]}`;
       default:
         return '';
     }

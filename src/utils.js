@@ -192,7 +192,7 @@ Utils.getGameDataPartyMemberList = function () {
 };
 
 Utils.getMapInfoList = function () {
-  return ['基本情報', '実行イベント', '値'];
+  return ['基本情報', '実行イベント', '値', '結果情報', '行動情報'];
 };
 
 Utils.getMapInfoStandardList = function () {
@@ -201,6 +201,14 @@ Utils.getMapInfoStandardList = function () {
 
 Utils.getMapInfoEventList = function () {
   return ['オブジェクトId', '起因'];
+};
+
+Utils.getMapInfoResultList = function () {
+  return ['選択インデックス'];
+};
+
+Utils.getMapInfoActionList = function () {
+  return ['使用者Id', 'メンバーId', '行動種類', '使用物Id'];
 };
 
 Utils.getLocationDestList = function () {

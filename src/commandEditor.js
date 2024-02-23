@@ -802,6 +802,7 @@ const Variable = (props) => {
   const parameters = parametersRef.current;
   const opecode = parameters[2];
   let multi = parameters[0] !== parameters[1];
+  const opeList = Utils.getOpecodeSelectList();
 
   const onVariableChange = (e) => {
     parameters[0] = parseInt(e.target.value);
@@ -858,28 +859,76 @@ const Variable = (props) => {
       <div>
         <input
           type="radio"
-          name="opecode"
+          name="code"
           value="0"
           defaultChecked={opecode === 0 ? 'checked' : ''}
           onChange={(e) => onOpecodeChange(e)}
         />
-        代入
+        <font>{opeList[0]}</font>
         <input
           type="radio"
-          name="opecode"
+          name="code"
           value="1"
           defaultChecked={opecode === 1 ? 'checked' : ''}
           onChange={(e) => onOpecodeChange(e)}
         />
-        加算
+        <font>{opeList[1]}</font>
         <input
           type="radio"
-          name="opecode"
+          name="code"
           value="2"
           defaultChecked={opecode === 2 ? 'checked' : ''}
           onChange={(e) => onOpecodeChange(e)}
         />
-        減算
+        <font>{opeList[2]}</font>
+        <input
+          type="radio"
+          name="code"
+          value="3"
+          defaultChecked={opecode === 3 ? 'checked' : ''}
+          onChange={(e) => onOpecodeChange(e)}
+        />
+        <font>{opeList[3]}</font>
+        <input
+          type="radio"
+          name="code"
+          value="4"
+          defaultChecked={opecode === 4 ? 'checked' : ''}
+          onChange={(e) => onOpecodeChange(e)}
+        />
+        <font>{opeList[4]}</font>
+        <input
+          type="radio"
+          name="code"
+          value="5"
+          defaultChecked={opecode === 5 ? 'checked' : ''}
+          onChange={(e) => onOpecodeChange(e)}
+        />
+        <font>{opeList[5]}</font>
+        <input
+          type="radio"
+          name="code"
+          value="6"
+          defaultChecked={opecode === 6 ? 'checked' : ''}
+          onChange={(e) => onOpecodeChange(e)}
+        />
+        <font>{opeList[6]}</font>
+        <input
+          type="radio"
+          name="code"
+          value="7"
+          defaultChecked={opecode === 7 ? 'checked' : ''}
+          onChange={(e) => onOpecodeChange(e)}
+        />
+        <font>{opeList[7]}</font>
+        <input
+          type="radio"
+          name="code"
+          value="8"
+          defaultChecked={opecode === 8 ? 'checked' : ''}
+          onChange={(e) => onOpecodeChange(e)}
+        />
+        <font>{opeList[8]}</font>
       </div>
       <font>定数：</font>
       <NumberEdit
@@ -1878,6 +1927,8 @@ const AssignMapInfo = (props) => {
   let standard = type === 0 ? parameters[2] : 0;
   let event = type === 1 ? parameters[2] : 0;
   let index = type === 2 ? parameters[2] : 0;
+  let result = type === 3 ? parameters[2] : 0;
+  let action = type === 4 ? parameters[2] : 0;
   const typeList = Utils.getMapInfoList();
 
   const onSlotChange = (e) => {
@@ -1900,8 +1951,16 @@ const AssignMapInfo = (props) => {
     index = value;
   };
 
+  const onResultChange = (e) => {
+    result = parseInt(e.target.value);
+  };
+
+  const onActionChange = (e) => {
+    action = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
-    const values1 = [standard, event, index];
+    const values1 = [standard, event, index, result, action];
     const newType = parameters[1];
     parameters[2] = values1[newType];
 
@@ -1962,6 +2021,32 @@ const AssignMapInfo = (props) => {
           onValueFocusOff={onValueFocusOff}
         />
         <font>番目</font>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="3"
+          defaultChecked={type === 3 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[3]}：</font>
+        <select defaultValue={result} onChange={(e) => onResultChange(e)}>
+          {simpleSelectItems(Utils.getMapInfoResultList())}
+        </select>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="4"
+          defaultChecked={type === 4 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[4]}：</font>
+        <select defaultValue={action} onChange={(e) => onActionChange(e)}>
+          {simpleSelectItems(Utils.getMapInfoActionList())}
+        </select>
       </div>
     </CommandBase>
   );
