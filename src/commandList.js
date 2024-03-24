@@ -1009,13 +1009,25 @@ const CommandItem = (props) => {
   };
 
   // 画面のフェードアウト
-  const listScreenFadeOutContents = (wait) => {
-    return <td>待機:{Utils.getOrNotSelectList()[wait]}</td>;
+  const listScreenFadeOutContents = (wait, speed = -1, target = 0) => {
+    const speedText = speed < 0 ? 'システム設定値' : `${speed}`;
+    return (
+      <td>
+        待機:{Utils.getOrNotSelectList()[wait]} 速度:{speedText} 対象:
+        {Utils.getFadeTargetList()[target]}
+      </td>
+    );
   };
 
   // 画面のフェードイン
-  const listScreenFadeInContents = (wait) => {
-    return <td>待機:{Utils.getOrNotSelectList()[wait]}</td>;
+  const listScreenFadeInContents = (wait, speed = -1, target = 0) => {
+    const speedText = speed < 0 ? 'システム設定値' : `${speed}`;
+    return (
+      <td>
+        待機:{Utils.getOrNotSelectList()[wait]} 速度:{speedText} 対象:
+        {Utils.getFadeTargetList()[target]}
+      </td>
+    );
   };
 
   // 画面のシェイク

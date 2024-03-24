@@ -369,4 +369,8 @@ Utils.getMoveTypeList = function () {
   return ['直線', '放物線X', '放物線Y'];
 };
 
+Utils.getFadeTargetList = function () {
+  return ['全体', 'シーン'];
+};
+
 export default Utils;

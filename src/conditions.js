@@ -116,22 +116,25 @@ const ConditionVaribale = (props) => {
         selectValue={props.condition.param1}
         onChange={(e) => onVariableChange(e)}
       />
-      が
+      <select
+        value={props.condition.compare}
+        onChange={(e) => onCompareChange(e)}
+      >
+        <option value="0">=</option>
+        <option value="1">&gt;=</option>
+        <option value="2">&lt;=</option>
+        <option value="3">&gt;</option>
+        <option value="4">&lt;</option>
+        <option value="5">!=</option>
+        <option value="6">&amp;</option>
+        <option value="7">!&amp;</option>
+      </select>
       <NumberEdit
         min={-9999999}
         max={9999999}
         value={props.condition.param2}
         onValueFocusOff={onValueFocusOff}
       />
-      と
-      <select
-        value={props.condition.compare}
-        onChange={(e) => onCompareChange(e)}
-      >
-        <option value="0">等しい</option>
-        <option value="1">以上</option>
-        <option value="2">以下</option>
-      </select>
     </div>
   );
 };

@@ -4959,7 +4959,7 @@ const EventTrigger = (props) => {
       <div>
         <font>イベントId：</font>
         <NumberEdit
-          min={0}
+          min={-1}
           max={100}
           value={parameters[1]}
           onValueFocusOff={onEventIdValueFocusOff}
@@ -5162,12 +5162,22 @@ const BattleStart = (props) => {
 const ScreenFadeOut = (props) => {
   const data = sliceParameters(props.command.parameters);
   // 0: 待機 0:しない 1:する
-  const parametersRef = React.useRef(data || [0]);
+  // 1: フェード時間 -1:システム時間を使用
+  // 2: 対象 0:全体 1:シーン
+  const parametersRef = React.useRef(data || [0, -1, 0]);
   const parameters = parametersRef.current;
   const orNotList = Utils.getOrNotSelectList();
 
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
+  };
+
+  const onValueFocusOff = (value) => {
+    parameters[1] = value;
+  };
+
+  const onTargetChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
   };
 
   const onUpdate = () => {
@@ -5200,6 +5210,24 @@ const ScreenFadeOut = (props) => {
         />
         {orNotList[1]}
       </div>
+      <div>
+        <font>フェード時間：</font>
+        <NumberEdit
+          min={-1}
+          max={5000}
+          value={parameters[1]}
+          onValueFocusOff={onValueFocusOff}
+        />
+      </div>
+      <div>
+        <font>対象：</font>
+        <select
+          defaultValue={parameters[2]}
+          onChange={(e) => onTargetChange(e)}
+        >
+          {simpleSelectItems(Utils.getFadeTargetList())}
+        </select>
+      </div>
     </CommandBase>
   );
 };
@@ -5208,12 +5236,22 @@ const ScreenFadeOut = (props) => {
 const ScreenFadeIn = (props) => {
   const data = sliceParameters(props.command.parameters);
   // 0: 待機 0:しない 1:する
-  const parametersRef = React.useRef(data || [0]);
+  // 1: 待機時間 -1:システム時間を使用
+  // 2: 対象 0:全体 1:シーン
+  const parametersRef = React.useRef(data || [0, -1, 0]);
   const parameters = parametersRef.current;
   const orNotList = Utils.getOrNotSelectList();
 
   const onRadioChange = (e) => {
     parameters[0] = parseInt(e.target.value);
+  };
+
+  const onValueFocusOff = (value) => {
+    parameters[1] = value;
+  };
+
+  const onTargetChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
   };
 
   const onUpdate = () => {
@@ -5245,6 +5283,24 @@ const ScreenFadeIn = (props) => {
           onChange={(e) => onRadioChange(e)}
         />
         {orNotList[1]}
+      </div>
+      <div>
+        <font>フェード時間：</font>
+        <NumberEdit
+          min={-1}
+          max={5000}
+          value={parameters[1]}
+          onValueFocusOff={onValueFocusOff}
+        />
+      </div>
+      <div>
+        <font>対象：</font>
+        <select
+          defaultValue={parameters[2]}
+          onChange={(e) => onTargetChange(e)}
+        >
+          {simpleSelectItems(Utils.getFadeTargetList())}
+        </select>
       </div>
     </CommandBase>
   );
