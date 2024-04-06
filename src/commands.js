@@ -22,6 +22,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.MessageCloseWait, '文章閉じ待機')}
           {commandButton(COMMAND.Embedded, '組み込みメニュー')}
           {commandButton(COMMAND.EndEmbedded, '組み込みメニュー終了')}
+          {commandButton(COMMAND.EndWaitMessage, '文章待機終了')}
           <button onClick={() => props.closePopup(COMMAND.FLAG)}>
             フラグの処理
           </button>

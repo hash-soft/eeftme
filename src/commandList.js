@@ -1054,7 +1054,9 @@ const CommandItem = (props) => {
   // マップアニメーション
   const listMapAnimationContents = (targetType, target, effectId, waitType) => {
     const targetTypeText = Utils.getMapAnimationTargetTypeList()[targetType];
-    const targetText = targetType !== 0 ? ` ${dispSlotName(target)}` : '';
+    const targetText = [1, 2, 3].includes(targetType)
+      ? ` ${dispSlotName(target)}`
+      : '';
     const effectText = ` ${dispEffectName(effectId)}`;
     const waitText =
       waitType === 0
@@ -1260,7 +1262,7 @@ const CommandItem = (props) => {
         contents = listEndMenuContents(...parameters);
         break;
       case COMMAND.MessageSettings:
-        title = '文章設定';
+        title = '文章設定：';
         contents = listMessageSettingsContents(...parameters);
         break;
       case COMMAND.MessageCloseWait:
@@ -1268,11 +1270,14 @@ const CommandItem = (props) => {
         contents = listMessageCloseWaitContents(...parameters);
         break;
       case COMMAND.Embedded:
-        title = '組み込みメニュー';
+        title = '組み込みメニュー：';
         contents = listEmbeddedContents(...parameters);
         break;
       case COMMAND.EndEmbedded:
         title = '組み込みメニュー終了';
+        break;
+      case COMMAND.EndWaitMessage:
+        title = '文章待機終了';
         break;
       case COMMAND.FLAG:
         title = 'フラグ:';

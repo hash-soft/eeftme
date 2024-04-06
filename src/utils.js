@@ -342,7 +342,7 @@ Utils.getShakeSpeedList = function () {
 };
 
 Utils.getMapAnimationTargetTypeList = function () {
-  return ['マップ', 'キャラクター', 'タイル'];
+  return ['マップ', 'キャラクター', 'タイル', 'ピクチャ'];
 };
 
 Utils.getMapAnimationWaitTypeList = function () {

@@ -5428,7 +5428,7 @@ const ScreenShake = (props) => {
 
 // マップアニメーション
 const MapAnimation = (props) => {
-  // 0: 0:マップ 1:キャラクター 2:タイル
+  // 0: 0:マップ 1:キャラクター 2:タイル 3:ピクチャ
   // 1: 対象Id格納スロット
   // 2: アニメーションId
   // 3: ウェイトタイプ 0:しない 1:指定の長さ 2:終了まで
@@ -5489,9 +5489,17 @@ const MapAnimation = (props) => {
           onChange={(e) => onTargetTypeRadioChange(e)}
         />
         {targetTypeList[2]}
+        <input
+          type="radio"
+          name="target"
+          value="3"
+          defaultChecked={parameters[0] === 3 ? 'checked' : ''}
+          onChange={(e) => onTargetTypeRadioChange(e)}
+        />
+        {targetTypeList[3]}
       </div>
       <div>
-        対象：
+        オブジェクト：
         <SlotSelectBox
           selectValue={parameters[1]}
           onChange={(e) => onSlotChange(e)}
@@ -5952,6 +5960,9 @@ const ShowPicture = (props) => {
   // 3: 端点タイプ
   // 4: x座標
   // 5: y座標
+  // 6: 不透明度
+  // 7: X拡大率
+  // 8: Y拡大率
   const parameters = GetParameters(props.command.parameters, [
     1,
     1,
@@ -5959,6 +5970,9 @@ const ShowPicture = (props) => {
     0,
     0,
     0,
+    100,
+    100,
+    100,
   ]);
 
   const onValueFocusOff = (value, i) => {
@@ -6041,6 +6055,36 @@ const ShowPicture = (props) => {
           onValueFocusOff={(value) => onValueFocusOff(value, 5)}
         />
       </div>
+      <div>
+        <font>不透明度：</font>
+        <NumberEdit
+          min={0}
+          max={255}
+          value={parameters[6]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 6)}
+        />
+        <font>%</font>
+      </div>
+      <div>
+        <font>横拡大率：</font>
+        <NumberEdit
+          min={-1000}
+          max={1000}
+          value={parameters[7]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 7)}
+        />
+        <font>%</font>
+      </div>
+      <div>
+        <font>縦拡大率：</font>
+        <NumberEdit
+          min={-1000}
+          max={1000}
+          value={parameters[8]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 8)}
+        />
+        <font>%</font>
+      </div>
     </CommandBase>
   );
 };
@@ -6052,7 +6096,13 @@ const MovePicture = (props) => {
   // 2: y座標
   // 3: 移動タイプ
   // 4: 移動時間
-  const parameters = GetParameters(props.command.parameters, [1, 0, 0, 0, 60]);
+  // 5: 不透明度
+  // 6: X拡大率
+  // 7: Y拡大率
+  const parameters = GetParameters(
+    props.command.parameters,
+    [1, 0, 0, 0, 60, 100, 100, 100]
+  );
 
   const onValueFocusOff = (value, i) => {
     parameters[i] = value;
@@ -6069,7 +6119,7 @@ const MovePicture = (props) => {
 
   return (
     <CommandBase
-      title={'ピクチャの消去'}
+      title={'ピクチャの移動'}
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >
@@ -6118,6 +6168,36 @@ const MovePicture = (props) => {
           onValueFocusOff={(value) => onValueFocusOff(value, 4)}
         />
       </div>
+      <div>
+        <font>不透明度：</font>
+        <NumberEdit
+          min={0}
+          max={255}
+          value={parameters[5]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 5)}
+        />
+        <font>%</font>
+      </div>
+      <div>
+        <font>横拡大率：</font>
+        <NumberEdit
+          min={-1000}
+          max={1000}
+          value={parameters[6]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 6)}
+        />
+        <font>%</font>
+      </div>
+      <div>
+        <font>縦拡大率：</font>
+        <NumberEdit
+          min={-1000}
+          max={1000}
+          value={parameters[7]}
+          onValueFocusOff={(value) => onValueFocusOff(value, 7)}
+        />
+        <font>%</font>
+      </div>
     </CommandBase>
   );
 };
@@ -6138,7 +6218,7 @@ const ErasePicture = (props) => {
 
   return (
     <CommandBase
-      title={'ピクチャの表示'}
+      title={'ピクチャの消去'}
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >

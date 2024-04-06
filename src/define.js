@@ -6,6 +6,7 @@ const COMMAND = {
   MessageCloseWait: 5,
   Embedded: 6,
   EndEmbedded: 7,
+  EndWaitMessage: 8,
   FLAG: 11,
   VARIABLE: 12,
   OperateSlot: 13,
@@ -98,6 +99,7 @@ const CommandKeys = Object.keys(COMMAND).map((key) => COMMAND[key]);
 // それほどないので手書きする
 const NoParamKeys = [
   COMMAND.EndEmbedded,
+  COMMAND.EndWaitMessage,
   COMMAND.ItemSpace,
   COMMAND.ELSE,
   COMMAND.EndBranch,
