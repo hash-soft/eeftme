@@ -2643,6 +2643,235 @@ const ChangeSkill = (props) => {
   );
 };
 
+// 経験値変更
+const ChangeExp = (props) => {
+  // 0: 経験値指定種類 0>値 1>参照
+  // 1: 経験値
+  // 2: 参照メンバースロット
+  // 3: 0:加算 1:減算
+  const parameters = GetParameters(props.command.parameters, [0, 1, 1, 0]);
+  const ref = parameters[0];
+  let expValue = parameters[1];
+  let expSlotId = parameters[1];
+
+  const onRefCheckChange = (e) => {
+    parameters[0] = e.target.checked ? 1 : 0;
+  };
+
+  const onExpValueFocusOff = (value) => {
+    expValue = value;
+  };
+
+  const onExpSlotChange = (e) => {
+    expSlotId = parseInt(e.target.value);
+  };
+
+  const onMemberSlotChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  };
+
+  const onOperateChange = (e) => {
+    parameters[3] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    // refによりidを決定する
+    parameters[1] = parameters[0] === 0 ? expValue : expSlotId;
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'経験値変更'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        経験値
+        <input
+          type="checkbox"
+          name="expRef"
+          defaultChecked={ref !== 0 ? 'checked' : ''}
+          onChange={(e) => onRefCheckChange(e)}
+        />
+        参照
+      </div>
+      <div>
+        <font>値：</font>
+        <NumberEdit
+          min={1}
+          max={9999999}
+          value={expValue}
+          onValueFocusOff={onExpValueFocusOff}
+        />
+      </div>
+      <div>
+        <font>参照：</font>
+        <SlotSelectBox
+          selectValue={expSlotId}
+          onChange={(e) => onExpSlotChange(e)}
+        />
+      </div>
+      <div>
+        <font>対象メンバー格納スロット：</font>
+        <SlotSelectBox
+          selectValue={parameters[2]}
+          onChange={(e) => onMemberSlotChange(e)}
+        />
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="operate"
+          value="0"
+          defaultChecked={parameters[3] === 0 ? 'checked' : ''}
+          onChange={(e) => onOperateChange(e)}
+        />
+        増加
+        <input
+          type="radio"
+          name="operate"
+          value="1"
+          defaultChecked={parameters[3] === 1 ? 'checked' : ''}
+          onChange={(e) => onOperateChange(e)}
+        />
+        減少
+      </div>
+    </CommandBase>
+  );
+};
+
+// レベル変更
+const ChangeLv = (props) => {
+  // 0: レベル指定種類 0>値 1>参照
+  // 1: ベベル値
+  // 2: 参照メンバースロット
+  // 3: 0:加算 1:減算
+  const parameters = GetParameters(props.command.parameters, [0, 1, 1, 0]);
+  const ref = parameters[0];
+  let lvValue = parameters[1];
+  let lvSlotId = parameters[1];
+
+  const onRefCheckChange = (e) => {
+    parameters[0] = e.target.checked ? 1 : 0;
+  };
+
+  const onLvValueFocusOff = (value) => {
+    lvValue = value;
+  };
+
+  const onLvSlotChange = (e) => {
+    lvSlotId = parseInt(e.target.value);
+  };
+
+  const onMemberSlotChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
+  };
+
+  const onOperateChange = (e) => {
+    parameters[3] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    // refによりidを決定する
+    parameters[1] = parameters[0] === 0 ? lvValue : lvSlotId;
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'レベル変更'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        レベル
+        <input
+          type="checkbox"
+          name="expRef"
+          defaultChecked={ref !== 0 ? 'checked' : ''}
+          onChange={(e) => onRefCheckChange(e)}
+        />
+        参照
+      </div>
+      <div>
+        <font>値：</font>
+        <NumberEdit
+          min={1}
+          max={98}
+          value={lvValue}
+          onValueFocusOff={onLvValueFocusOff}
+        />
+      </div>
+      <div>
+        <font>参照：</font>
+        <SlotSelectBox
+          selectValue={lvSlotId}
+          onChange={(e) => onLvSlotChange(e)}
+        />
+      </div>
+      <div>
+        <font>対象メンバー格納スロット：</font>
+        <SlotSelectBox
+          selectValue={parameters[2]}
+          onChange={(e) => onMemberSlotChange(e)}
+        />
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="operate"
+          value="0"
+          defaultChecked={parameters[3] === 0 ? 'checked' : ''}
+          onChange={(e) => onOperateChange(e)}
+        />
+        増加
+        <input
+          type="radio"
+          name="operate"
+          value="1"
+          defaultChecked={parameters[3] === 1 ? 'checked' : ''}
+          onChange={(e) => onOperateChange(e)}
+        />
+        減少
+      </div>
+    </CommandBase>
+  );
+};
+
+// レベル適用
+const ApplyLv = (props) => {
+  // 0: 参照メンバースロット
+  const parameters = GetParameters(props.command.parameters, [1]);
+
+  const onMemberSlotChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'レベル適用'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>対象メンバー格納スロット：</font>
+        <SlotSelectBox
+          selectValue={parameters[2]}
+          onChange={(e) => onMemberSlotChange(e)}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
 // 所持金変更
 const ChangeGold = (props) => {
   // 0: 操作 0>増加 1>減少
@@ -6730,9 +6959,9 @@ const CommandEditor = (props) => {
         return <MessageCloseWait {...props} />;
       case COMMAND.Embedded:
         return <Embedded {...props} />;
-      case COMMAND.FLAG:
+      case COMMAND.Flag:
         return <Flag {...props} />;
-      case COMMAND.VARIABLE:
+      case COMMAND.Variable:
         return <Variable {...props} />;
       case COMMAND.OperateSlot:
         return <OperateSlot {...props} />;
@@ -6762,6 +6991,12 @@ const CommandEditor = (props) => {
         return <ChangeItem {...props} />;
       case COMMAND.ChangeSkill:
         return <ChangeSkill {...props} />;
+      case COMMAND.ChangeExp:
+        return <ChangeExp {...props} />;
+      case COMMAND.ChangeLv:
+        return <ChangeLv {...props} />;
+      case COMMAND.ApplyLv:
+        return <ApplyLv {...props} />;
       case COMMAND.ChangeGold:
         return <ChangeGold {...props} />;
       case COMMAND.RegisterMate:

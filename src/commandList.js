@@ -551,11 +551,63 @@ const CommandItem = (props) => {
     } else {
       return (
         <td>
-          スロット({id})の技能(id指定) {operateText}, 入手者格納スロット(
+          スロット({id})の技能(id指定) {operateText}, 対象者格納スロット(
           {dispSlotName(memberSlotId)})
         </td>
       );
     }
+  };
+
+  // 経験値変更
+  const listChangeExpContents = (ref, expValue, memberSlotId, operate) => {
+    const operateText = operate === 0 ? '+' : '-';
+    // 直接指定
+    if (ref === 0) {
+      return (
+        <td>
+          {operateText} {expValue} , 対象者格納スロット(
+          {dispSlotName(memberSlotId)})
+        </td>
+      );
+    } else {
+      return (
+        <td>
+          {operateText} {dispSlotName(expValue)} , 対象者格納スロット(
+          {dispSlotName(memberSlotId)})
+        </td>
+      );
+    }
+  };
+
+  // レベル変更
+  const listChangeLvContents = (ref, lvValue, memberSlotId, operate) => {
+    const operateText = operate === 0 ? '+' : '-';
+    // 直接指定
+    if (ref === 0) {
+      return (
+        <td>
+          {operateText} {lvValue} , 対象者格納スロット(
+          {dispSlotName(memberSlotId)})
+        </td>
+      );
+    } else {
+      return (
+        <td>
+          {operateText} {dispSlotName(lvValue)} , 対象者格納スロット(
+          {dispSlotName(memberSlotId)})
+        </td>
+      );
+    }
+  };
+
+  // レベル適用
+  const listApplyLvContents = (memberSlotId) => {
+    return (
+      <td>
+        対象者格納スロット(
+        {dispSlotName(memberSlotId)})
+      </td>
+    );
   };
 
   const listChangeGoldContents = (op, type, value) => {
@@ -1279,11 +1331,11 @@ const CommandItem = (props) => {
       case COMMAND.EndWaitMessage:
         title = '文章待機終了';
         break;
-      case COMMAND.FLAG:
+      case COMMAND.Flag:
         title = 'フラグ:';
         contents = listFlagContents(...parameters);
         break;
-      case COMMAND.VARIABLE:
+      case COMMAND.Variable:
         title = '変数:';
         contents = listVariableContents(...parameters);
         break;
@@ -1363,6 +1415,18 @@ const CommandItem = (props) => {
       case COMMAND.ChangeSkill:
         title = '技能変更:';
         contents = listChangeSkillContents(...parameters);
+        break;
+      case COMMAND.ChangeExp:
+        title = '経験値変更';
+        contents = listChangeExpContents(...parameters);
+        break;
+      case COMMAND.ChangeLv:
+        title = 'レベル変更';
+        contents = listChangeLvContents(...parameters);
+        break;
+      case COMMAND.ApplyLv:
+        title = 'レベル反映';
+        contents = listApplyLvContents(...parameters);
         break;
       case COMMAND.ChangeGold:
         title = '所持金の変更:';

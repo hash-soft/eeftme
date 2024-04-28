@@ -23,12 +23,8 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.Embedded, '組み込みメニュー')}
           {commandButton(COMMAND.EndEmbedded, '組み込みメニュー終了')}
           {commandButton(COMMAND.EndWaitMessage, '文章待機終了')}
-          <button onClick={() => props.closePopup(COMMAND.FLAG)}>
-            フラグの処理
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.VARIABLE)}>
-            変数の処理
-          </button>
+          {commandButton(COMMAND.Flag, 'フラグの処理')}
+          {commandButton(COMMAND.Variable, '変数の処理')}
           {commandButton(COMMAND.OperateSlot, 'スロット演算')}
           {commandButton(COMMAND.AssignFixData, '固定データ取得')}
           {commandButton(COMMAND.AssignGameData, 'ゲームデータ取得')}
@@ -50,6 +46,9 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.ExitLoop, 'ループ中断')}
           {commandButton(COMMAND.ChangeItem, '道具変更')}
           {commandButton(COMMAND.ChangeSkill, '技能変更')}
+          {commandButton(COMMAND.ChangeExp, '経験値変更')}
+          {commandButton(COMMAND.ChangeLv, 'レベル変更')}
+          {commandButton(COMMAND.ApplyLv, 'レベル反映')}
           {commandButton(COMMAND.ChangeGold, '所持金変更')}
           {commandButton(COMMAND.RegisterMate, '仲間の登録')}
           {commandButton(COMMAND.ChangeParty, 'パーティの変更')}
