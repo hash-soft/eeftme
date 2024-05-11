@@ -26,6 +26,7 @@ import {
   EncounterSelectBox,
   PictureSelectBox,
   VehicleSelectBox,
+  ActionConditionSelectBox,
 } from './selectBoxSet';
 import { NumberEdit } from './editBoxSet';
 import Utils from './utils';
@@ -272,6 +273,8 @@ const MessageSettings = (props) => {
   let mode = parameters[1];
   let hoist = parameters[1];
   let inputWait = parameters[1];
+  let drawSize = parameters[1];
+  let refWaitSpeed = parameters[1];
 
   const selectList = Utils.getMessageOptionTypeSelectList();
   const orNotList = Utils.getOrNotSelectList();
@@ -317,6 +320,14 @@ const MessageSettings = (props) => {
     inputWait = value;
   };
 
+  const onDrawSizeFocusOff = (value) => {
+    drawSize = value;
+  };
+
+  const onRefWaitSpeedChange = (e) => {
+    refWaitSpeed = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     parameters[1] = [
       waitCount,
@@ -334,6 +345,8 @@ const MessageSettings = (props) => {
       0,
       0,
       inputWait,
+      drawSize,
+      refWaitSpeed,
     ][parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
@@ -372,7 +385,7 @@ const MessageSettings = (props) => {
         {selectList[1]}
         <NumberEdit
           min={0}
-          max={8}
+          max={9}
           value={waitSpeed}
           onValueFocusOff={onWaitSpeedFocusOff}
         />
@@ -586,6 +599,36 @@ const MessageSettings = (props) => {
           max={6000}
           value={inputWait}
           onValueFocusOff={onInputWaitFocusOff}
+        />
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="15"
+          defaultChecked={parameters[0] === 15 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[15]}
+        <NumberEdit
+          min={0}
+          max={20}
+          value={drawSize}
+          onValueFocusOff={onDrawSizeFocusOff}
+        />
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="16"
+          defaultChecked={parameters[0] === 16 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[16]}
+        <SlotSelectBox
+          selectValue={refWaitSpeed}
+          onChange={(e) => onRefWaitSpeedChange(e)}
         />
       </div>
     </CommandBase>
@@ -1501,6 +1544,9 @@ const AssignGameData = (props) => {
   let memberType = type === 9 ? parameters[3] : 0;
   let vehicleSlotId = type === 10 ? parameters[2] : 1;
   let vehicleProperty = type === 10 ? parameters[3] : 0;
+  let systemProperty = type === 11 ? parameters[3] : 0;
+  let battlerSlotId = type === 12 ? parameters[2] : 1;
+  let battlerProperty = type === 12 ? parameters[3] : 0;
   const typeList = Utils.getGameDataTypeSelectList();
 
   const onSlotChange = (e) => {
@@ -1587,6 +1633,18 @@ const AssignGameData = (props) => {
     vehicleProperty = parseInt(e.target.value);
   };
 
+  const onSystemPropertyChange = (e) => {
+    systemProperty = parseInt(e.target.value);
+  };
+
+  const onBattlerSlotIdChange = (e) => {
+    battlerSlotId = parseInt(e.target.value);
+  };
+
+  const onBattlerPropertyChange = (e) => {
+    battlerProperty = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     const values1 = [
       partySlotId,
@@ -1600,6 +1658,8 @@ const AssignGameData = (props) => {
       0,
       memberId,
       vehicleSlotId,
+      0,
+      battlerSlotId,
     ];
     const values2 = [
       partyRef,
@@ -1613,6 +1673,8 @@ const AssignGameData = (props) => {
       actionProperty,
       memberType,
       vehicleProperty,
+      systemProperty,
+      battlerProperty,
     ];
     const newType = parameters[1];
     [parameters[2], parameters[3]] = [values1[newType], values2[newType]];
@@ -1861,6 +1923,46 @@ const AssignGameData = (props) => {
             onChange={(e) => onVehiclePropertyChange(e)}
           >
             {simpleSelectItems(Utils.getVehicleInfoSelectList())}
+          </select>
+        </div>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="11"
+          defaultChecked={type === 11 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[11]}：</font>
+        <select
+          defaultValue={systemProperty}
+          onChange={(e) => onSystemPropertyChange(e)}
+        >
+          {simpleSelectItems(Utils.getSystemIdList())}
+        </select>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="12"
+          defaultChecked={type === 12 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[12]}：</font>
+        <div>
+          登録id
+          <SlotSelectBox
+            selectValue={battlerSlotId}
+            onChange={(e) => onBattlerSlotIdChange(e)}
+          />
+          の
+          <select
+            defaultValue={battlerProperty}
+            onChange={(e) => onBattlerPropertyChange(e)}
+          >
+            {simpleSelectItems(Utils.getBattlerInfoSelectList())}
           </select>
         </div>
       </div>
@@ -2272,20 +2374,25 @@ const AssignResult = (props) => {
 
 // 戦闘者判定
 const JudgeBattler = (props) => {
-  // 0: スロットId
-  // 1: 0-指定なし 1-味方 2-敵 3-仲間（未実装）
-  // 2: メンバーId or 敵Id or 仲間Id
-  const parameters = GetParameters(props.command.parameters, [1, 0, 0]);
-  let memberId = parameters[1] === 1 ? parameters[2] : 1;
-  let enemyId = parameters[1] === 2 ? parameters[2] : 1;
+  // 0: 格納スロットId
+  // 1: 参照スロットId
+  // 2: 0-指定なし 1-味方 2-敵 3-仲間（未実装）
+  // 3: メンバーId or 敵Id or 仲間Id
+  const parameters = GetParameters(props.command.parameters, [1, 1, 0, 0]);
+  let memberId = parameters[2] === 1 ? parameters[3] : 1;
+  let enemyId = parameters[2] === 2 ? parameters[3] : 1;
   const typeList = Utils.getBattlerTypeList();
 
   const onSlotChange = (e) => {
     parameters[0] = parseInt(e.target.value);
   };
 
-  const onRadioChange = (e) => {
+  const onRefSlotChange = (e) => {
     parameters[1] = parseInt(e.target.value);
+  };
+
+  const onRadioChange = (e) => {
+    parameters[2] = parseInt(e.target.value);
   };
 
   const onMemberChange = (e) => {
@@ -2297,7 +2404,7 @@ const JudgeBattler = (props) => {
   };
 
   const onUpdate = () => {
-    parameters[2] = [0, memberId, enemyId, 0][parameters[1]];
+    parameters[3] = [0, memberId, enemyId, 0][parameters[2]];
     const command = { code: props.command.code, parameters: parameters };
     props.onUpdate(command);
   };
@@ -2309,10 +2416,17 @@ const JudgeBattler = (props) => {
       onCancel={props.onCancel}
     >
       <div>
-        <font>スロットId：</font>
+        <font>格納スロット：</font>
         <SlotSelectBox
           selectValue={parameters[0]}
           onChange={(e) => onSlotChange(e)}
+        />
+      </div>
+      <div>
+        <font>参照スロット：</font>
+        <SlotSelectBox
+          selectValue={parameters[1]}
+          onChange={(e) => onRefSlotChange(e)}
         />
       </div>
       <div>
@@ -2321,7 +2435,7 @@ const JudgeBattler = (props) => {
             type="radio"
             name="type"
             value="0"
-            defaultChecked={parameters[1] === 0 ? 'checked' : ''}
+            defaultChecked={parameters[2] === 0 ? 'checked' : ''}
             onChange={(e) => onRadioChange(e)}
           />
           <font>{typeList[0]}</font>
@@ -2330,7 +2444,7 @@ const JudgeBattler = (props) => {
           type="radio"
           name="type"
           value="1"
-          defaultChecked={parameters[1] === 1 ? 'checked' : ''}
+          defaultChecked={parameters[2] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
         <font>{typeList[1]}：</font>
@@ -2344,7 +2458,7 @@ const JudgeBattler = (props) => {
           type="radio"
           name="type"
           value="2"
-          defaultChecked={parameters[1] === 2 ? 'checked' : ''}
+          defaultChecked={parameters[2] === 2 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
         <font>{typeList[2]}：</font>
@@ -2354,6 +2468,49 @@ const JudgeBattler = (props) => {
             onChange={(e) => onEnemyChange(e)}
           />
         </div>
+      </div>
+    </CommandBase>
+  );
+};
+
+// 条件判定
+const JudgeCondition = (props) => {
+  // 0: スロットId
+  // 1: 行動条件Id
+  const parameters = GetParameters(props.command.parameters, [1, 1]);
+
+  const onSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onConditionChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'条件判定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>戦闘者：</font>
+        <SlotSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onSlotChange(e)}
+        />
+      </div>
+      <div>
+        <font>条件：</font>
+        <ActionConditionSelectBox
+          selectValue={parameters[1]}
+          onChange={(e) => onConditionChange(e)}
+        />
       </div>
     </CommandBase>
   );
@@ -5657,7 +5814,7 @@ const ScreenShake = (props) => {
 
 // マップアニメーション
 const MapAnimation = (props) => {
-  // 0: 0:マップ 1:キャラクター 2:タイル 3:ピクチャ
+  // 0: 0:マップ 1:キャラクター 2:タイル 3:ピクチャ 4：バトラー
   // 1: 対象Id格納スロット
   // 2: アニメーションId
   // 3: ウェイトタイプ 0:しない 1:指定の長さ 2:終了まで
@@ -5726,6 +5883,14 @@ const MapAnimation = (props) => {
           onChange={(e) => onTargetTypeRadioChange(e)}
         />
         {targetTypeList[3]}
+        <input
+          type="radio"
+          name="target"
+          value="4"
+          defaultChecked={parameters[0] === 4 ? 'checked' : ''}
+          onChange={(e) => onTargetTypeRadioChange(e)}
+        />
+        {targetTypeList[4]}
       </div>
       <div>
         オブジェクト：
@@ -6738,6 +6903,100 @@ const ActionForce = (props) => {
   );
 };
 
+/**
+ * 戦闘画像変更
+ * @param {*} props
+ */
+const ChangeBattlerImage = (props) => {
+  // 0: スロットId
+  // 1: 敵Id
+  const parameters = GetParameters(props.command.parameters, [1, 1]);
+
+  const onSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onEnemyChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'戦闘画像変更'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>スロットId：</font>
+        <SlotSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onSlotChange(e)}
+        />
+      </div>
+      <div>
+        <font>敵Id：</font>
+        <EnemySelectBox
+          selectValue={parameters[1]}
+          unuse={true}
+          onChange={(e) => onEnemyChange(e)}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
+/**
+ * 戦闘者変更
+ * @param {*} props
+ */
+const TransformBattler = (props) => {
+  // 0: スロットId
+  // 1: 敵Id
+  const parameters = GetParameters(props.command.parameters, [1, 1]);
+
+  const onSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onEnemyChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'戦闘者変更'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>スロットId：</font>
+        <SlotSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onSlotChange(e)}
+        />
+      </div>
+      <div>
+        <font>敵Id：</font>
+        <EnemySelectBox
+          selectValue={parameters[1]}
+          unuse={true}
+          onChange={(e) => onEnemyChange(e)}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
 // コメント
 const Comment = (props) => {
   const parameters = GetParameters(props.command.parameters, ['']);
@@ -6981,6 +7240,8 @@ const CommandEditor = (props) => {
         return <AssignResult {...props} />;
       case COMMAND.JudgeBattler:
         return <JudgeBattler {...props} />;
+      case COMMAND.JudgeCondition:
+        return <JudgeCondition {...props} />;
       case COMMAND.CASE:
         return <Case {...props} />;
       case COMMAND.Label:
@@ -7091,6 +7352,10 @@ const CommandEditor = (props) => {
         return <ActionExtra {...props} />;
       case COMMAND.ActionForce:
         return <ActionForce {...props} />;
+      case COMMAND.ChangeBattlerImage:
+        return <ChangeBattlerImage {...props} />;
+      case COMMAND.TransformBattler:
+        return <TransformBattler {...props} />;
       case COMMAND.Comment:
         return <Comment {...props} />;
       case COMMAND.ChangeFloorDamage:

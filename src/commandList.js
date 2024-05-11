@@ -84,6 +84,10 @@ const CommandItem = (props) => {
     return Utils.getDispName(dataset.vehicles, id);
   };
 
+  const dispActionConditionName = (id) => {
+    return Utils.getDispName(dataset.actionConditions, id);
+  };
+
   const dispEffectName = (id) => {
     return Utils.getDispName(animations, id);
   };
@@ -171,6 +175,7 @@ const CommandItem = (props) => {
         case 8:
         case 10:
         case 14:
+        case 15:
           return [`[${Utils.getMessageOptionTypeSelectList()[type]}]`, value];
         case 5:
           return [
@@ -181,6 +186,11 @@ const CommandItem = (props) => {
           return [
             `[${Utils.getMessageOptionTypeSelectList()[type]}]`,
             `${Utils.getMessageModeList()[value]}`,
+          ];
+        case 16:
+          return [
+            `[${Utils.getMessageOptionTypeSelectList()[type]}]`,
+            dispSlotName(value),
           ];
         default:
           return [Utils.getMessageOptionTypeSelectList()[type], ''];
@@ -405,6 +415,12 @@ const CommandItem = (props) => {
         return `${dispSlotName(param1)} ${
           Utils.getVehicleInfoSelectList()[param2]
         }`;
+      case 11:
+        return `${Utils.getSystemIdList()[param2]}`;
+      case 12:
+        return `${dispSlotName(param1)} ${
+          Utils.getBattlerInfoSelectList()[param2]
+        }`;
       default:
         return '';
     }
@@ -486,11 +502,12 @@ const CommandItem = (props) => {
   };
 
   // 戦闘者判定
-  const listJudgeBattlerContents = (slotId, type, id) => {
+  const listJudgeBattlerContents = (slotId, refSlotId, type, id) => {
     const slotText = dispSlotName(slotId);
+    const refSlotText = dispSlotName(refSlotId);
     return (
       <td>
-        {slotText}：{Utils.getBattlerTypeList()[type]}
+        {slotText}={refSlotText}：{Utils.getBattlerTypeList()[type]}
         {_getJudgeBattler(type, id)}
       </td>
     );
@@ -505,6 +522,17 @@ const CommandItem = (props) => {
       default:
         return '';
     }
+  };
+
+  // 行動条件判定
+  const listJudgeConditionContents = (slotId, conditionId) => {
+    const slotText = dispSlotName(slotId);
+    const conditionText = dispActionConditionName(conditionId);
+    return (
+      <td>
+        {slotText}が{conditionText}になっている
+      </td>
+    );
   };
 
   const listCaseContents = (result) => {
@@ -1261,6 +1289,20 @@ const CommandItem = (props) => {
     return <td>{`${dispSlotName(slotId)}が${dispSkillName(skillId)}`}</td>;
   };
 
+  // 戦闘画像変更
+  const listChangeBattlerImageContents = (slotId, enemyId) => {
+    return (
+      <td>{`${dispSlotName(slotId)}の${dispEnemyName(enemyId)}画像に変更`}</td>
+    );
+  };
+
+  // 戦闘者変更
+  const listTransformBattlerContents = (slotId, enemyId) => {
+    return (
+      <td>{`${dispSlotName(slotId)}の${dispEnemyName(enemyId)}に変更`}</td>
+    );
+  };
+
   // コメント
   const listCommentContents = (text) => {
     const message = (
@@ -1377,6 +1419,10 @@ const CommandItem = (props) => {
       case COMMAND.JudgeBattler:
         title = '戦闘者判定';
         contents = listJudgeBattlerContents(...parameters);
+        break;
+      case COMMAND.JudgeCondition:
+        title = '状態判定';
+        contents = listJudgeConditionContents(...parameters);
         break;
       case COMMAND.CASE:
         title = 'Case';
@@ -1530,6 +1576,9 @@ const CommandItem = (props) => {
         title = '行先の設定:';
         contents = listAddressSettingsContents(...parameters);
         break;
+      case COMMAND.Suspend:
+        title = '中断';
+        break;
       case COMMAND.SAVE:
         title = 'セーブ';
         break;
@@ -1639,6 +1688,14 @@ const CommandItem = (props) => {
       case COMMAND.ActionForce:
         title = '強制行動指定：';
         contents = listActionForceContents(...parameters);
+        break;
+      case COMMAND.ChangeBattlerImage:
+        title = '戦闘画像変更：';
+        contents = listChangeBattlerImageContents(...parameters);
+        break;
+      case COMMAND.TransformBattler:
+        title = '戦闘者変更：';
+        contents = listTransformBattlerContents(...parameters);
         break;
       case COMMAND.Comment:
         title = '';

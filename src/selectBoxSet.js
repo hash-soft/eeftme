@@ -289,6 +289,19 @@ const VehicleSelectBox = (props) => {
   return <SelectBoxBase items={vehicles} digits={3} {...props}></SelectBoxBase>;
 };
 
+// 行動状態セレクトボックス
+const ActionConditionSelectBox = (props) => {
+  const actionConditions = React.useContext(Dataset).actionConditions;
+
+  return (
+    <SelectBoxBase
+      items={actionConditions}
+      digits={3}
+      {...props}
+    ></SelectBoxBase>
+  );
+};
+
 // 地形セレクトボックス
 const TerrainSelectBox = (props) => {
   return (
@@ -422,6 +435,7 @@ export {
   WarpSelectBox,
   TerrainSelectBox,
   VehicleSelectBox,
+  ActionConditionSelectBox,
   TroopSelectBox,
   EncounterSelectBox,
   FontSelectBox,

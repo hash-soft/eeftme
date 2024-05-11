@@ -111,6 +111,8 @@ Utils.getMessageOptionTypeSelectList = function () {
     '基点行を削除',
     '行をリセット',
     '入力待ち時間',
+    '描画サイズ',
+    '自動待機速度（参照）',
   ];
 };
 
@@ -184,6 +186,8 @@ Utils.getGameDataTypeSelectList = function () {
     '行動',
     'メンバー',
     '乗り物',
+    'システム',
+    '戦闘者',
   ];
 };
 
@@ -216,7 +220,12 @@ Utils.getLocationDestList = function () {
 };
 
 Utils.getGameDataTextSelectList = function () {
-  return ['パーティの呼び名', '敵のむれ呼び名', '全体の呼び名'];
+  return [
+    'パーティの呼び名',
+    '敵のむれ呼び名',
+    '全体の呼び名',
+    'パーティ呼び名（単独可）',
+  ];
 };
 
 Utils.getRecoverTypeSelectList = function () {
@@ -271,6 +280,14 @@ Utils.getVehicleInfoSelectList = function () {
 
 Utils.getActionIdList = function () {
   return ['行動者', '対象者'];
+};
+
+Utils.getSystemIdList = function () {
+  return ['戦闘速度'];
+};
+
+Utils.getBattlerInfoSelectList = function () {
+  return ['名前'];
 };
 
 Utils.getFollowerSettingsTypeList = function () {
@@ -342,7 +359,7 @@ Utils.getShakeSpeedList = function () {
 };
 
 Utils.getMapAnimationTargetTypeList = function () {
-  return ['マップ', 'キャラクター', 'タイル', 'ピクチャ'];
+  return ['マップ', 'キャラクター', 'タイル', 'ピクチャ', 'バトラー'];
 };
 
 Utils.getMapAnimationWaitTypeList = function () {

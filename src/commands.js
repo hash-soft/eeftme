@@ -35,6 +35,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.CompareSlot, 'スロット比較')}
           {commandButton(COMMAND.AssignResult, '結果代入')}
           {commandButton(COMMAND.JudgeBattler, '戦闘者判定')}
+          {commandButton(COMMAND.JudgeCondition, '行動条件判定')}
           {commandButton(COMMAND.CASE, 'Case')}
           {commandButton(COMMAND.ELSE, 'Else')}
           {commandButton(COMMAND.EndBranch, 'EndBranch')}
@@ -68,18 +69,13 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.Scroll, 'マップスクロール')}
           {commandButton(COMMAND.MoveRoute, '移動ルート')}
           {commandButton(COMMAND.MoveRouteWait, '移動ルート待機')}
-          <button onClick={() => props.closePopup(COMMAND.FollowerControl)}>
-            隊列の操作
-          </button>
+          {commandButton(COMMAND.FollowerControl, '隊列の操作')}
           {commandButton(COMMAND.MapScript, 'マップスクリプト')}
           {commandButton(COMMAND.CommonScript, 'コモンスクリプト')}
-          <button onClick={() => props.closePopup(COMMAND.WAIT)}>待機</button>
-          <button onClick={() => props.closePopup(COMMAND.FollowerSettings)}>
-            隊員の設定変更
-          </button>
-          <button onClick={() => props.closePopup(COMMAND.EraseEvent)}>
-            イベントの消去
-          </button>
+          {commandButton(COMMAND.WAIT, '待機')}
+          {commandButton(COMMAND.FollowerSettings, '隊員の設定変更')}
+          {commandButton(COMMAND.EraseEvent, 'イベントの消去')}
+          {commandButton(COMMAND.Suspend, '中断')}
           {commandButton(COMMAND.SAVE, 'セーブ')}
           {commandButton(COMMAND.AddressSettings, '行先の設定')}
           {commandButton(COMMAND.Se, '効果音')}
@@ -110,6 +106,8 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.ActionTarget, '行動対象指定')}
           {commandButton(COMMAND.ActionExtra, '追加行動指定')}
           {commandButton(COMMAND.ActionForce, '強制行動指定')}
+          {commandButton(COMMAND.ChangeBattlerImage, '戦闘画像変更')}
+          {commandButton(COMMAND.TransformBattler, '戦闘者変更')}
           {commandButton(COMMAND.Comment, 'コメント')}
           {commandButton(COMMAND.ChangeFloorDamage, '床ダメージ切替')}
           {commandButton(COMMAND.ChangeSlipDamage, '歩行ダメージ切替')}
