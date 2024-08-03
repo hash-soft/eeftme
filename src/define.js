@@ -35,6 +35,7 @@ const COMMAND = {
   ChangeExp: 64,
   ChangeLv: 65,
   ApplyLv: 66,
+  ChangeEquipment: 68,
   ChangeGold: 70,
   RegisterMate: 71,
   DeleteMate: 72, // 不要そうなので作らない

@@ -3004,7 +3004,7 @@ const ApplyLv = (props) => {
   const parameters = GetParameters(props.command.parameters, [1]);
 
   const onMemberSlotChange = (e) => {
-    parameters[1] = parseInt(e.target.value);
+    parameters[0] = parseInt(e.target.value);
   };
 
   const onUpdate = () => {
@@ -3021,8 +3021,52 @@ const ApplyLv = (props) => {
       <div>
         <font>対象メンバー格納スロット：</font>
         <SlotSelectBox
-          selectValue={parameters[2]}
+          selectValue={parameters[0]}
           onChange={(e) => onMemberSlotChange(e)}
+        />
+      </div>
+    </CommandBase>
+  );
+};
+
+// 装備変更
+const ChangeEquipment = (props) => {
+  // 0: 参照メンバースロット
+  // 1: 装備道具
+  const parameters = GetParameters(props.command.parameters, [1, 0]);
+
+  const onMemberSlotChange = (e) => {
+    parameters[0] = parseInt(e.target.value);
+  };
+
+  const onItemChange = (e) => {
+    parameters[1] = parseInt(e.target.value);
+  };
+
+  const onUpdate = () => {
+    const command = { code: props.command.code, parameters: parameters };
+    props.onUpdate(command);
+  };
+
+  return (
+    <CommandBase
+      title={'装備変更'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <div>
+        <font>対象メンバー格納スロット：</font>
+        <SlotSelectBox
+          selectValue={parameters[0]}
+          onChange={(e) => onMemberSlotChange(e)}
+        />
+      </div>
+      <div>
+        <font>道具：</font>
+        <ItemSelectBox
+          selectValue={parameters[1]}
+          onChange={(e) => onItemChange(e)}
+          unuse={true}
         />
       </div>
     </CommandBase>
@@ -7258,6 +7302,8 @@ const CommandEditor = (props) => {
         return <ChangeLv {...props} />;
       case COMMAND.ApplyLv:
         return <ApplyLv {...props} />;
+      case COMMAND.ChangeEquipment:
+        return <ChangeEquipment {...props} />;
       case COMMAND.ChangeGold:
         return <ChangeGold {...props} />;
       case COMMAND.RegisterMate:

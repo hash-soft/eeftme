@@ -1,10 +1,14 @@
 {
   "folders": [
     {
-      "path": "."
-    }
+      "path": ".",
+    },
+    {
+      "name": "data",
+      "path": "D:/Programing/project/kaeru/tool/data",
+    },
   ],
   "settings": {
-    "cSpell.words": ["disp"]
-  }
+    "cSpell.words": ["disp"],
+  },
 }

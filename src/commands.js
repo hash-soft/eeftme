@@ -50,6 +50,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.ChangeExp, '経験値変更')}
           {commandButton(COMMAND.ChangeLv, 'レベル変更')}
           {commandButton(COMMAND.ApplyLv, 'レベル反映')}
+          {commandButton(COMMAND.ChangeEquipment, '装備変更')}
           {commandButton(COMMAND.ChangeGold, '所持金変更')}
           {commandButton(COMMAND.RegisterMate, '仲間の登録')}
           {commandButton(COMMAND.ChangeParty, 'パーティの変更')}

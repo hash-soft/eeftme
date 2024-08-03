@@ -638,6 +638,15 @@ const CommandItem = (props) => {
     );
   };
 
+  // 装備変更
+  const listChangeEquipmentContents = (memberSlotId, item) => {
+    return (
+      <td>
+        対象者格納スロット({dispSlotName(memberSlotId)}){dispItemName(item)}
+      </td>
+    );
+  };
+
   const listChangeGoldContents = (op, type, value) => {
     const opText = op === 0 ? '+' : '-';
     const paramText = _getNumberOrSlotParamText(type, value);
@@ -1473,6 +1482,10 @@ const CommandItem = (props) => {
       case COMMAND.ApplyLv:
         title = 'レベル反映';
         contents = listApplyLvContents(...parameters);
+        break;
+      case COMMAND.ChangeEquipment:
+        title = '装備変更:';
+        contents = listChangeEquipmentContents(...parameters);
         break;
       case COMMAND.ChangeGold:
         title = '所持金の変更:';
