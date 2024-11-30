@@ -157,7 +157,8 @@ const SaveButton = (props) => {
     if (props.type !== 'download') {
       return;
     }
-    const blob = new Blob([JSON.stringify(events, null, '  ')], {
+    // インデントをつけたければ space = '  ';
+    const blob = new Blob([JSON.stringify(events, null)], {
       type: 'application/json',
     });
     const link = document.createElement('a');

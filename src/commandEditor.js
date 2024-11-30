@@ -731,6 +731,7 @@ const Flag = (props) => {
   let refId = parameters[3] === 1 ? parameters[0] : 1;
   let multi = parameters[0] !== parameters[1];
   const typeList = Utils.getDirectOrSlotList();
+  const opeList = Utils.getFlagOpecodeSelectList();
 
   const onFlagChange = (e) => {
     direct = parseInt(e.target.value);
@@ -819,7 +820,7 @@ const Flag = (props) => {
           defaultChecked={opecode === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        OFF
+        {opeList[0]}
         <input
           type="radio"
           name="opecode"
@@ -827,7 +828,23 @@ const Flag = (props) => {
           defaultChecked={opecode === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        ON
+        {opeList[1]}
+        <input
+          type="radio"
+          name="opecode"
+          value="2"
+          defaultChecked={opecode === 2 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {opeList[2]}
+        <input
+          type="radio"
+          name="opecode"
+          value="3"
+          defaultChecked={opecode === 3 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {opeList[3]}
       </div>
     </CommandBase>
   );
@@ -1356,6 +1373,8 @@ const AssignFixData = (props) => {
   let systemSlotName = type === 2 ? parameters[2] : '';
   let skillId = type === 3 ? parameters[2] : 1;
   let skillProperty = type === 3 ? parameters[3] : 0;
+  let enemyId = type === 4 ? parameters[2] : 1;
+  let enemyProperty = type === 4 ? parameters[3] : 0;
   let refId = parameters[4] === 1 ? parameters[2] : 1;
   const typeList = Utils.getFixDataTypeSelectList();
 
@@ -1391,6 +1410,14 @@ const AssignFixData = (props) => {
     skillProperty = parseInt(e.target.value);
   };
 
+  const onEnemyIdChange = (e) => {
+    enemyId = parseInt(e.target.value);
+  };
+
+  const onEnemyPropertyChange = (e) => {
+    enemyProperty = parseInt(e.target.value);
+  };
+
   const onRefCheckChange = (e) => {
     parameters[4] = e.target.checked ? 1 : 0;
   };
@@ -1400,8 +1427,8 @@ const AssignFixData = (props) => {
   };
 
   const onUpdate = () => {
-    const values1 = [messageId, itemId, systemSlotName, skillId];
-    const values2 = [0, itemProperty, 0, skillProperty];
+    const values1 = [messageId, itemId, systemSlotName, skillId, enemyId];
+    const values2 = [0, itemProperty, 0, skillProperty, enemyProperty];
     const newType = parameters[1];
     [parameters[2], parameters[3]] = [values1[newType], values2[newType]];
     if (parameters[4] === 1) {
@@ -1497,6 +1524,29 @@ const AssignFixData = (props) => {
             onChange={(e) => onSkillPropertyChange(e)}
           >
             {simpleSelectItems(Utils.getSkillInfoSelectList())}
+          </select>
+        </div>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="4"
+          defaultChecked={type === 3 ? 'checked' : ''}
+          onChange={(e) => onTypeChange(e)}
+        />
+        <font>{typeList[4]}：</font>
+        <div>
+          <EnemySelectBox
+            selectValue={enemyId}
+            onChange={(e) => onEnemyIdChange(e)}
+          />
+          の
+          <select
+            defaultValue={enemyProperty}
+            onChange={(e) => onEnemyPropertyChange(e)}
+          >
+            {simpleSelectItems(Utils.getEnemyInfoSelectList())}
           </select>
         </div>
       </div>

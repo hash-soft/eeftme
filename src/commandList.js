@@ -228,7 +228,7 @@ const CommandItem = (props) => {
         : `参照：${dispSlotName(flagId)}`;
     return (
       <td>
-        {flagName} = {control === 0 ? 'OFF' : 'ON'}
+        {flagName} = {Utils.getFlagOpecodeSelectList()[control]}
       </td>
     );
   };
@@ -355,6 +355,10 @@ const CommandItem = (props) => {
       case 3:
         return `${dispSkillName(param1)}の[${
           Utils.getSkillInfoSelectList()[param2]
+        }]`;
+      case 4:
+        return `${dispEnemyName(param1)}の[${
+          Utils.getEnemyInfoSelectList()[param2]
         }]`;
       default:
         return '';
@@ -1610,6 +1614,12 @@ const CommandItem = (props) => {
       case COMMAND.ChangePlayerBgm:
         title = 'プレイヤーBGM変更:';
         contents = listChangePlayerBgm(...parameters);
+        break;
+      case COMMAND.Startup:
+        title = 'スタートアップ実行';
+        break;
+      case COMMAND.Cleanup:
+        title = 'クリーンアップ実行';
         break;
       case COMMAND.EventTrigger:
         title = 'イベント起動:';

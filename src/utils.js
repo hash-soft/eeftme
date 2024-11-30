@@ -132,6 +132,10 @@ Utils.getDirectOrRefList = function () {
   return ['直接', '参照'];
 };
 
+Utils.getFlagOpecodeSelectList = function () {
+  return ['OFF', 'ON', 'OFF 保存あり', 'ON 保存あり'];
+};
+
 Utils.getOpecodeSelectList = function () {
   return ['=', '+=', '-=', '*=', '/=', '%=', '|=', '&=', '&=~'];
 };
@@ -162,7 +166,7 @@ Utils.getActionExtraList = function () {
 };
 
 Utils.getFixDataTypeSelectList = function () {
-  return ['メッセージ', 'どうぐ', 'システムスロットId', 'ぎのう'];
+  return ['メッセージ', 'どうぐ', 'システムスロットId', 'ぎのう', '敵'];
 };
 
 Utils.getItemInfoSelectList = function () {
@@ -170,6 +174,10 @@ Utils.getItemInfoSelectList = function () {
 };
 
 Utils.getSkillInfoSelectList = function () {
+  return ['名前'];
+};
+
+Utils.getEnemyInfoSelectList = function () {
   return ['名前'];
 };
 
