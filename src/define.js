@@ -15,6 +15,7 @@ const COMMAND = {
   AssignSystemSlot: 16,
   AssignMapInfo: 17,
   Goods: 21,
+  GoodsPrice: 22,
   ItemSpace: 31,
   CompareSlot: 33,
   AssignResult: 34,

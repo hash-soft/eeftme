@@ -480,6 +480,14 @@ const CommandItem = (props) => {
     return <td>{text}</td>;
   };
 
+  // 商品価格の設定
+  const listGoodsPriceContents = (parameters) => {
+    const text = parameters
+      .map((value, index) => `${index + 1}:[${value}]`)
+      .join(',');
+    return <td>{text}</td>;
+  };
+
   // スロット比較
   const listCompareSlotContents = (id, code, type, param) => {
     const slotText = dispSlotName(id);
@@ -928,21 +936,24 @@ const CommandItem = (props) => {
   };
 
   const _getMoveSettingsText = (type, value) => {
+    const list = Utils.getTransferSettingsList();
     switch (type) {
       case 0:
-        return '[画面消去]' + Utils.getMoveSettingsScreenOffList()[value];
+        return list[type] + `[${Utils.getMoveSettingsScreenOffList()[value]}]`;
       case 1:
-        return '[画面表示]' + Utils.getMoveSettingsScreenOnList()[value];
+        return list[type] + `[${Utils.getMoveSettingsScreenOnList()[value]}]`;
       case 2:
-        return '[隊列]' + Utils.getMoveSettingsFollowerList()[value];
+        return list[type] + `[${Utils.getMoveSettingsFollowerList()[value]}]`;
       case 3:
-        return '[効果音]' + dispSeName(value);
+        return list[type] + dispSeName(value);
       case 4:
-        return '[横画面座標スロット]' + dispSlotName(value);
+        return list[type] + dispSlotName(value);
       case 5:
-        return '[縦画面座標スロット]' + dispSlotName(value);
+        return list[type] + dispSlotName(value);
       case 6:
-        return '[表示]' + Utils.getMoveSettingsVisibleList()[value];
+        return list[type] + `[${Utils.getMoveSettingsVisibleList()[value]}]`;
+      case 7:
+        return list[type] + dispCommonEventName(value);
       default:
         return '???';
     }
@@ -1417,6 +1428,10 @@ const CommandItem = (props) => {
       case COMMAND.Goods:
         title = '商品の設定:';
         contents = listGoodsContents(parameters);
+        break;
+      case COMMAND.GoodsPrice:
+        title = '商品価格の設定:';
+        contents = listGoodsPriceContents(parameters);
         break;
       case COMMAND.ItemSpace:
         title = '道具追加可能判定';

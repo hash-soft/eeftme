@@ -2251,6 +2251,64 @@ const Goods = (props) => {
   );
 };
 
+// 商品価格の設定
+const GoodsPrice = (props) => {
+  const parameters = GetParameters(props.command.parameters, []);
+
+  const onValueFocusOff = (value, n) => {
+    parameters[n] = value;
+  };
+
+  const onUpdate = () => {
+    let end = -1;
+    for (let i = 0; i < parameters.length; i++) {
+      if (parameters[i]) {
+        end = i;
+      } else {
+        parameters[i] = 0;
+      }
+    }
+    if (end >= 0) {
+      parameters.splice(end + 1);
+    }
+    const command = {
+      code: props.command.code,
+      parameters,
+    };
+    props.onUpdate(command);
+  };
+
+  const GoodsPricePriceList = () => {
+    const inputList = new Array(8);
+    for (let i = 0; i < inputList.length; i++) {
+      inputList[i] = (
+        <div>
+          <NumberEdit
+            min={0}
+            max={99999}
+            value={parameters[i] ?? 0}
+            onValueFocusOff={(e) => {
+              onValueFocusOff(e, i);
+            }}
+          />
+        </div>
+      );
+    }
+    return inputList;
+  };
+
+  return (
+    <CommandBase
+      title={'商品価格の設定'}
+      onUpdate={onUpdate}
+      onCancel={props.onCancel}
+    >
+      <font>価格：</font>
+      <GoodsPricePriceList />
+    </CommandBase>
+  );
+};
+
 // スロット比較
 const CompareSlot = (props) => {
   const data = sliceParameters(props.command.parameters);
@@ -4428,7 +4486,9 @@ const MoveSettings = (props) => {
   let shiftXId = parameters[1];
   let shiftYId = parameters[1];
   let visible = parameters[1];
+  let cleanupId = parameters[1];
 
+  const selectList = Utils.getTransferSettingsList();
   const screenOffList = Utils.getMoveSettingsScreenOffList();
   const screenOnList = Utils.getMoveSettingsScreenOnList();
   const followerList = Utils.getMoveSettingsFollowerList();
@@ -4465,6 +4525,10 @@ const MoveSettings = (props) => {
     visible = parseInt(e.target.value);
   };
 
+  const onCleanupIdChange = (e) => {
+    cleanupId = parseInt(e.target.value);
+  };
+
   const onUpdate = () => {
     const values = [
       screenOff,
@@ -4474,6 +4538,7 @@ const MoveSettings = (props) => {
       shiftXId,
       shiftYId,
       visible,
+      cleanupId,
     ];
     parameters[1] = values[parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
@@ -4494,7 +4559,7 @@ const MoveSettings = (props) => {
           defaultChecked={parameters[0] === 0 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        画面消去
+        {selectList[0]}
         <select defaultValue={screenOff} onChange={(e) => onScreenOffChange(e)}>
           {simpleSelectItems(screenOffList)}
         </select>
@@ -4507,7 +4572,7 @@ const MoveSettings = (props) => {
           defaultChecked={parameters[0] === 1 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        画面表示
+        {selectList[1]}
         <select defaultValue={screenOn} onChange={(e) => onScreenOnChange(e)}>
           {simpleSelectItems(screenOnList)}
         </select>
@@ -4520,7 +4585,7 @@ const MoveSettings = (props) => {
           defaultChecked={parameters[0] === 2 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        隊列
+        {selectList[2]}
         <select defaultValue={follower} onChange={(e) => onFollowerChange(e)}>
           {simpleSelectItems(followerList)}
         </select>
@@ -4533,7 +4598,7 @@ const MoveSettings = (props) => {
           defaultChecked={parameters[0] === 3 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        効果音
+        {selectList[3]}
         <SeSelectBox
           selectValue={soundId}
           onChange={(e) => onSoundIdChange(e)}
@@ -4548,7 +4613,7 @@ const MoveSettings = (props) => {
           defaultChecked={parameters[0] === 4 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        横画面座標スロット:
+        {selectList[4]}
         <SlotSelectBox
           selectValue={shiftXId}
           unuse={true}
@@ -4563,7 +4628,7 @@ const MoveSettings = (props) => {
           defaultChecked={parameters[0] === 5 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        縦画面座標スロット:
+        {selectList[5]}
         <SlotSelectBox
           selectValue={shiftYId}
           unuse={true}
@@ -4578,10 +4643,25 @@ const MoveSettings = (props) => {
           defaultChecked={parameters[0] === 6 ? 'checked' : ''}
           onChange={(e) => onRadioChange(e)}
         />
-        移動後の表示:
+        {selectList[6]}
         <select defaultValue={screenOn} onChange={(e) => onVisibleChange(e)}>
           {simpleSelectItems(visibleList)}
         </select>
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="7"
+          defaultChecked={parameters[0] === 7 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[7]}
+        <CommonEventSelectBox
+          selectValue={cleanupId}
+          onChange={(e) => onCleanupIdChange(e)}
+          unuse={true}
+        />
       </div>
     </CommandBase>
   );
@@ -7328,6 +7408,8 @@ const CommandEditor = (props) => {
         return <AssignMapInfo {...props} />;
       case COMMAND.Goods:
         return <Goods {...props} />;
+      case COMMAND.GoodsPrice:
+        return <GoodsPrice {...props} />;
       case COMMAND.CompareSlot:
         return <CompareSlot {...props} />;
       case COMMAND.AssignResult:

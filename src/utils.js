@@ -60,6 +60,19 @@ Utils.addBracket = function (text) {
   return '[' + text + ']';
 };
 
+Utils.getTransferSettingsList = function () {
+  return [
+    '画面消去',
+    '画面表示',
+    '隊列',
+    '効果音',
+    '横画面座標スロット',
+    '縦画面座標スロット',
+    '移動後の表示',
+    'クリーンアップ',
+  ];
+};
+
 Utils.getMoveSettingsScreenOffList = function () {
   return ['フェードアウト', '消去しない'];
 };

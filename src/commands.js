@@ -31,6 +31,7 @@ const CommandPopup = (props) => {
           {commandButton(COMMAND.AssignSystemSlot, 'システムスロットに代入')}
           {commandButton(COMMAND.AssignMapInfo, 'マップ情報取得')}
           {commandButton(COMMAND.Goods, '商品の設定')}
+          {commandButton(COMMAND.GoodsPrice, '商品価格の設定')}
           {commandButton(COMMAND.ItemSpace, '道具追加可能判定')}
           {commandButton(COMMAND.CompareSlot, 'スロット比較')}
           {commandButton(COMMAND.AssignResult, '結果代入')}
