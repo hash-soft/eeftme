@@ -4539,6 +4539,7 @@ const MoveSettings = (props) => {
       shiftYId,
       visible,
       cleanupId,
+      0,
     ];
     parameters[1] = values[parameters[0]];
     const command = { code: props.command.code, parameters: parameters };
@@ -4662,6 +4663,16 @@ const MoveSettings = (props) => {
           onChange={(e) => onCleanupIdChange(e)}
           unuse={true}
         />
+      </div>
+      <div>
+        <input
+          type="radio"
+          name="type"
+          value="8"
+          defaultChecked={parameters[0] === 8 ? 'checked' : ''}
+          onChange={(e) => onRadioChange(e)}
+        />
+        {selectList[8]}
       </div>
     </CommandBase>
   );
@@ -6566,7 +6577,7 @@ const ShowPicture = (props) => {
 
   return (
     <CommandBase
-      title={'ピクチャの移動'}
+      title={'ピクチャの表示'}
       onUpdate={onUpdate}
       onCancel={props.onCancel}
     >

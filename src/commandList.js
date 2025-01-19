@@ -954,6 +954,8 @@ const CommandItem = (props) => {
         return list[type] + `[${Utils.getMoveSettingsVisibleList()[value]}]`;
       case 7:
         return list[type] + dispCommonEventName(value);
+      case 8:
+        return list[type];
       default:
         return '???';
     }

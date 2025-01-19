@@ -70,6 +70,7 @@ Utils.getTransferSettingsList = function () {
     '縦画面座標スロット',
     '移動後の表示',
     'クリーンアップ',
+    '乗り物から出る',
   ];
 };
 
