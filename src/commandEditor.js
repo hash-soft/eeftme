@@ -5376,10 +5376,15 @@ const Se = (props) => {
 // BGM演奏
 const BgmPlay = (props) => {
   // 0: BGMId
-  const parameters = GetParameters(props.command.parameters, [0]);
+  // 1: 0:ループ 1:ループしない
+  const parameters = GetParameters(props.command.parameters, [0, 0]);
 
   const onChange = (e) => {
     parameters[0] = parseInt(e.target.value);
+  };
+
+  const onNoLoopCheck = (e) => {
+    parameters[1] = e.target.checked;
   };
 
   const onUpdate = () => {
@@ -5399,6 +5404,15 @@ const BgmPlay = (props) => {
         onChange={(e) => onChange(e)}
         unuse={true}
       />
+      <div>
+        <input
+          type="checkbox"
+          name="multi"
+          defaultChecked={parameters[1] ? 'checked' : ''}
+          onChange={(e) => onNoLoopCheck(e)}
+        />
+        ループしない
+      </div>
     </CommandBase>
   );
 };

@@ -1041,10 +1041,16 @@ const CommandItem = (props) => {
     return <td>{dispSeName(id)}</td>;
   };
 
-  const listBgmPlay = (id) => {
-    return <td>{dispBgmName(id)}</td>;
+  // BGM
+  const listBgmPlay = (id, noLoop) => {
+    return (
+      <td>
+        {dispBgmName(id)},{noLoop > 0 ? 'ループしない' : 'ループする'}
+      </td>
+    );
   };
 
+  // BGM割り込み
   const listBgmInterrupt = (id, wait, noResume) => {
     return (
       <td>
